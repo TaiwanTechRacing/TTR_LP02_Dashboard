@@ -1,0 +1,26 @@
+#include "images.h"
+
+const ext_img_desc_t images[22] = {
+    { "logo", &img_logo },
+    { "steeringWheel", &img_steering_wheel },
+    { "RacingPage_Background", &img_racing_page_background },
+    { "Cooling", &img_cooling },
+    { "Temp", &img_temp },
+    { "Pressure", &img_pressure },
+    { "FactoryPage_Background", &img_factory_page_background },
+    { "power", &img_power },
+    { "TTR_LOGO_2", &img_ttr_logo_2 },
+    { "PWR_V2", &img_pwr_v2 },
+    { "face", &img_face },
+    { "RB", &img_rb },
+    { "tire", &img_tire },
+    { "Motor", &img_motor },
+    { "M2", &img_m2 },
+    { "Motor_AMK", &img_motor_amk },
+    { "NewBG", &img_new_bg },
+    { "motorBG", &img_motor_bg },
+    { "SWBG", &img_swbg },
+    { "BAT", &img_bat },
+    { "RP", &img_rp },
+    { "BAT_Bg", &img_bat_bg },
+};

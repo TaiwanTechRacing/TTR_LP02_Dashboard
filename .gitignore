@@ -1,0 +1,7 @@
+Debug/
+Release/
+.metadata/
+*.o
+*.d
+*.elf
+*.map
