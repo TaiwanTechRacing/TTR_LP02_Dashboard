@@ -79,7 +79,12 @@
      * RAM_D1. Address and size must match SDRAM_LVGL_HEAP_ADDR /
      * SDRAM_LVGL_HEAP_SIZE in Core/User/bsp_sdram.h. That header cannot be
      * included here because LVGL uses this value too early. */
-    #define LV_MEM_ADR 0xC0100000
+    /* The PC simulator has no SDRAM; let LVGL allocate the pool normally. */
+    #ifdef LV_SIMULATOR
+        #define LV_MEM_ADR 0
+    #else
+        #define LV_MEM_ADR 0xC0100000
+    #endif
     /* Instead of an address give a memory allocator that will be called to get a memory pool for LVGL. E.g. my_malloc */
     #if LV_MEM_ADR == 0
         #undef LV_MEM_POOL_INCLUDE
@@ -114,7 +119,13 @@
  * - LV_OS_MQX
  * - LV_OS_SDL2
  * - LV_OS_CUSTOM */
-#define LV_USE_OS   LV_OS_NONE
+/* The firmware runs bare-metal; the PC simulator needs LVGL's Windows OS
+ * backend, which lv_windows_context.c requires. */
+#ifdef LV_SIMULATOR
+    #define LV_USE_OS   LV_OS_WINDOWS
+#else
+    #define LV_USE_OS   LV_OS_NONE
+#endif
 
 #if LV_USE_OS == LV_OS_CUSTOM
     #define LV_OS_CUSTOM_INCLUDE <stdint.h>
@@ -1367,7 +1378,12 @@
 #define LV_USE_NXP_ELCDIF   0
 
 /** LVGL Windows backend */
-#define LV_USE_WINDOWS    0
+/* Win32 display backend, used only by the PC simulator in sim/. */
+#ifdef LV_SIMULATOR
+    #define LV_USE_WINDOWS    1
+#else
+    #define LV_USE_WINDOWS    0
+#endif
 
 /** LVGL UEFI backend */
 #define LV_USE_UEFI 0

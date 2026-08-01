@@ -1,4 +1,5 @@
 build/
+sim/build/
 .vscode/.cmake/
 Debug/
 Release/
@@ -9,7 +10,8 @@ Release/
 *.map
 
 # EEZ Studio
-# 產生的程式碼輸出到 Core/User/ui，這裡是改輸出路徑之前的殘留，不需要版控
+# Generated code goes to Core/User/ui. This is the leftover output from before
+# the destination folder was changed and does not belong in version control.
 dashboard_layout/src/
-# 編輯器的視窗狀態（縮放、選取、捲動位置），每個人不一樣
+# Editor view state (zoom, selection, scroll position) - differs per person.
 *.eez-project-ui-state
