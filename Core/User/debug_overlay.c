@@ -1,9 +1,9 @@
 /*
  * debug_overlay.c
  *
- *  用 LVGL 內建的 sysmon 元件,不自己畫。它的 FPS 是直接從 LVGL 的
- *  refresh 流程統計出來的,比自己在主迴圈數圈數準確 —— 主迴圈跑得快
- *  不等於畫面真的有更新。
+ *  Uses LVGL's built-in sysmon component rather than drawing our own. Its FPS
+ *  comes from LVGL's refresh pipeline, which is more honest than counting main
+ *  loop iterations: a fast loop does not mean the screen actually updated.
  */
 
 #include "debug_overlay.h"
@@ -16,8 +16,9 @@ static bool s_visible;
 void DebugOverlay_Init(void)
 {
     /*
-     * LVGL 在建立 display 的時候就會把效能標籤顯示出來,所以這裡要主動關掉。
-     * 預設關閉是刻意的:比賽時車手需要的是乾淨的儀表畫面。
+     * LVGL shows the performance label as soon as the display is created, so
+     * hide it explicitly. Off by default is deliberate: during a race the
+     * driver wants a clean instrument display.
      */
     lv_sysmon_hide_performance(lv_display_get_default());
     s_visible = false;
@@ -42,7 +43,7 @@ bool DebugOverlay_IsVisible(void)
     return s_visible;
 }
 
-#else /* 疊層被編譯掉 */
+#else /* overlay compiled out */
 
 void DebugOverlay_Init(void) { }
 void DebugOverlay_Toggle(void) { }

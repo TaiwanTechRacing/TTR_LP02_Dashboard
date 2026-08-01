@@ -1,14 +1,15 @@
 /*
  * bsp_qspi.h
  *
- *  核心板上的 W25Qxx QSPI Flash,設定成記憶體映射模式。
+ *  W25Qxx QSPI flash on the core board, configured for memory-mapped reads.
  *
- *  用途:內部 2MB Flash 幾乎被 UI 圖片佔滿(5 張全螢幕背景就吃掉 1.25MB)。
- *  把圖片資料放到這顆外部 Flash,LVGL 可以像讀一般記憶體一樣直接從
- *  0x90000000 取用,內部 Flash 就只留給程式碼。
+ *  Why: the internal 2 MB flash was nearly full of UI artwork - five
+ *  full-screen backgrounds alone accounted for 1.25 MB. With image data on
+ *  this external chip, LVGL can read it like ordinary memory at 0x90000000
+ *  and the internal flash is left for code.
  *
- *  重要:FMC/SDRAM 沒有配置在 .ioc 裡,QSPI 也一樣。CubeMX 不知道下面這些腳
- *  已經被佔用:
+ *  Important: like FMC/SDRAM, QSPI is not configured in the .ioc. CubeMX does
+ *  not know these pins are taken:
  *
  *    PB2  QUADSPI_CLK      (AF9)
  *    PB6  QUADSPI_BK1_NCS  (AF10)
@@ -17,7 +18,7 @@
  *    PF8  QUADSPI_BK1_IO0  (AF10)
  *    PF9  QUADSPI_BK1_IO1  (AF10)
  *
- *  這幾支和 SDRAM 不衝突 —— FMC 用的是 PF0~PF5 與 PF11~PF15。
+ *  None of these clash with the SDRAM, which uses PF0..PF5 and PF11..PF15.
  */
 
 #ifndef BSP_QSPI_H
@@ -26,29 +27,30 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/** 記憶體映射之後,Flash 內容出現在這個位址。 */
+/** Once mapped, the flash contents appear at this address. */
 #define QSPI_BASE_ADDR   0x90000000UL
 
 /**
- * 初始化 QUADSPI、讀取 JEDEC ID 判斷容量、開啟 Quad 模式,
- * 最後切到記憶體映射。
+ * Bring up QUADSPI, read the JEDEC ID to determine capacity, enable quad mode
+ * and switch to memory-mapped reads.
  *
- * 失敗不會停機。這顆 Flash 目前是備援用途,沒有它儀表照樣能跑,所以
- * 這裡刻意不呼叫 Error_Handler() —— 不值得為了一顆還沒用到的晶片
- * 讓整個儀表板黑掉。所有等待都有逾時保護。
+ * Failure is not fatal. This chip is currently a fallback and the dashboard
+ * runs fine without it, so Error_Handler() is deliberately not called - it is
+ * not worth blanking the whole display over a chip nothing uses yet. Every
+ * wait is bounded by a timeout.
  *
- * @return 成功並完成映射時回傳 true。
+ * @return true if the chip was found and mapping succeeded.
  */
 bool BSP_QSPI_Init(void);
 
 /**
- * 偵測到的 Flash 容量(bytes)。尚未初始化或偵測失敗時回傳 0。
- * W25Q64 = 8MB,W25Q128 = 16MB。
+ * Detected capacity in bytes, or 0 if not initialised or detection failed.
+ * W25Q64 is 8 MB, W25Q128 is 16 MB.
  */
 uint32_t BSP_QSPI_GetFlashSize(void);
 
 /**
- * 讀到的 JEDEC ID(0xEF40xx 之類)。除錯用。
+ * The JEDEC ID that was read (0xEF40xx and similar). For debugging.
  */
 uint32_t BSP_QSPI_GetJedecId(void);
 

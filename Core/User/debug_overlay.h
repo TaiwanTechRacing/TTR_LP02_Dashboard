@@ -1,16 +1,17 @@
 /*
  * debug_overlay.h
  *
- *  Debug 疊層:在畫面左上角顯示更新率(FPS)與 LVGL 的 CPU 佔比。
+ *  Debug overlay: frame rate and LVGL CPU share, drawn top-left.
  *
- *  操作方式:兩顆按鍵同時按住約 1 秒切換顯示/隱藏。
- *  開機預設是關閉的 —— 比賽時不該有東西蓋在儀表畫面上。
+ *  Toggled by holding both buttons for about one second. Off at boot - nothing
+ *  should sit on top of the instrument display during a race.
  *
- *  疊層是掛在 LVGL 的 sysmon layer,不屬於任何一個 page,所以切頁時會一直
- *  留在畫面上,不需要每頁各自處理。
+ *  The overlay lives on LVGL's sysmon layer rather than on a page, so it stays
+ *  visible across screen changes with no per-page handling.
  *
- *  要在正式版完全編譯掉的話,把 Drivers/lv_conf.h 的 LV_USE_SYSMON 改回 0,
- *  下面這些函式會自動變成空實作,呼叫端不用改。
+ *  To compile it out entirely for a race build, set LV_USE_SYSMON back to 0 in
+ *  Drivers/lv_conf.h. These functions then become empty and callers need no
+ *  changes.
  */
 
 #ifndef DEBUG_OVERLAY_H
@@ -19,15 +20,15 @@
 #include <stdbool.h>
 
 /**
- * 初始化並確保疊層一開始是隱藏的。
- * 必須在 BSP_Display_Init() 之後呼叫。
+ * Initialise and make sure the overlay starts hidden.
+ * Must be called after BSP_Display_Init().
  */
 void DebugOverlay_Init(void);
 
-/** 切換顯示/隱藏。 */
+/** Toggle visibility. */
 void DebugOverlay_Toggle(void);
 
-/** 目前是否顯示中。 */
+/** Whether the overlay is currently shown. */
 bool DebugOverlay_IsVisible(void);
 
 #endif /* DEBUG_OVERLAY_H */

@@ -1,20 +1,23 @@
 /*
  * bsp_display.c
  *
- *  顯示層。原本的做法是:LVGL 畫進一塊 1/10 螢幕大的小 buffer,再用 DMA2D
- *  搬到 framebuffer,而且是 CPU 空轉輪詢等 DMA2D 做完。一張畫面要重複這個
- *  流程十幾次,CPU 全部浪費在等待上,而且畫面會撕裂。
+ *  Display layer. The original approach had LVGL render into a buffer one
+ *  tenth of the screen, copy it to the framebuffer with DMA2D, and busy-wait
+ *  on the CPU until DMA2D finished. A full frame repeated that a dozen-odd
+ *  times, so the CPU spent most of its time waiting - and the picture tore.
  *
- *  現在改成:兩張整頁 framebuffer 放在 SDRAM,LVGL 直接畫在上面(DIRECT
- *  模式),畫完只要換 LTDC 的讀取位址就好,一次記憶體搬移都不用。換頁排在
- *  垂直空白期,所以不會撕裂。
+ *  Now: two full-page framebuffers in SDRAM with LVGL drawing straight into
+ *  them (DIRECT mode). Presenting a frame is just pointing LTDC at the other
+ *  buffer, with no memory copy at all. The swap is scheduled for the vertical
+ *  blanking interval, so there is no tearing.
  */
 
 #include "bsp_display.h"
 #include "bsp_sdram.h"
 #include "stm32h7xx_hal.h"
 
-/* 換頁沒完成的容忍上限。60 Hz 一張畫面 16.7 ms,50 ms 代表中斷真的出事了。 */
+/* How long to tolerate an unfinished flip. A 60 Hz frame is 16.7 ms, so 50 ms
+ * means the interrupt genuinely failed. */
 #define FLUSH_TIMEOUT_MS 50U
 
 static lv_display_t *s_disp;
@@ -31,8 +34,9 @@ void BSP_Display_Init(void)
     s_disp = lv_display_create(LCD_WIDTH, LCD_HEIGHT);
 
     /*
-     * DIRECT 模式 + 兩張整頁 buffer。LVGL 會輪流畫在這兩張上面,並且自己
-     * 記住最近兩張畫面各自髒掉的區域,所以兩張的內容會保持一致。
+     * DIRECT mode with two full-page buffers. LVGL alternates between them and
+     * tracks which areas went dirty in each of the last two frames, so both
+     * buffers stay consistent.
      */
     lv_display_set_buffers(s_disp,
                            (void *)SDRAM_FB0_ADDR,
@@ -43,8 +47,9 @@ void BSP_Display_Init(void)
     lv_display_set_flush_cb(s_disp, lcd_flush_cb);
 
     /*
-     * 開 LTDC 的 register reload 中斷。優先權刻意設得比 FDCAN2(0)低,
-     * 畫面換頁絕對不該延誤 CAN 收包。
+     * Enable the LTDC register-reload interrupt. Its priority is deliberately
+     * lower than FDCAN2 (which is 0): presenting a frame must never delay CAN
+     * reception.
      */
     LTDC->ICR = LTDC_ICR_CRRIF;
     HAL_NVIC_SetPriority(LTDC_IRQn, 5, 0);
@@ -61,7 +66,7 @@ void BSP_Display_Service(void)
         return;
     }
 
-    /* 中斷沒來。放棄等待,讓 LVGL 繼續跑。 */
+    /* The interrupt never came. Give up waiting and let LVGL continue. */
     LTDC->IER &= ~LTDC_IER_RRIE;
     s_flush_pending = false;
     lv_display_flush_ready(s_disp);
@@ -72,8 +77,9 @@ static void lcd_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_
     LV_UNUSED(area);
 
     /*
-     * DIRECT 模式下 LVGL 已經把像素寫進整頁 buffer 了,每個髒區域都會呼叫一次
-     * 這裡。只有最後一次才需要動作 —— 前面幾次直接回報完成就好。
+     * In DIRECT mode LVGL has already written the pixels into the full-page
+     * buffer and calls this once per dirty area. Only the last call needs to do
+     * anything; the earlier ones just report completion.
      */
     if (!lv_display_flush_is_last(disp)) {
         lv_display_flush_ready(disp);
@@ -81,11 +87,12 @@ static void lcd_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_
     }
 
     /*
-     * framebuffer 那塊 MPU 設成 write-through,所以像素此刻已經在 SDRAM 裡,
-     * 不需要 SCB_CleanDCache_by_Addr。
+     * The framebuffer region is write-through in the MPU, so the pixels are
+     * already in SDRAM and no SCB_CleanDCache_by_Addr is needed.
      *
-     * 把 LTDC 指到剛畫好的這張,並要求在下一個垂直空白期生效。在那之前螢幕
-     * 顯示的還是舊的那張,所以不會看到畫到一半的畫面。
+     * Point LTDC at the buffer just rendered and ask for the change to take
+     * effect at the next vertical blanking. Until then the old buffer stays on
+     * screen, so a half-drawn frame is never visible.
      */
     s_flush_start_tick = HAL_GetTick();
     s_flush_pending = true;
@@ -94,13 +101,15 @@ static void lcd_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_
     LTDC->IER |= LTDC_IER_RRIE;
     LTDC->SRCR = LTDC_SRCR_VBR;
 
-    /* 這裡不呼叫 lv_display_flush_ready() —— 等 LTDC_IRQHandler 確認換頁
-     * 真的生效之後再放行,LVGL 才不會提早去畫還在顯示中的那張。 */
+    /* Deliberately no lv_display_flush_ready() here. LTDC_IRQHandler releases
+     * it once the swap has actually taken effect, so LVGL never starts drawing
+     * into the buffer still on screen. */
 }
 
 /**
- * LTDC 全域中斷。CubeMX 沒有產生這個 handler(.ioc 裡沒開 LTDC 中斷),
- * 所以在這裡定義,蓋掉 startup 檔裡的 weak 版本。
+ * LTDC global interrupt. CubeMX does not generate this handler because the
+ * .ioc has no LTDC interrupt enabled, so it is defined here, overriding the
+ * weak symbol in the startup file.
  */
 void LTDC_IRQHandler(void)
 {

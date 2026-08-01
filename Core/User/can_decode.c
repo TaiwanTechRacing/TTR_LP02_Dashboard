@@ -1,8 +1,9 @@
 /*
  * can_decode.c
  *
- *  把 CAN frame 解包寫進 vehicle_data。原本這段在 main.c 裡、而且是跑在
- *  FDCAN 中斷內;現在由主迴圈呼叫(frame 來自 can_rx.c 的環形佇列)。
+ *  Unpacks CAN frames into vehicle_data. This used to live in main.c and run
+ *  inside the FDCAN ISR; it is now driven from the main loop, with frames
+ *  arriving through the ring buffer in can_rx.c.
  */
 
 #include "can_decode.h"
@@ -14,12 +15,14 @@ static void store_segment(uint8_t seg, const float *volts, const float *temps);
 static void decode_one(const ttr_can_frame_t *frame);
 
 /*
- * AMS 的八段訊息內容完全一樣,只有型別名稱和段號不同。原本是八段各自展開的
- * 複製貼上,合計約 220 行 —— 改一個欄位要記得改八個地方。
+ * The eight AMS segment messages carry identical payloads and differ only in
+ * type name and segment index. This was previously eight hand-expanded copies
+ * totalling ~220 lines, where changing one field meant remembering all eight.
  *
- * 注意 C0~C13 有 14 個(電芯),T0~T6 只有 7 個。溫度那邊每段有 10 個位置,
- * 但 CAN 只送 7 個,剩下 3 個維持 0。重構前那個會踩記憶體的 bug 就是因為
- * 兩邊長度不同卻共用同一個迴圈計數。
+ * Note the asymmetry: C0..C13 is 14 cells, T0..T6 is only 7 temperatures. Each
+ * segment has 10 temperature slots but CAN only carries 7, so the last 3 stay
+ * zero. The out-of-bounds bug fixed during the refactor came from sharing one
+ * loop counter across both despite the different lengths.
  */
 #define DECODE_AMS_MODULE(n, seg)                                              \
     case TTR_CAN_ID_AMS_AMS_MODULE_##n: {                                      \
@@ -41,7 +44,8 @@ void CAN_Poll(void)
 {
     ttr_can_frame_t frame;
 
-    /* 一次清空佇列。即使某一圈因為重繪整頁而變慢,也不會讓佇列越積越多。 */
+    /* Drain the whole queue each pass, so a slow iteration (full-screen
+     * redraw, say) does not let the backlog grow. */
     while (CAN_RX_Dequeue(&frame)) {
         decode_one(&frame);
     }
@@ -67,8 +71,9 @@ static void decode_one(const ttr_can_frame_t *frame)
         ttr_vcu_vcu_sdc_t s;
         ttr_vcu_vcu_sdc_unpack(&s, frame);
 
-        /* 原本這裡是 12 行 read-modify-write 的 bit 搬移,而且位移量從 4 開始
-         * (歷史遺留的偏移)。現在 bit 0 就是第一個節點,對齊 vd_sdc_node_t。 */
+        /* This was 12 lines of read-modify-write bit shuffling starting at
+         * bit 4 for historical reasons. Bit 0 is now the first node, matching
+         * vd_sdc_node_t. */
         uint16_t sdc = 0;
         sdc |= (uint16_t)((s.IMD_STATUS    & 1u) << VD_SDC_IMD);
         sdc |= (uint16_t)((s.AMS_STATUS    & 1u) << VD_SDC_AMS);
@@ -103,16 +108,17 @@ static void decode_one(const ttr_can_frame_t *frame)
     case TTR_CAN_ID_VCU_VCU_SENSOR2: {
         ttr_vcu_vcu_sensor2_t s;
         ttr_vcu_vcu_sensor2_unpack(&s, frame);
-        /* 方向盤 -180~+180 度換算成 0~100,而且左右反過來(畫面上的圓弧
-         * 是順時針增加,方向盤是逆時針為正)。 */
+        /* Map steering -180..+180 deg onto 0..100 and invert it: the on-screen
+         * arc grows clockwise while positive steering angle is anticlockwise. */
         g_vehicle.steering_pct  = 100.0f - (s.STEERING_ANGLE + 180.0f) / 360.0f * 100.0f;
         g_vehicle.apps1_pu      = s.APPS1_PU;
-        g_vehicle.car_speed_kph = (uint16_t)(s.CAR_SPEED + 0.5f);   /* 新 DBC 是 float */
+        g_vehicle.car_speed_kph = (uint16_t)(s.CAR_SPEED + 0.5f);   /* float in the new DBC */
         VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR2);
         break;
     }
 
-    /* 低壓電池。舊 DBC 放在 VCU_SENSOR3,新版搬到 VCU_SYSTEM_STATUS。 */
+    /* Low voltage battery. Was VCU_SENSOR3 in the old DBC, moved to
+     * VCU_SYSTEM_STATUS in the new one. */
     case TTR_CAN_ID_VCU_VCU_SYSTEM_STATUS: {
         ttr_vcu_vcu_system_status_t s;
         ttr_vcu_vcu_system_status_unpack(&s, frame);
@@ -144,8 +150,9 @@ static void decode_one(const ttr_can_frame_t *frame)
         break;
     }
 
-    /* 高壓電池。舊 DBC 是單一則 AMS_STATUS0,新版拆成 BASIC + LIMIT,
-     * 儀表要顯示的東西全部落在 BASIC。 */
+    /* High voltage battery. The old DBC had a single AMS_STATUS0; the new one
+     * splits it into BASIC + LIMIT, and everything the dashboard shows is in
+     * BASIC. */
     case TTR_CAN_ID_AMS_AMS_STATUS_BASIC: {
         ttr_ams_ams_status_basic_t s;
         ttr_ams_ams_status_basic_unpack(&s, frame);
@@ -177,7 +184,7 @@ static void decode_one(const ttr_can_frame_t *frame)
     DECODE_AMS_MODULE(8, 7)
 
     default:
-        /* 濾波器理論上只放行上面這些 ID,收到別的就忽略。 */
+        /* The hardware filter should only admit the IDs above; ignore anything else. */
         break;
     }
 }

@@ -1,35 +1,37 @@
 /*
  * ui_bind.c
  *
- *  實作 EEZ Studio 在 vars.h 宣告的 get_var_xxx()。
+ *  Implements the get_var_xxx() functions EEZ Studio declares in vars.h.
  *
- *  EEZ 的 LVGL 專案在關閉 Flow 的模式下,只產生宣告、不產生實作 —— 值從哪來
- *  由我們決定。這就是整個 UI 的接縫:
+ *  With Flow disabled, an EEZ LVGL project only emits the declarations - where
+ *  the values come from is up to us. This file is the seam:
  *
- *      vehicle_data  →  [ui_bind.c]  →  EEZ 產生的 screens.c
+ *      vehicle_data  ->  [ui_bind.c]  ->  EEZ-generated screens.c
  *
- *  在 EEZ 裡搬動元件、改樣式、換字型都不會動到這個檔案。只有「新增或改名
- *  變數」才需要來這裡加對應的 getter。
+ *  Moving widgets, restyling, or swapping fonts in EEZ does not touch this
+ *  file. Only adding or renaming a variable requires a new getter here.
  *
- *  重構前的作法是一個寫死幾百個 objects.xxx 名稱的 updatescreen() 大 switch,
- *  版面一重新產生就整片編不過。
+ *  What this replaces: an updatescreen() switch that hard-coded several hundred
+ *  objects.xxx widget names, so regenerating the layout broke the whole build.
  *
- *  ── 訊號過期的處理 ──
- *  每個 getter 都會先問 VehicleData_IsStale()。CAN 斷掉時畫面顯示 "---" 而不是
- *  凍結在最後一筆數值 —— 車手看到定住的 600V 會以為一切正常,這是安全問題。
+ *  -- Stale signal handling --
+ *  Every getter checks VehicleData_IsStale() first. When CAN drops, the display
+ *  shows "---" instead of freezing on the last value. A driver looking at a
+ *  frozen 600V reading assumes everything is fine, which is a safety problem.
  */
 
 #include "vehicle_data.h"
 #include <stdio.h>
 
-/* 訊號過期時顯示的字串 */
+/* Shown in place of a value whose signal has timed out */
 #define STALE_TEXT "---"
 
 /*
- * 每個 getter 各自持有回傳用的緩衝區。
+ * One buffer per getter.
  *
- * 不能用區域變數(回傳後就失效),也不共用一個緩衝區 —— LVGL 在同一次重繪
- * 裡會連續呼叫多個 getter,共用的話後面的會蓋掉前面的。
+ * A local would go out of scope before LVGL reads it, and a single shared
+ * buffer would not work either: LVGL calls several getters back to back within
+ * one refresh, so later calls would overwrite earlier results.
  */
 static char s_speed_buf[8];
 static char s_soc_buf[12];
@@ -37,7 +39,8 @@ static char s_lv_buf[16];
 static char s_hv_buf[16];
 
 /**
- * 車速。整數顯示,不補零 —— 前面補零在大字級時會佔掉版面寬度。
+ * Vehicle speed. Integer, no leading zeros - padding wastes horizontal space
+ * at the large font size used on the main screen.
  */
 const char *get_var_speed(void)
 {
@@ -50,10 +53,10 @@ const char *get_var_speed(void)
 }
 
 /**
- * RTD 狀態。
+ * Ready-to-drive state.
  *
- * 這裡回傳的是要顯示的字,不是狀態碼 —— 顏色變化請在 EEZ 裡用樣式處理,
- * 韌體只負責內容。
+ * Returns the text to display, not a state code - colour changes belong in the
+ * EEZ style, the firmware only supplies content.
  */
 const char *get_var_ready(void)
 {
@@ -64,7 +67,7 @@ const char *get_var_ready(void)
     return g_vehicle.rtd_active ? "READY" : "NOT READY";
 }
 
-/** 高壓電池 SOC 百分比。 */
+/** High voltage pack state of charge. */
 const char *get_var_label_soc_value(void)
 {
     if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
@@ -75,7 +78,7 @@ const char *get_var_label_soc_value(void)
     return s_soc_buf;
 }
 
-/** 低壓電池電壓。 */
+/** Low voltage battery. */
 const char *get_var_label_lv_value(void)
 {
     if (VehicleData_IsStale(VD_GROUP_VCU_SYSTEM, VD_DEFAULT_TIMEOUT_MS)) {
@@ -86,7 +89,7 @@ const char *get_var_label_lv_value(void)
     return s_lv_buf;
 }
 
-/** 高壓電池組電壓。 */
+/** High voltage pack. */
 const char *get_var_label_hv_value(void)
 {
     if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
@@ -98,13 +101,15 @@ const char *get_var_label_hv_value(void)
 }
 
 /**
- * SOC 長條圖的數值。
+ * Value driving the bar widget.
  *
- * EEZ 那邊 bar 的 min/max 目前設成 18/30(低壓電池的電壓範圍),但上面的標題
- * 寫 SOC。這裡先照變數名 lv 回傳低壓電壓 —— 如果那根 bar 其實是要顯示高壓
- * SOC,把 EEZ 的 min/max 改成 0/100,這裡改回傳 pack_soc 即可。
+ * The bar in EEZ is currently configured min=18 max=30, the low voltage battery
+ * range, while the label above it reads SOC. This returns GLV voltage to match
+ * the variable name. If that bar is meant to show pack SOC instead, change the
+ * EEZ range to 0..100 and return pack_soc here.
  *
- * 過期時回傳 min 值讓長條歸零,比停在最後一格容易看出異常。
+ * On timeout it returns 0 so the bar empties, which reads as abnormal far more
+ * clearly than a bar frozen part way up.
  */
 int32_t get_var_lv(void)
 {

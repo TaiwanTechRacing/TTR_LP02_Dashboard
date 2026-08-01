@@ -75,9 +75,10 @@
     #define LV_MEM_POOL_EXPAND_SIZE 0
 
     /** Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too. */
-    /* LVGL 的 heap 放到板上的 32 MB SDRAM,不再佔用內部 RAM_D1。
-     * 位址與大小要和 Core/User/bsp_sdram.h 的 SDRAM_LVGL_HEAP_ADDR /
-     * SDRAM_LVGL_HEAP_SIZE 保持一致(這裡不能 include,LVGL 太早用到)。 */
+    /* The LVGL heap lives in the board's 32 MB SDRAM instead of internal
+     * RAM_D1. Address and size must match SDRAM_LVGL_HEAP_ADDR /
+     * SDRAM_LVGL_HEAP_SIZE in Core/User/bsp_sdram.h. That header cannot be
+     * included here because LVGL uses this value too early. */
     #define LV_MEM_ADR 0xC0100000
     /* Instead of an address give a memory allocator that will be called to get a memory pool for LVGL. E.g. my_malloc */
     #if LV_MEM_ADR == 0
@@ -91,8 +92,9 @@
  *====================*/
 
 /** Default display refresh, input device read and animation step period. */
-/* 33 ms 等於把上限鎖在 30 fps。開了 cache、換成雙緩衝、主迴圈也不再 HAL_Delay
- * 之後,16 ms(60 fps)才跟得上面板的更新率。 */
+/* 33 ms caps the display at 30 fps. With caches on, double buffering in place
+ * and the main loop no longer calling HAL_Delay, 16 ms (60 fps) is what keeps
+ * up with the panel. */
 #define LV_DEF_REFR_PERIOD  16      /**< [ms] */
 
 /** Default Dots Per Inch. Used to initialize default sizes such as widgets sized, style paddings.
@@ -134,8 +136,8 @@
 #define LV_DRAW_BUF_STRIDE_ALIGN                1
 
 /** Align start address of draw_buf addresses to this bytes*/
-/* 開了 D-cache 之後對齊到 cache line(32 byte),避免 buffer 邊界和別的資料
- * 共用同一條 cache line。 */
+/* Align to a 32-byte cache line now that D-cache is on, so a buffer boundary
+ * never shares a line with unrelated data. */
 #define LV_DRAW_BUF_ALIGN                       32
 
 /** Using matrix for transformations.
@@ -648,16 +650,7 @@
 /** Enable handling large font and/or fonts with a lot of characters.
  *  The limit depends on the font size, font face and bpp.
  *  A compiler error will be triggered if a font needs it. */
-/*
- * 開啟的原因:UI_FONT_ORBITER_BOLD_180 目前是 8bpp、字元範圍 32-127,點陣資料
- * 超過 1 MB,而字形描述子的 bitmap_index 只有 20 bit(上限 1,048,575),偏移量
- * 會溢位 —— 產生的字型檔自己帶了 #error 擋下來。
- *
- * 這是繞過症狀,不是解法。真正該做的是把大字級改成 bpp=4、字元範圍只留
- * 45-57(數字加 - . /):那個字型會從 618 KB 掉到約 40 KB,溢位問題自然消失,
- * 也不需要這個選項(它會讓所有字型的描述子變寬,多吃一點空間)。
- */
-#define LV_FONT_FMT_TXT_LARGE 1
+#define LV_FONT_FMT_TXT_LARGE 0
 
 /** Enables/disables support for compressed fonts. */
 #define LV_USE_FONT_COMPRESSED 0
@@ -1049,9 +1042,10 @@
 #define LV_USE_SNAPSHOT 0
 
 /** 1: Enable system monitor component */
-/* 提供 debug 疊層的 FPS 顯示。實際的顯示/隱藏由 Core/User/debug_overlay.c
- * 在執行期控制,開機預設是隱藏的。
- * 要完全編譯掉(比賽用),把這裡改回 0 即可,debug_overlay 會自動變成空函式。 */
+/* Backs the FPS readout in the debug overlay. Visibility is controlled at
+ * runtime by Core/User/debug_overlay.c and starts hidden.
+ * Set back to 0 for a race build to compile it out entirely; debug_overlay
+ * then becomes empty functions. */
 #define LV_USE_SYSMON   1
 #if LV_USE_SYSMON
     /** Get the idle percentage. E.g. uint32_t my_get_idle(void); */

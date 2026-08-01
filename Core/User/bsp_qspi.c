@@ -1,16 +1,17 @@
 /*
  * bsp_qspi.c
  *
- *  W25Qxx QSPI Flash,直接操作 QUADSPI 暫存器(理由同 bsp_sdram.c:
- *  專案的 HAL 版本和本機 CubeH7 套件對不上,而且 HAL_QSPI 這個模組
- *  根本沒被 CubeMX 複製進來)。
+ *  W25Qxx QSPI flash driven through the QUADSPI registers directly. Same
+ *  reasoning as bsp_sdram.c: the vendored HAL version matches no local CubeH7
+ *  package, and CubeMX never copied the HAL_QSPI module into the project at
+ *  all.
  */
 
 #include "bsp_qspi.h"
 #include "bsp_mpu.h"
 #include "stm32h7xx_hal.h"
 
-/* W25Qxx 指令 */
+/* W25Qxx commands */
 #define CMD_WRITE_ENABLE        0x06U
 #define CMD_READ_STATUS_REG2    0x35U
 #define CMD_WRITE_STATUS_REG2   0x31U
@@ -18,27 +19,30 @@
 #define CMD_FAST_READ_QUAD_OUT  0x6BU
 
 /*
- * 讀取指令選 0x6B(Fast Read Quad Output)而不是更快的 0xEB
- * (Fast Read Quad I/O)。
+ * Reads use 0x6B (Fast Read Quad Output) rather than the faster 0xEB
+ * (Fast Read Quad I/O).
  *
- * 0x6B 是 1-1-4:指令和位址走單線,只有資料走四線,固定 8 個 dummy cycle,
- * 不需要 alternate byte。0xEB 的位址也走四線、還要送 M7-M0 模式位元組,
- * dummy cycle 數會隨頻率和廠牌設定變動,設錯就是讀出整片垃圾而且很難查。
+ * 0x6B is 1-1-4: command and address on a single line, only data on four,
+ * with a fixed 8 dummy cycles and no alternate byte. 0xEB sends the address
+ * on four lines plus an M7-M0 mode byte, and its dummy cycle count varies with
+ * frequency and vendor settings - get it wrong and you read pure garbage,
+ * which is painful to diagnose.
  *
- * 對我們的用途(整批讀圖片)來說,位址階段的差異可以忽略 —— 資料階段
- * 一樣是四線全速。用可靠的那個。
+ * For bulk image reads the address phase is negligible; the data phase runs at
+ * full quad speed either way. Take the reliable one.
  */
 #define QSPI_DUMMY_CYCLES       8U
 
 /*
- * QUADSPI kernel clock 預設是 hclk3 = 240MHz。除以 4 得到 60MHz。
+ * The QUADSPI kernel clock defaults to hclk3 = 240 MHz; divide by 4 for 60 MHz.
  *
- * W25Q 系列在 Fast Read Quad Output 下規格大多可到 80MHz 以上,這裡取 60MHz
- * 留裕度:這條路是備援,穩定比極速重要。四線 60MHz 約 30 MB/s,一張全螢幕
- * 圖(261KB)大約 9ms,對切頁來說夠用。
- * 之後真的需要更快,把 PRESCALER 調小即可。
+ * Most W25Q parts are rated above 80 MHz for Fast Read Quad Output, so 60 MHz
+ * leaves margin. This path is a fallback and stability matters more than peak
+ * throughput. Four lines at 60 MHz is roughly 30 MB/s, about 9 ms for a
+ * full-screen 261 KB image - fine for a page change.
+ * Lower the prescaler later if more speed is genuinely needed.
  */
-#define QSPI_PRESCALER          3U      /* 除頻 = PRESCALER + 1 = 4 */
+#define QSPI_PRESCALER          3U      /* divider = PRESCALER + 1 = 4 */
 
 #define QSPI_TIMEOUT_MS         100U
 
@@ -59,18 +63,19 @@ bool BSP_QSPI_Init(void)
     qspi_gpio_init();
     __HAL_RCC_QSPI_CLK_ENABLE();
 
-    /* 先把 QUADSPI 關掉再設定,避免殘留狀態 */
+    /* Disable QUADSPI before configuring so no stale state survives */
     QUADSPI->CR = 0;
 
     QUADSPI->CR = (QSPI_PRESCALER << QUADSPI_CR_PRESCALER_Pos)
-                | (3U << QUADSPI_CR_FTHRES_Pos);          /* FIFO 門檻 4 bytes */
+                | (3U << QUADSPI_CR_FTHRES_Pos);          /* FIFO threshold 4 bytes */
 
     /*
-     * FSIZE 先填最大值(2^32)。真正的容量要讀完 JEDEC ID 才知道,
-     * 但讀 ID 本身就需要 QUADSPI 先能動,所以這裡給一個夠大的暫定值。
+     * Start with FSIZE at maximum (2^32). The real capacity is only known after
+     * reading the JEDEC ID, and reading it requires a working QUADSPI, so a
+     * generous provisional value goes in first.
      */
     QUADSPI->DCR = (31U << QUADSPI_DCR_FSIZE_Pos)
-                 | (7U  << QUADSPI_DCR_CSHT_Pos);         /* CS 最短高電位 8 cycle */
+                 | (7U  << QUADSPI_DCR_CSHT_Pos);         /* minimum CS high time, 8 cycles */
 
     QUADSPI->CR |= QUADSPI_CR_EN;
 
@@ -79,17 +84,18 @@ bool BSP_QSPI_Init(void)
     }
 
     /*
-     * JEDEC ID 第三個 byte 是容量的 2 次冪指數:
-     * W25Q64 = 0xEF4017 -> 2^23 = 8MB,W25Q128 = 0xEF4018 -> 2^24 = 16MB。
+     * The third JEDEC ID byte is the capacity as a power of two:
+     * W25Q64 = 0xEF4017 -> 2^23 = 8 MB, W25Q128 = 0xEF4018 -> 2^24 = 16 MB.
      */
     const uint8_t capacity_exp = (uint8_t)(s_jedec_id & 0xFFU);
     if (capacity_exp < 16U || capacity_exp > 25U) {
-        /* 不是合理的容量代碼,大概是沒讀到晶片(全 0 或全 F) */
+        /* Not a plausible capacity code - most likely no chip responded
+         * (all zeros or all ones) */
         return false;
     }
     s_flash_size = 1UL << capacity_exp;
 
-    /* 用實際容量重設 FSIZE */
+    /* Re-set FSIZE from the real capacity */
     QUADSPI->CR &= ~QUADSPI_CR_EN;
     QUADSPI->DCR = ((uint32_t)(capacity_exp - 1U) << QUADSPI_DCR_FSIZE_Pos)
                  | (7U << QUADSPI_DCR_CSHT_Pos);
@@ -102,7 +108,8 @@ bool BSP_QSPI_Init(void)
 
     qspi_enable_memory_mapped();
 
-    /* 映射區域要等容量確定才能開,否則 MPU 擋著讀不到 */
+    /* The mapped window can only be opened once the capacity is known,
+     * otherwise the MPU blocks every read */
     BSP_MPU_EnableQspiRegion(s_flash_size);
 
     return true;
@@ -131,7 +138,7 @@ static bool qspi_wait_not_busy(void)
     return true;
 }
 
-/* 等待傳輸完成旗標(TCF),然後清掉它 */
+/* Wait for the transfer complete flag (TCF), then clear it */
 static bool qspi_wait_transfer_complete(void)
 {
     const uint32_t start = HAL_GetTick();
@@ -152,10 +159,10 @@ static bool qspi_read_jedec_id(uint32_t *id)
         return false;
     }
 
-    QUADSPI->DLR = 3U - 1U;                                  /* 讀 3 bytes */
-    QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)             /* 指令走單線 */
-                 | (1U << QUADSPI_CCR_DMODE_Pos)             /* 資料走單線 */
-                 | (1U << QUADSPI_CCR_FMODE_Pos)             /* 間接讀取 */
+    QUADSPI->DLR = 3U - 1U;                                  /* read 3 bytes */
+    QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)             /* command on one line */
+                 | (1U << QUADSPI_CCR_DMODE_Pos)             /* data on one line */
+                 | (1U << QUADSPI_CCR_FMODE_Pos)             /* indirect read */
                  | (CMD_READ_JEDEC_ID << QUADSPI_CCR_INSTRUCTION_Pos);
 
     uint32_t value = 0;
@@ -179,12 +186,13 @@ static bool qspi_read_jedec_id(uint32_t *id)
 }
 
 /*
- * 0x6B 需要 Flash 的 Quad Enable 位元先打開,否則 IO2/IO3 不會被驅動,
- * 讀出來會是垃圾。W25Q 的 QE 在 Status Register 2 的 bit 1。
+ * 0x6B needs the flash's Quad Enable bit set first, otherwise IO2 and IO3 are
+ * never driven and reads come back as garbage. On W25Q parts QE is bit 1 of
+ * status register 2.
  */
 static bool qspi_enable_quad_mode(void)
 {
-    /* --- 先讀 SR2 --- */
+    /* --- read SR2 first --- */
     if (!qspi_wait_not_busy()) {
         return false;
     }
@@ -210,7 +218,7 @@ static bool qspi_enable_quad_mode(void)
     }
 
     if ((sr2 & 0x02U) != 0U) {
-        return true;    /* QE 已經是開的,不必再寫一次 */
+        return true;    /* QE already set, no need to write it again */
     }
 
     /* --- Write Enable --- */
@@ -225,7 +233,7 @@ static bool qspi_enable_quad_mode(void)
         return false;
     }
 
-    /* --- 寫回 SR2,把 QE 設起來 --- */
+    /* --- write SR2 back with QE set --- */
     if (!qspi_wait_not_busy()) {
         return false;
     }
@@ -233,7 +241,7 @@ static bool qspi_enable_quad_mode(void)
     QUADSPI->DLR = 0U;
     QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)
                  | (1U << QUADSPI_CCR_DMODE_Pos)
-                 | (0U << QUADSPI_CCR_FMODE_Pos)              /* 間接寫入 */
+                 | (0U << QUADSPI_CCR_FMODE_Pos)              /* indirect write */
                  | (CMD_WRITE_STATUS_REG2 << QUADSPI_CCR_INSTRUCTION_Pos);
 
     *(volatile uint8_t *)&QUADSPI->DR = (uint8_t)(sr2 | 0x02U);
@@ -242,7 +250,8 @@ static bool qspi_enable_quad_mode(void)
         return false;
     }
 
-    /* 寫狀態暫存器是非揮發性動作,晶片內部要一點時間 */
+    /* Writing the status register is a non-volatile operation; the chip needs
+     * a moment internally */
     HAL_Delay(10);
 
     return qspi_wait_not_busy();
@@ -250,12 +259,12 @@ static bool qspi_enable_quad_mode(void)
 
 static void qspi_enable_memory_mapped(void)
 {
-    QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)              /* 指令單線 */
-                 | (1U << QUADSPI_CCR_ADMODE_Pos)             /* 位址單線 */
-                 | (2U << QUADSPI_CCR_ADSIZE_Pos)             /* 24-bit 位址 */
-                 | (3U << QUADSPI_CCR_DMODE_Pos)              /* 資料四線 */
+    QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)              /* command on one line */
+                 | (1U << QUADSPI_CCR_ADMODE_Pos)             /* address on one line */
+                 | (2U << QUADSPI_CCR_ADSIZE_Pos)             /* 24-bit address */
+                 | (3U << QUADSPI_CCR_DMODE_Pos)              /* data on four lines */
                  | (QSPI_DUMMY_CYCLES << QUADSPI_CCR_DCYC_Pos)
-                 | (3U << QUADSPI_CCR_FMODE_Pos)              /* 記憶體映射 */
+                 | (3U << QUADSPI_CCR_FMODE_Pos)              /* memory-mapped */
                  | (CMD_FAST_READ_QUAD_OUT << QUADSPI_CCR_INSTRUCTION_Pos);
 }
 
@@ -270,22 +279,22 @@ static void qspi_gpio_init(void)
     gpio.Pull  = GPIO_NOPULL;
     gpio.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 
-    /* PB2 CLK 走 AF9 */
+    /* PB2 CLK on AF9 */
     gpio.Pin       = GPIO_PIN_2;
     gpio.Alternate = GPIO_AF9_QUADSPI;
     HAL_GPIO_Init(GPIOB, &gpio);
 
-    /* PB6 NCS 走 AF10 */
+    /* PB6 NCS on AF10 */
     gpio.Pin       = GPIO_PIN_6;
     gpio.Alternate = GPIO_AF10_QUADSPI;
     HAL_GPIO_Init(GPIOB, &gpio);
 
-    /* PF6 IO3 / PF7 IO2 走 AF9 */
+    /* PF6 IO3 / PF7 IO2 on AF9 */
     gpio.Pin       = GPIO_PIN_6 | GPIO_PIN_7;
     gpio.Alternate = GPIO_AF9_QUADSPI;
     HAL_GPIO_Init(GPIOF, &gpio);
 
-    /* PF8 IO0 / PF9 IO1 走 AF10 */
+    /* PF8 IO0 / PF9 IO1 on AF10 */
     gpio.Pin       = GPIO_PIN_8 | GPIO_PIN_9;
     gpio.Alternate = GPIO_AF10_QUADSPI;
     HAL_GPIO_Init(GPIOF, &gpio);

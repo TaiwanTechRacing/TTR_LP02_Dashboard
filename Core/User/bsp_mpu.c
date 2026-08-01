@@ -1,10 +1,11 @@
 /*
  * bsp_mpu.c
  *
- *  Cortex-M7 的 MPU 與 cache 設定。
+ *  Cortex-M7 MPU and cache configuration.
  *
- *  這裡是整個效能改善的地基:M7 不開 cache 的話,從 Flash 抓指令和存取 SRAM
- *  都會慢好幾倍,LVGL 的軟體繪圖首當其衝。
+ *  This is the foundation of the performance work. With caches off, an M7
+ *  fetches instructions from flash and touches SRAM several times slower than
+ *  it should, and LVGL's software rendering takes the brunt of it.
  */
 
 #include "bsp_mpu.h"
@@ -12,8 +13,9 @@
 #include "stm32h7xx_hal.h"
 #include <stdbool.h>
 
-/* QSPI 記憶體映射的起始位址。與 bsp_qspi.h 的 QSPI_BASE_ADDR 相同,
- * 這裡另外定義是為了讓 MPU 設定不必反過來相依於 QSPI 驅動。 */
+/* Base of the memory-mapped QSPI window. Same value as QSPI_BASE_ADDR in
+ * bsp_qspi.h, duplicated here so the MPU setup does not depend on the QSPI
+ * driver in the other direction. */
 #define QSPI_MAPPED_BASE  0x90000000UL
 
 static void mpu_disable_region(uint8_t number);
@@ -26,8 +28,9 @@ void BSP_MPU_ConfigAndEnableCache(void)
     HAL_MPU_Disable();
 
     /*
-     * Region 0:整塊 32 MB SDRAM,write-back + write-allocate。
-     * LVGL 的 heap 放在這裡面,WB 對於反覆讀寫的資料結構最快。
+     * Region 0: the whole 32 MB SDRAM, write-back with write-allocate.
+     * The LVGL heap lives in here, and WB is fastest for data structures that
+     * are read and written repeatedly.
      */
     mpu.Enable           = MPU_REGION_ENABLE;
     mpu.Number           = MPU_REGION_NUMBER0;
@@ -38,18 +41,20 @@ void BSP_MPU_ConfigAndEnableCache(void)
     mpu.IsCacheable      = MPU_ACCESS_CACHEABLE;
     mpu.IsBufferable     = MPU_ACCESS_BUFFERABLE;
     mpu.IsShareable      = MPU_ACCESS_NOT_SHAREABLE;
-    mpu.DisableExec      = MPU_INSTRUCTION_ACCESS_DISABLE;   /* 資料區,不放程式 */
+    mpu.DisableExec      = MPU_INSTRUCTION_ACCESS_DISABLE;   /* data only, never executed */
     mpu.SubRegionDisable = 0x00;
     HAL_MPU_ConfigRegion(&mpu);
 
     /*
-     * Region 1:兩張 framebuffer(512 KB),write-through。
-     * 位址和 region 0 重疊,M7 的規則是編號大的贏,所以這 512 KB 會是 WT。
+     * Region 1: the two framebuffers (512 KB), write-through. It overlaps
+     * region 0, and on the M7 the higher-numbered region wins, so these 512 KB
+     * end up WT.
      *
-     * 為什麼 framebuffer 一定要 WT:LTDC 是自己直接去 SDRAM 抓畫面的,不會看
-     * D-cache。如果用 write-back,CPU 畫好的像素可能還躺在 cache 裡沒寫回去,
-     * 螢幕就會出現殘影或花屏。WT 讓寫入直接穿透到 SDRAM,完全不需要手動
-     * SCB_CleanDCache,也就不會有忘記清 cache 的 bug。
+     * Why the framebuffer must be write-through: LTDC fetches pixels straight
+     * from SDRAM and never looks at the D-cache. Under write-back, freshly
+     * drawn pixels can still be sitting dirty in cache, showing up as tearing
+     * or garbage on screen. Write-through pushes every write out to SDRAM, so
+     * no manual SCB_CleanDCache is needed - and no bug from forgetting one.
      */
     mpu.Number           = MPU_REGION_NUMBER1;
     mpu.BaseAddress      = SDRAM_FB0_ADDR;
@@ -60,12 +65,13 @@ void BSP_MPU_ConfigAndEnableCache(void)
     HAL_MPU_ConfigRegion(&mpu);
 
     /*
-     * Region 2:把 QSPI 映射視窗(0x90000000 起 256MB)整段設成 no-access。
+     * Region 2: block the entire 256 MB QSPI window at 0x90000000.
      *
-     * 記憶體映射的 QSPI 如果被當成一般記憶體,M7 會做投機式預取。一旦預取
-     * 到晶片實際容量之外,QUADSPI 會等一個永遠不會來的回應,整顆 CPU 就卡
-     * 在那裡。所以預設全部擋掉,等 BSP_QSPI_Init() 讀到實際容量之後,再由
-     * BSP_MPU_EnableQspiRegion() 只開放真正存在的那幾 MB。
+     * Memory-mapped QSPI treated as ordinary memory invites speculative
+     * prefetch from the M7. A prefetch past the end of the real chip leaves
+     * QUADSPI waiting for a response that never arrives and the CPU hangs. So
+     * block it all by default; BSP_MPU_EnableQspiRegion() opens only the real
+     * capacity once BSP_QSPI_Init() has determined it.
      */
     mpu.Number           = MPU_REGION_NUMBER2;
     mpu.BaseAddress      = QSPI_MAPPED_BASE;
@@ -76,16 +82,18 @@ void BSP_MPU_ConfigAndEnableCache(void)
     mpu.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
     HAL_MPU_ConfigRegion(&mpu);
 
-    /* CubeMX 只用了 region 0,但保險起見把其餘的關掉,避免殘留設定。 */
+    /* CubeMX only used region 0, but disable the rest anyway so no stale
+     * configuration survives. */
     for (uint8_t i = 3U; i < 8U; i++) {
         mpu_disable_region(i);
     }
 
     /*
-     * 開啟 MPU,並保留背景的預設記憶體映射(PRIVDEFENA)。
-     * 這樣 Flash(0x08000000)、內部 SRAM(0x24000000)、周邊暫存器都沿用
-     * ARM 預設屬性 —— Flash 是 cacheable、內部 SRAM 是 write-back、周邊是
-     * device memory,剛好都是我們要的,不需要額外開 region。
+     * Enable the MPU while keeping the default background map (PRIVDEFENA), so
+     * flash at 0x08000000, internal SRAM at 0x24000000 and the peripheral space
+     * keep ARM's default attributes: flash cacheable, internal SRAM write-back,
+     * peripherals device memory. All of which is what we want, so no extra
+     * regions are needed.
      */
     HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 
@@ -98,7 +106,7 @@ void BSP_MPU_EnableQspiRegion(uint32_t size_bytes)
     uint8_t size_code;
 
     if (!mpu_size_code(size_bytes, &size_code)) {
-        return;   /* 容量不合理,維持全部封鎖 */
+        return;   /* implausible size - leave the window blocked */
     }
 
     MPU_Region_InitTypeDef mpu = {0};
@@ -106,11 +114,13 @@ void BSP_MPU_EnableQspiRegion(uint32_t size_bytes)
     HAL_MPU_Disable();
 
     /*
-     * Region 3 疊在 region 2(no-access)上面。M7 的規則是編號大的贏,
-     * 所以實際存在的這幾 MB 變成可讀,範圍外仍然被 region 2 擋著。
+     * Region 3 sits on top of region 2 (no-access). The higher-numbered region
+     * wins on the M7, so the megabytes that actually exist become readable
+     * while everything beyond stays blocked by region 2.
      *
-     * 設成唯讀是刻意的:這是記憶體映射的 Flash,任何寫入都是程式邏輯錯誤,
-     * 讓 MPU 直接抓出來比默默忽略好。
+     * Read-only is deliberate: this is memory-mapped flash, so any write is a
+     * logic error and it is better for the MPU to catch it than to silently
+     * discard it.
      */
     mpu.Enable           = MPU_REGION_ENABLE;
     mpu.Number           = MPU_REGION_NUMBER3;
@@ -128,7 +138,7 @@ void BSP_MPU_EnableQspiRegion(uint32_t size_bytes)
     HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 }
 
-/* 把容量換成 MPU 的 size 代碼。只接受 2 的冪次,而且至少 256 bytes。 */
+/* Convert a byte count to the MPU size code. Powers of two only, minimum 256. */
 static bool mpu_size_code(uint32_t size_bytes, uint8_t *code)
 {
     if (size_bytes < 256U) {
@@ -136,7 +146,7 @@ static bool mpu_size_code(uint32_t size_bytes, uint8_t *code)
     }
 
     if ((size_bytes & (size_bytes - 1U)) != 0U) {
-        return false;   /* 不是 2 的冪次 */
+        return false;   /* not a power of two */
     }
 
     uint8_t exp = 0;
@@ -144,7 +154,7 @@ static bool mpu_size_code(uint32_t size_bytes, uint8_t *code)
         exp++;
     }
 
-    /* MPU 的 SIZE 欄位定義:region 大小 = 2^(SIZE+1) */
+    /* MPU SIZE field is defined as: region size = 2^(SIZE+1) */
     *code = (uint8_t)(exp - 1U);
     return true;
 }

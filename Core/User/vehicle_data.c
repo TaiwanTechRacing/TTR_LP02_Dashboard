@@ -8,8 +8,8 @@
 
 vehicle_data_t g_vehicle;
 
-/* 0 代表「開機到現在都還沒收到過」。HAL_GetTick() 從 0 開始,理論上第一個
- * tick 也是 0,但那只有開機瞬間的 1ms,不影響判斷。 */
+/* 0 means "nothing received since boot". HAL_GetTick() also starts at 0, but
+ * that only overlaps for the first millisecond after reset. */
 static uint32_t s_last_update[VD_GROUP_COUNT];
 
 void VehicleData_Init(void)
@@ -32,7 +32,7 @@ bool VehicleData_IsStale(vd_group_t group, uint32_t timeout_ms)
     }
 
     if (s_last_update[group] == 0u) {
-        return true;    /* 從來沒收到過 */
+        return true;    /* never received */
     }
 
     return (HAL_GetTick() - s_last_update[group]) > timeout_ms;

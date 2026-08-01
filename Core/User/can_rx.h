@@ -1,18 +1,21 @@
 /*
  * can_rx.h
  *
- *  CAN 接收佇列。
+ *  CAN receive queue.
  *
- *  原本的寫法是在 FDCAN 中斷裡直接把整包解開、寫進上百個 float 全域變數。
- *  這有兩個問題:
+ *  The original code unpacked entire messages inside the FDCAN ISR and wrote
+ *  the results straight into a hundred-odd float globals. Two problems with
+ *  that:
  *
- *   1. FDCAN2 的中斷優先權是 0(最高),解包又不短,等於每來一包 CAN 就把
- *      正在跑的繪圖工作打斷一次。訊務量大的時候畫面會明顯卡頓。
- *   2. 中斷和主迴圈之間只靠 volatile,沒有任何臨界區。像 sensor2 那種一包
- *      帶好幾個欄位的訊息,主迴圈可能讀到「一半舊、一半新」的組合。
+ *   1. FDCAN2 runs at interrupt priority 0 (the highest) and unpacking is not
+ *      short, so every arriving frame preempted whatever rendering was in
+ *      flight. Under heavy bus traffic the display visibly stuttered.
+ *   2. The only synchronisation between ISR and main loop was volatile, with
+ *      no critical section. For a multi-field message like sensor2 the main
+ *      loop could observe a mix of old and new field values.
  *
- *  現在中斷只負責把 frame 丟進這個佇列(幾十個 cycle 就結束),解包搬到主
- *  迴圈做。
+ *  The ISR now only pushes the frame into this queue, which takes a few dozen
+ *  cycles. Unpacking happens in the main loop.
  */
 
 #ifndef CAN_RX_H
@@ -22,38 +25,40 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/* 32 包的緩衝。以目前的 CAN 訊務量,主迴圈每圈都會清空,這個深度只是給
- * 突發流量留餘裕。 */
+/* 32 frames of headroom. At the current bus load the main loop drains this
+ * every pass; the depth is only there to absorb bursts. */
 #define CAN_RX_QUEUE_LEN 32u
 
 /**
- * 把一包 frame 放進佇列。只會從中斷呼叫。
- * 佇列滿的話丟棄最新這包並回傳 false(同時累加 overflow 計數)。
+ * Push one frame. Called from the ISR only.
+ * When the queue is full the new frame is dropped, the overflow counter is
+ * incremented and false is returned.
  */
 bool CAN_RX_Enqueue(const ttr_can_frame_t *frame);
 
 /**
- * 取出一包。只會從主迴圈呼叫。沒有資料時回傳 false。
+ * Pop one frame. Called from the main loop only. Returns false when empty.
  */
 bool CAN_RX_Dequeue(ttr_can_frame_t *frame);
 
 /**
- * 佇列溢位的累計次數。持續增加代表主迴圈跑太慢或佇列太淺,
- * 是很有用的診斷數字。
+ * Cumulative overflow count. A number that keeps climbing means the main loop
+ * is too slow or the queue too shallow - a useful diagnostic.
  */
 uint32_t CAN_RX_OverflowCount(void);
 
 /**
- * 最後一次收到任何 CAN 訊息的時間(HAL_GetTick 的毫秒數)。
+ * HAL_GetTick() value when any CAN frame last arrived.
  */
 uint32_t CAN_RX_LastFrameTick(void);
 
 /**
- * 距離上一包 CAN 是否已經超過 timeout_ms。
+ * Whether more than timeout_ms has passed since the last frame.
  *
- * 這是為了解決一個安全性問題:CAN 斷線之後,螢幕會一直顯示斷線前的最後一組
- * 數值,車手看到的 RTD、SDC 狀態、電池溫度全都是假的。有了這個判斷,UI 就
- * 可以把過期的數值改成 "---" 或跳警告。
+ * This exists for a safety reason: after a CAN dropout the screen would keep
+ * showing the last values received, so the RTD state, SDC status and battery
+ * temperatures the driver sees are all stale. With this the UI can switch to
+ * "---" or raise a warning instead.
  */
 bool CAN_RX_IsLinkStale(uint32_t timeout_ms);
 

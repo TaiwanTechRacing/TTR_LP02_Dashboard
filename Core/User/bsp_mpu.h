@@ -1,7 +1,7 @@
 /*
  * bsp_mpu.h
  *
- *  MPU 區域設定 + 開啟 CPU cache。
+ *  MPU region setup and CPU cache enable.
  */
 
 #ifndef BSP_MPU_H
@@ -10,29 +10,31 @@
 #include <stdint.h>
 
 /**
- * 重新設定 MPU 並開啟 I-cache / D-cache。
+ * Reconfigure the MPU and enable I-cache and D-cache.
  *
- * 呼叫時機:HAL_Init() 之後、SystemClock_Config() 之前。
+ * Call after HAL_Init() and before SystemClock_Config().
  *
- * 這個函式會完全覆蓋掉 CubeMX 產生的 MPU_Config()。CubeMX 那份把
- * 0x60000000~0xDFFFFFFF 全設成 no-access,其中就包含 SDRAM 所在的
- * 0xC0000000 —— 這是之前 SDRAM 完全沒辦法用的直接原因。
+ * This fully overrides the CubeMX-generated MPU_Config(), which marks
+ * 0x60000000..0xDFFFFFFF as no-access - a range that contains the SDRAM at
+ * 0xC0000000. That was the direct reason the SDRAM was unusable.
  */
 void BSP_MPU_ConfigAndEnableCache(void);
 
 /**
- * 開放 QSPI 記憶體映射區域(0x90000000)為可讀、可快取。
+ * Open the memory-mapped QSPI window at 0x90000000 as readable and cacheable.
  *
- * 由 BSP_QSPI_Init() 在讀到 JEDEC ID、確定容量之後呼叫。
+ * Called by BSP_QSPI_Init() once the JEDEC ID has been read and the capacity
+ * is known.
  *
- * 為什麼要分兩段做:BSP_MPU_ConfigAndEnableCache() 會先把整個
- * 0x90000000 起始的 256MB 設成 no-access。記憶體映射的 QSPI 如果被當成
- * 一般記憶體,Cortex-M7 會做投機式預取,一旦預取到晶片實際容量之外,
- * QUADSPI 會等一個永遠不會來的回應而卡死。先全部擋掉、再只開實際存在
- * 的那幾 MB,就不會發生。
+ * Why this is two steps: BSP_MPU_ConfigAndEnableCache() first marks the whole
+ * 256 MB starting at 0x90000000 as no-access. Memory-mapped QSPI treated as
+ * ordinary memory invites speculative prefetch, and a prefetch past the end of
+ * the real chip leaves QUADSPI waiting for a response that never comes, hanging
+ * the CPU. Blocking everything and then opening only the megabytes that exist
+ * avoids that.
  *
- * @param size_bytes 實際容量,必須是 2 的冪次(8MB 或 16MB)。
- *                   傳 0 代表維持全部封鎖。
+ * @param size_bytes actual capacity, must be a power of two (8 MB or 16 MB).
+ *                   Passing 0 leaves the whole window blocked.
  */
 void BSP_MPU_EnableQspiRegion(uint32_t size_bytes);
 

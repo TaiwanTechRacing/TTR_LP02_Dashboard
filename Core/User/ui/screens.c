@@ -99,7 +99,7 @@ void create_screen_main() {
             // speedLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.speed_label = obj;
-            lv_obj_set_pos(obj, -51, -32);
+            lv_obj_set_pos(obj, -44, -44);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &ui_font_orbiter_bold_180, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -255,12 +255,10 @@ void tick_screen_by_id(enum ScreensEnum screenId) {
 
 ext_font_desc_t fonts[] = {
     { "orbitron_bold_20", &ui_font_orbitron_bold_20 },
-    { "orbitron_bold_25", &ui_font_orbitron_bold_25 },
     { "orbitron_bold_30", &ui_font_orbitron_bold_30 },
     { "orbitron_bold_40", &ui_font_orbitron_bold_40 },
     { "orbitron_bold_50", &ui_font_orbitron_bold_50 },
     { "ORBITER_BOLD_180", &ui_font_orbiter_bold_180 },
-    { "ORBITER_BOLD_160", &ui_font_orbiter_bold_160 },
 #if LV_FONT_MONTSERRAT_8
     { "MONTSERRAT_8", &lv_font_montserrat_8 },
 #endif

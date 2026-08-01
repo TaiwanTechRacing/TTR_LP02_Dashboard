@@ -44,7 +44,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-/* LCD_WIDTH / LCD_HEIGHT 現在定義在 bsp_display.h */
+/* LCD_WIDTH / LCD_HEIGHT now live in bsp_display.h */
 
 #define COLOR_RED 0xF800
 #define COLOR_ORANGE 0xFD20
@@ -64,15 +64,16 @@
 #define HV_LOW_VOLT 350
 
 /*
- * 下面這幾個週期以前是用「主迴圈跑幾圈」來計算的,但迴圈速度會隨著畫面複雜度
- * 變動,同一個數字在不同頁面代表的時間不一樣。現在一律用 HAL_GetTick() 的
- * 毫秒數,行為才可預測。
+ * These periods used to be counted in main loop iterations, but loop speed
+ * varies with scene complexity, so the same number meant different amounts of
+ * time on different pages. They are all wall-clock milliseconds from
+ * HAL_GetTick() now, which behaves predictably.
  */
-#define WELCOME_HOLD_MS        3000U   /* 開機歡迎頁停留時間 */
-#define UI_UPDATE_PERIOD_MS      25U   /* 把車輛資料寫進 widget 的頻率(40 Hz) */
-#define BUTTON_SCAN_PERIOD_MS     5U   /* 按鍵取樣週期 */
-#define BUTTON_DEBOUNCE_SCANS     5U   /* 連續 5 次讀到按下才算數 = 25 ms 去彈跳 */
-#define DEBUG_TOGGLE_SCANS      200U   /* 兩鍵同時按住 200 x 5ms = 1 秒,切換 debug 疊層 */
+#define WELCOME_HOLD_MS        3000U   /* how long the splash screen stays up */
+#define UI_UPDATE_PERIOD_MS      25U   /* rate at which the UI re-reads vehicle data (40 Hz) */
+#define BUTTON_SCAN_PERIOD_MS     5U   /* button sampling period */
+#define BUTTON_DEBOUNCE_SCANS     5U   /* 5 consecutive samples to accept a press = 25 ms debounce */
+#define DEBUG_TOGGLE_SCANS      200U   /* both buttons held 200 x 5 ms = 1 s toggles the debug overlay */
 
 #define NUM_OF_CELLS 112 //電芯數量
 #define DATA_PER_PACK 4 //每個封包有4個電芯的電壓讀值
@@ -96,9 +97,10 @@ LTDC_HandleTypeDef hltdc;
 
 /* USER CODE BEGIN PV */
 /*
- * framebuffer 搬到 SDRAM 了(以前是內部 RAM_D1 的一個 261 KB 陣列,吃掉半塊
- * 內部記憶體)。這個巨集只是給 CubeMX 產生的 MX_LTDC_Init() 取初始顯示位址用,
- * 之後的換頁由 bsp_display.c 負責。
+ * The framebuffer now lives in SDRAM. It used to be a 261 KB array in internal
+ * RAM_D1, which consumed half of it. This macro only supplies the initial
+ * display address to the CubeMX-generated MX_LTDC_Init(); page flipping is
+ * handled by bsp_display.c.
  */
 #define FRAMEBUFFER ((uint16_t (*)[LCD_WIDTH])SDRAM_FB0_ADDR)
 
@@ -106,14 +108,15 @@ FDCAN_FilterTypeDef sFilterConfig;
 FDCAN_TxHeaderTypeDef TxHeader;
 FDCAN_RxHeaderTypeDef RxHeader;
 
-/* FDCAN 中斷收包用的暫存區。TTR_CAN_MAX_DLC 是 48。 */
+/* Scratch buffer the FDCAN ISR receives into. TTR_CAN_MAX_DLC is 48. */
 uint8_t RX[TTR_CAN_MAX_DLC] = {0};
 
-/* 目前顯示的頁面索引,由 ScanButtons() 換頁 */
+/* Index of the page on screen; ScanButtons() moves it */
 uint8_t screen_ID_now = 0;
 
-/* 硬體濾波器放行的 CAN ID。順序不重要,結尾的 0 是列表結束標記。
- * 這裡改了要記得 can_decode.c 那邊也要有對應的 case,否則收到也不會被解開。 */
+/* CAN IDs the hardware filter admits. Order does not matter; the trailing 0
+ * terminates the list. Adding one here also needs a matching case in
+ * can_decode.c, otherwise the frame arrives and is silently dropped. */
 static uint16_t STD_ID_LIST_CAN[35] = {
     TTR_CAN_ID_VCU_VCU_STATE,   TTR_CAN_ID_VCU_VCU_SDC,
     TTR_CAN_ID_VCU_VCU_SENSOR1, TTR_CAN_ID_VCU_VCU_SENSOR2,
@@ -140,11 +143,11 @@ static void MX_FDCAN1_Init(void);
 /* USER CODE BEGIN PFP */
 static void ScanButtons(void);
 /*
- * 換頁順序。index 0 是開機的歡迎頁,不列入按鍵循環;
- * MIN/MAX_SCR_ID 界定按鍵能循環的範圍。
+ * Page order. Index 0 is the splash screen shown at boot and is excluded from
+ * the button cycle; MIN/MAX_SCR_ID bound what the buttons can reach.
  */
 enum ScreensEnum screens[] = {
-    SCREEN_ID_WELCOME,   /* 0  開機畫面,只在啟動時顯示 */
+    SCREEN_ID_WELCOME,   /* 0  splash, boot only */
     SCREEN_ID_MAIN,      /* 1 */
     SCREEN_ID_DEBUG1,    /* 2 */
 };
@@ -181,11 +184,12 @@ int main(void)
 
   /* USER CODE BEGIN Init */
   /*
-   * 重設 MPU 並開啟 I-cache / D-cache。
+   * Reconfigure the MPU and turn on I-cache and D-cache.
    *
-   * 上面那行 MPU_Config() 是 CubeMX 產生的,它把 0x60000000~0xDFFFFFFF 設成
-   * no-access,SDRAM(0xC0000000)正好落在裡面 —— 這是之前板子上那顆 32 MB
-   * SDRAM 完全用不了的原因。下面這個函式會整個覆蓋掉它。
+   * The MPU_Config() call above is CubeMX-generated and marks
+   * 0x60000000..0xDFFFFFFF as no-access, a range that contains the SDRAM at
+   * 0xC0000000 - the reason the board's 32 MB of SDRAM was unusable. The call
+   * below replaces that configuration entirely.
    */
   BSP_MPU_ConfigAndEnableCache();
   /* USER CODE END Init */
@@ -197,8 +201,8 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  /* SDRAM 必須在 MX_LTDC_Init() 之前備妥 —— LTDC 一啟動就會開始從
-   * framebuffer 位址讀資料。 */
+  /* SDRAM must be ready before MX_LTDC_Init(): LTDC starts fetching from the
+   * framebuffer address the moment it is enabled. */
   BSP_SDRAM_Init();
   if (!BSP_SDRAM_SelfTest())
   {
@@ -206,11 +210,13 @@ int main(void)
   }
 
   /*
-   * 板上的 QSPI Flash。目前還沒有東西放在裡面,先接起來是為了驗證驅動
-   * 能不能正確認到晶片(用 BSP_QSPI_GetJedecId() / GetFlashSize() 看)。
+   * QSPI flash on the core board. Nothing is stored there yet; it is wired up
+   * so the driver can be verified against real hardware - check
+   * BSP_QSPI_GetJedecId() and BSP_QSPI_GetFlashSize().
    *
-   * 刻意不檢查回傳值:這顆是給 UI 改版之後放圖片用的備援空間,沒有它
-   * 儀表照樣能跑,不值得為它讓整個畫面黑掉。
+   * The return value is deliberately ignored: this chip is spare capacity for
+   * artwork after the UI redesign, the dashboard runs fine without it, and it
+   * is not worth blanking the display over.
    */
   (void)BSP_QSPI_Init();
   /* USER CODE END SysInit */
@@ -288,17 +294,18 @@ int main(void)
   {
     const uint32_t now = HAL_GetTick();
 
-    /* 先把 CAN 資料解完,再讓 LVGL 畫 —— 這樣這一圈畫出來的就是最新的值。 */
+    /* Decode CAN before LVGL renders, so this pass draws the newest values. */
     CAN_Poll();
 
     /*
-     * LVGL 的 timer 與繪圖。
+     * LVGL timers and rendering.
      *
-     * 以前這裡是 lv_timer_handler() 之後接一個 HAL_Delay(time_till_next),
-     * 整個主迴圈會睡滿一整個刷新週期(最多 33 ms)。後果是按鍵和資料更新都
-     * 被拖著一起等,而且 updatescreen() 改完 widget 還得再等下一輪才畫得出來
-     * —— CAN 資料到畫面的延遲是兩個刷新週期。現在迴圈不睡了,節流改由下面
-     * 各自的時間判斷負責。
+     * This used to be lv_timer_handler() followed by
+     * HAL_Delay(time_till_next), which put the whole main loop to sleep for a
+     * full refresh period (up to 33 ms). Buttons and data updates were dragged
+     * along with it, and widgets touched by updatescreen() had to wait another
+     * round to appear - two refresh periods from CAN frame to pixel. The loop
+     * no longer sleeps; each task below throttles itself on wall-clock time.
      */
     lv_timer_handler();
     BSP_Display_Service();
@@ -311,9 +318,11 @@ int main(void)
     }
 
     /*
-     * 讓 EEZ 產生的畫面去讀一次 get_var_xxx()(實作在 ui_bind.c)。
-     * 舊版是由 updatescreen() 直接寫 widget,新版改成 EEZ 自己輪詢繫結的變數,
-     * 所以這一行不能少 —— 少了畫面會停在預設值,而且不會有任何錯誤訊息。
+     * Let the EEZ-generated screens poll get_var_xxx() once (implemented in
+     * ui_bind.c). The old code wrote widgets directly from updatescreen();
+     * the new code has EEZ read its bound variables instead, so this line is
+     * essential - without it the display sits at its default values and
+     * nothing reports an error.
      */
     if ((now - last_ui_update) >= UI_UPDATE_PERIOD_MS)
     {
@@ -671,11 +680,12 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /*
- * 讀取兩顆換頁按鍵。
+ * Read the two page-change buttons.
  *
- * 原本是兩段幾乎一模一樣的程式碼,各自帶一個 counter 和一個 flag。這裡改成
- * 表格驅動:counter 加到門檻時觸發一次,之後就停在門檻不動,直到按鍵放開才
- * 歸零 —— 這樣本身就有「只觸發一次」的效果,不需要額外的 b1f / b2f 旗標。
+ * This was two nearly identical blocks, each with its own counter and flag.
+ * It is now table-driven: the counter fires once on reaching the threshold and
+ * then saturates there until the button is released, which gives the
+ * fire-once behaviour for free - no separate b1f / b2f flags needed.
  */
 static void ScanButtons(void)
 {
@@ -690,9 +700,10 @@ static void ScanButtons(void)
   };
 
   /*
-   * 先處理「兩顆一起按住」的手勢,而且按住期間直接 return 不翻頁。
-   * 如果兩顆是在同一個取樣週期內按下的(25ms 去彈跳生效之前),就完全
-   * 不會翻頁;稍微錯開的話會先翻一頁,這是可以接受的取捨。
+   * Handle the both-buttons gesture first and return while it is held, so no
+   * page change happens. Pressed within the same sampling window (before the
+   * 25 ms debounce elapses) nothing flips at all; slightly staggered presses
+   * cost one page change first, which is an acceptable trade.
    */
   static uint16_t both_counter = 0;
 
@@ -704,7 +715,7 @@ static void ScanButtons(void)
       both_counter++;
       if (both_counter == DEBUG_TOGGLE_SCANS)
       {
-        DebugOverlay_Toggle();   /* 只在跨過門檻的那一次觸發 */
+        DebugOverlay_Toggle();   /* fire only on the sample that crosses the threshold */
       }
     }
     return;
@@ -716,18 +727,18 @@ static void ScanButtons(void)
   {
     if (HAL_GPIO_ReadPin(buttons[i].port, buttons[i].pin) != 0)
     {
-      buttons[i].counter = 0;   /* 放開了 */
+      buttons[i].counter = 0;   /* released */
       continue;
     }
 
     if (buttons[i].counter >= BUTTON_DEBOUNCE_SCANS)
     {
-      continue;                 /* 這次按壓已經翻過頁了,等放開 */
+      continue;                 /* already flipped for this press; wait for release */
     }
 
     if (++buttons[i].counter < BUTTON_DEBOUNCE_SCANS)
     {
-      continue;                 /* 還在去彈跳 */
+      continue;                 /* still debouncing */
     }
 
     int8_t next = (int8_t)screen_ID_now + buttons[i].step;

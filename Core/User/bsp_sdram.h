@@ -1,11 +1,11 @@
 /*
  * bsp_sdram.h
  *
- *  核心板上的 W9825G6KH SDRAM(接在 FMC SDRAM Bank1)。
+ *  W9825G6KH SDRAM on the core board, wired to FMC SDRAM bank 1.
  *
- *  重要:FMC 沒有配置在 .ioc 裡面,是手寫的。如果之後有人用 CubeMX 重新產生
- *  程式碼,CubeMX 不知道下面這些腳位已經被佔用,可能會把它們配給別的周邊。
- *  改 .ioc 之前請先確認這張表:
+ *  Important: FMC is NOT configured in the .ioc - it is hand-written. CubeMX
+ *  does not know these pins are taken and may hand them to another peripheral
+ *  when regenerating. Check this table before touching the .ioc:
  *
  *    PC0  SDNWE    PD0  D2    PE0  NBL0   PF0  A0   PG0  A10
  *    PC2  SDNE0    PD1  D3    PE1  NBL1   PF1  A1   PG1  A11
@@ -27,22 +27,23 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/* W9825G6KH:13 row bits x 9 column bits x 4 banks x 16 bit = 32 MB */
+/* W9825G6KH: 13 row bits x 9 column bits x 4 banks x 16 bit = 32 MB */
 #define SDRAM_BASE_ADDR       0xC0000000UL
 #define SDRAM_SIZE_BYTES      (32U * 1024U * 1024U)
 
 /*
- * SDRAM 分配表。改這裡的話 lv_conf.h 的 LV_MEM_ADR / LV_MEM_SIZE 要跟著改。
+ * SDRAM map. Changing this means changing LV_MEM_ADR / LV_MEM_SIZE in
+ * lv_conf.h to match.
  *
- *   0xC0000000  256 KB  framebuffer 0   ┐ 這 512 KB 在 MPU 設成 write-through,
- *   0xC0040000  256 KB  framebuffer 1   ┘ LTDC 才不會讀到還留在 D-cache 裡的資料
- *   0xC0080000  512 KB  (保留)
- *   0xC0100000    2 MB  LVGL heap       ← write-back,CPU 存取快
- *   0xC0300000   29 MB  (未使用)
+ *   0xC0000000  256 KB  framebuffer 0   | these 512 KB are write-through in the
+ *   0xC0040000  256 KB  framebuffer 1   | MPU so LTDC never reads stale D-cache
+ *   0xC0080000  512 KB  (reserved)
+ *   0xC0100000    2 MB  LVGL heap       - write-back, fast for the CPU
+ *   0xC0300000   29 MB  (unused)
  */
 #define SDRAM_FB0_ADDR        (SDRAM_BASE_ADDR + 0x00000000UL)
 #define SDRAM_FB1_ADDR        (SDRAM_BASE_ADDR + 0x00040000UL)
-#define SDRAM_FB_REGION_SIZE  0x00080000UL   /* 兩張 framebuffer 合起來 = 512 KB */
+#define SDRAM_FB_REGION_SIZE  0x00080000UL   /* both framebuffers = 512 KB */
 
 #define SDRAM_LVGL_HEAP_ADDR  (SDRAM_BASE_ADDR + 0x00100000UL)
 #define SDRAM_LVGL_HEAP_SIZE  (2U * 1024U * 1024U)
@@ -51,14 +52,14 @@
 #define SDRAM_FREE_SIZE       (SDRAM_SIZE_BYTES - 0x00300000UL)
 
 /**
- * 初始化 FMC 與 SDRAM。必須在 SystemClock_Config() 之後、任何會碰到
- * 0xC0000000 的程式(包含 LTDC 初始化)之前呼叫。
+ * Bring up FMC and the SDRAM. Must run after SystemClock_Config() and before
+ * anything touches 0xC0000000, LTDC initialisation included.
  */
 void BSP_SDRAM_Init(void);
 
 /**
- * 寫入再讀回一小段資料,確認 SDRAM 真的通了。
- * 上車前的自我檢查用;回傳 false 代表 SDRAM 沒接好或時序不對。
+ * Write then read back a few locations to confirm the SDRAM responds.
+ * A startup sanity check; false means bad wiring or wrong timings.
  */
 bool BSP_SDRAM_SelfTest(void);
 

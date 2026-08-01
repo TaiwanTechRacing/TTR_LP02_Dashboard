@@ -6,8 +6,8 @@
 #define CAN_DECODE_H
 
 /**
- * 把 can_rx 佇列裡累積的所有 CAN 訊息解包寫進 vehicle_data。
- * 主迴圈每圈呼叫一次。
+ * Unpack every CAN message queued by can_rx into vehicle_data.
+ * Called once per main loop iteration.
  */
 void CAN_Poll(void);
 

@@ -8,12 +8,10 @@ extern "C" {
 #endif
 
 extern const lv_font_t ui_font_orbitron_bold_20;
-extern const lv_font_t ui_font_orbitron_bold_25;
 extern const lv_font_t ui_font_orbitron_bold_30;
 extern const lv_font_t ui_font_orbitron_bold_40;
 extern const lv_font_t ui_font_orbitron_bold_50;
 extern const lv_font_t ui_font_orbiter_bold_180;
-extern const lv_font_t ui_font_orbiter_bold_160;
 
 #ifndef EXT_FONT_DESC_T
 #define EXT_FONT_DESC_T

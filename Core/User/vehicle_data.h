@@ -1,18 +1,21 @@
 /*
  * vehicle_data.h
  *
- *  整車資料模型 —— 這份檔案是 CAN 解包和畫面顯示之間唯一的介面。
+ *  Vehicle data model - the single interface between CAN decoding and the display.
  *
- *  重構前的作法是把一百多個 volatile 全域變數散在 main.c,再由一個寫死幾百個
- *  objects.xxx 名稱的 updatescreen() 大 switch 推到畫面上。後果是版面一改,
- *  資料層就跟著爆炸。現在拆成三層:
+ *  Before the refactor, a hundred-odd volatile globals were scattered through
+ *  main.c and pushed to the screen by an updatescreen() switch that hard-coded
+ *  several hundred objects.xxx widget names. Any layout change broke the data
+ *  layer. The code is now split into three layers:
  *
- *      can_decode.c  →  vehicle_data  →  ui_bind.c  →  EEZ 產生的畫面
+ *      can_decode.c  ->  vehicle_data  ->  ui_bind.c  ->  EEZ-generated screens
  *
- *  改版面只會動到 ui_bind.c,這一層和 can_decode.c 完全不用碰。
+ *  Redesigning the layout only touches ui_bind.c; this layer and can_decode.c
+ *  stay untouched.
  *
- *  執行緒安全:不需要。CAN 解包已經從中斷搬到主迴圈(見 can_rx.h),
- *  寫入和讀取都在同一個執行緒,所以這裡不需要 volatile,也不需要臨界區。
+ *  Thread safety: not needed. CAN decoding moved out of the ISR into the main
+ *  loop (see can_rx.h), so writes and reads happen on the same thread. No
+ *  volatile, no critical sections.
  */
 
 #ifndef VEHICLE_DATA_H
@@ -21,13 +24,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define VD_NUM_CELLS        112u    /* 電芯總數 */
-#define VD_NUM_TSENSORS      80u    /* 溫度感測點總數 */
-#define VD_NUM_SEGMENTS       8u    /* AMS 分成 8 段 */
+#define VD_NUM_CELLS        112u    /* total cells */
+#define VD_NUM_TSENSORS      80u    /* total temperature sense points */
+#define VD_NUM_SEGMENTS       8u    /* AMS is split into 8 segments */
 #define VD_CELLS_PER_SEG    (VD_NUM_CELLS / VD_NUM_SEGMENTS)      /* 14 */
 #define VD_TSENSORS_PER_SEG (VD_NUM_TSENSORS / VD_NUM_SEGMENTS)   /* 10 */
 
-/* VCU 回報的駕駛模式 */
+/* Drive mode reported by the VCU */
 typedef enum {
     VD_DRIVE_MODE_OFF   = 0,
     VD_DRIVE_MODE_EDIFF = 1,
@@ -36,16 +39,17 @@ typedef enum {
 } vd_drive_mode_t;
 
 /*
- * Shutdown circuit 各節點在 sdc_status 裡的 bit 位置。
+ * Bit positions of each shutdown circuit node within sdc_status.
  *
- * 重構前這些是散落在程式裡的裸數字(sdcStatus 的 bit 4~15),而且 UI 那邊還有
- * 一份順序不同的對照表,兩邊要人工同步。現在只有這一份定義。
+ * These used to be bare numbers scattered through the code (sdcStatus bits
+ * 4..15), with a second table in the UI layer listing them in a different
+ * order that had to be kept in sync by hand. This is now the only definition.
  */
 typedef enum {
-    VD_SDC_IMD = 0,       /* 新 DBC 才有 */
-    VD_SDC_AMS,           /* 新 DBC 才有 */
-    VD_SDC_BSPD,          /* 新 DBC 才有 */
-    VD_SDC_PDOC,          /* 新 DBC 才有 */
+    VD_SDC_IMD = 0,       /* new DBC only */
+    VD_SDC_AMS,           /* new DBC only */
+    VD_SDC_BSPD,          /* new DBC only */
+    VD_SDC_PDOC,          /* new DBC only */
     VD_SDC_CSB,
     VD_SDC_LSB,
     VD_SDC_RSB,
@@ -61,23 +65,26 @@ typedef enum {
     VD_SDC_COUNT
 } vd_sdc_node_t;
 
-/* error_flags 的 bit 定義 */
+/* Bits of error_flags */
 #define VD_ERR_MCU1  (1u << 0)
 #define VD_ERR_MCU2  (1u << 1)
 #define VD_ERR_MCU3  (1u << 2)
 #define VD_ERR_MCU4  (1u << 3)
 #define VD_ERR_AMS   (1u << 4)
 
-/* warn_flags 的 bit 定義 */
+/* Bits of the value returned by VehicleData_WarnFlags() */
 #define VD_WARN_TEBPPC        (1u << 0)
 #define VD_WARN_CELL_OVERTEMP (1u << 1)
 
 /*
- * 訊號群組。每個群組對應一則 CAN 訊息,各自記錄最後更新時間。
+ * Signal groups. Each maps to one CAN message and carries its own last-update
+ * timestamp.
  *
- * 為什麼要分群組而不是整條匯流排一個時間戳:AMS 掉線和 VCU 掉線是兩件事,
- * 車手需要知道是哪一邊沒了。只看「有沒有 CAN」的話,VCU 還在傳但 AMS 死掉時
- * 電池數值會靜靜地停在最後一筆,看起來像正常值。
+ * Per-group rather than one timestamp for the whole bus: losing AMS and losing
+ * the VCU are different failures and the driver needs to know which. With a
+ * single bus-level timestamp, an AMS that dies while the VCU keeps transmitting
+ * would leave the battery readings frozen at their last value, indistinguishable
+ * from healthy data.
  */
 typedef enum {
     VD_GROUP_VCU_STATE = 0,
@@ -92,7 +99,7 @@ typedef enum {
     VD_GROUP_COUNT
 } vd_group_t;
 
-/** 訊號多久沒更新就視為過期。 */
+/** How long without an update before a signal counts as stale. */
 #define VD_DEFAULT_TIMEOUT_MS 500u
 
 typedef struct {
@@ -104,18 +111,18 @@ typedef struct {
     uint8_t  drive_mode;          /* vd_drive_mode_t */
 
     /* --- VCU_SDC --- */
-    uint16_t sdc_status;          /* bit 位置見 vd_sdc_node_t */
+    uint16_t sdc_status;          /* bit positions per vd_sdc_node_t */
 
     /* --- VCU_SENSOR1 --- */
-    float    bse_rear_pu;         /* 煞車踏板 0~100 */
+    float    bse_rear_pu;         /* brake pedal, 0..100 */
 
     /* --- VCU_SENSOR2 --- */
-    float    steering_pct;        /* 方向盤角度換算成 0~100 */
-    float    apps1_pu;            /* 油門踏板 0~100 */
+    float    steering_pct;        /* steering angle mapped to 0..100 */
+    float    apps1_pu;            /* throttle pedal, 0..100 */
     uint16_t car_speed_kph;
 
     /* --- VCU_SYSTEM_STATUS --- */
-    float    glv_voltage;         /* 低壓電池電壓 */
+    float    glv_voltage;         /* low voltage battery */
     float    glv_current;
 
     /* --- VCU_ERROR --- */
@@ -126,8 +133,8 @@ typedef struct {
     uint8_t  longitude;
 
     /* --- AMS_STATUS_BASIC --- */
-    float    pack_voltage;        /* 高壓電池組電壓 */
-    float    pack_soc;            /* 0~100 */
+    float    pack_voltage;        /* high voltage pack */
+    float    pack_soc;            /* 0..100 */
     float    pack_current;
     float    pack_power;
     float    temp_max;
@@ -146,25 +153,26 @@ typedef struct {
     float    cell_temp[VD_NUM_TSENSORS];
 } vehicle_data_t;
 
-/** 全車唯一的資料實例。can_decode.c 寫,ui_bind.c 讀。 */
+/** The one instance. Written by can_decode.c, read by ui_bind.c. */
 extern vehicle_data_t g_vehicle;
 
-/** 開機時清空,並把所有群組標成尚未收到資料。 */
+/** Clear everything and mark all groups as never received. Call at startup. */
 void VehicleData_Init(void);
 
-/** 由 can_decode.c 在成功解包後呼叫,更新該群組的時間戳。 */
+/** Called by can_decode.c after a successful unpack to refresh the timestamp. */
 void VehicleData_MarkFresh(vd_group_t group);
 
 /**
- * 該群組是否已經超過 timeout_ms 沒更新。
- * 開機後從未收到過也算過期 —— 顯示上要和「收過但斷了」一樣處理。
+ * Whether the group has gone longer than timeout_ms without an update.
+ * Never having received the message also counts as stale - the display should
+ * treat "never arrived" the same as "arrived then stopped".
  */
 bool VehicleData_IsStale(vd_group_t group, uint32_t timeout_ms);
 
-/** 綜合目前狀態算出警告旗標(VD_WARN_*)。 */
+/** Derive the warning flags (VD_WARN_*) from the current state. */
 uint8_t VehicleData_WarnFlags(void);
 
-/** 取某一節點的 shutdown circuit 狀態。 */
+/** Read one shutdown circuit node. */
 bool VehicleData_SdcNode(vd_sdc_node_t node);
 
 #endif /* VEHICLE_DATA_H */
