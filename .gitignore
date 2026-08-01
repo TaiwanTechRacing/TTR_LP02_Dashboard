@@ -15,3 +15,8 @@ Release/
 dashboard_layout/src/
 # Editor view state (zoom, selection, scroll position) - differs per person.
 *.eez-project-ui-state
+
+# GIF assets
+# Sources are the masters and are kept; the optimised output is derived from
+# them by tools/gif_optimize.py and can be regenerated at any time.
+dashboard_layout/gif/optimized/
