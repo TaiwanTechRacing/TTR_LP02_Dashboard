@@ -3,6 +3,22 @@
 配置方式與 `TTR_LP02_VCU` 相同,兩個專案的 task 名稱、preset 名稱、
 資料夾結構都刻意保持一致。
 
+## Clone
+
+LVGL 是 submodule(釘在 v9.4.0),clone 時要一起拉下來:
+
+```powershell
+git clone --recurse-submodules https://github.com/TaiwanTechRacing/TTR_LP02_Dashboard.git
+```
+
+已經 clone 過但 `Drivers/lvgl` 是空的:
+
+```powershell
+git submodule update --init
+```
+
+沒做這一步的話,CMake 會因為找不到任何 LVGL 原始碼而建置失敗。
+
 ## Required Commands
 
 These must work in PowerShell:
