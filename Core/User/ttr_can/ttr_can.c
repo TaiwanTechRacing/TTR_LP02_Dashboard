@@ -141,8 +141,8 @@ void ttr_charger_ams_control_pack(ttr_can_frame_t *frame, const ttr_charger_ams_
     ttr_set_bits(frame->data, 0u, 1u, src->BALANCE_EN ? 1u : 0u);
 }
 
-/* ===== MCU1_STATUS_0 ===== */
-void ttr_mcu1_status_0_unpack(ttr_mcu1_status_0_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU1_STATUS_CORE ===== */
+void ttr_mcu1_status_core_unpack(ttr_mcu1_status_core_t *dst, const ttr_can_frame_t *frame)
 {
     dst->SPEED_FB = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.762951f) + (-25000.0f));
     dst->ID_FB = (float)((float)ttr_get_bits(frame->data, 16u, 16u) * (0.00610361f) + (-200.0f));
@@ -152,8 +152,8 @@ void ttr_mcu1_status_0_unpack(ttr_mcu1_status_0_t *dst, const ttr_can_frame_t *f
     dst->SYS_ACTIVE = ttr_get_bits(frame->data, 50u, 1u) != 0u;
     dst->SYS_LIMIT_ACTIVE = ttr_get_bits(frame->data, 51u, 1u) != 0u;
     dst->FW_ACTIVE = ttr_get_bits(frame->data, 52u, 1u) != 0u;
-    dst->MTPA_ACTIVE = ttr_get_bits(frame->data, 53u, 1u) != 0u;
-    dst->RECV_CTRL_CMD_ACTIVE = ttr_get_bits(frame->data, 54u, 1u) != 0u;
+    dst->RECV_CTRL_CMD_ACTIVE = ttr_get_bits(frame->data, 53u, 1u) != 0u;
+    dst->ASC_ACTIVE = ttr_get_bits(frame->data, 54u, 1u) != 0u;
     dst->SYS_FAULT = ttr_get_bits(frame->data, 56u, 1u) != 0u;
     dst->VOLTAGE_SAT_ACTIVE = ttr_get_bits(frame->data, 57u, 1u) != 0u;
     dst->U_OCP_FAULT = ttr_get_bits(frame->data, 58u, 1u) != 0u;
@@ -164,11 +164,11 @@ void ttr_mcu1_status_0_unpack(ttr_mcu1_status_0_t *dst, const ttr_can_frame_t *f
     dst->W_GATE_FAULT = ttr_get_bits(frame->data, 63u, 1u) != 0u;
 }
 
-void ttr_mcu1_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_0_t *src)
+void ttr_mcu1_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_core_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU1_STATUS_0;
-    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_0;
+    frame->id = TTR_CAN_ID_MCU1_STATUS_CORE;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_CORE;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->SPEED_FB - (-25000.0f)) / (0.762951f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->ID_FB - (-200.0f)) / (0.00610361f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 16u, (uint64_t)_raw); }
@@ -178,8 +178,8 @@ void ttr_mcu1_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_0_t *s
     ttr_set_bits(frame->data, 50u, 1u, src->SYS_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 51u, 1u, src->SYS_LIMIT_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 52u, 1u, src->FW_ACTIVE ? 1u : 0u);
-    ttr_set_bits(frame->data, 53u, 1u, src->MTPA_ACTIVE ? 1u : 0u);
-    ttr_set_bits(frame->data, 54u, 1u, src->RECV_CTRL_CMD_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 53u, 1u, src->RECV_CTRL_CMD_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 54u, 1u, src->ASC_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 56u, 1u, src->SYS_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 57u, 1u, src->VOLTAGE_SAT_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 58u, 1u, src->U_OCP_FAULT ? 1u : 0u);
@@ -190,8 +190,8 @@ void ttr_mcu1_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_0_t *s
     ttr_set_bits(frame->data, 63u, 1u, src->W_GATE_FAULT ? 1u : 0u);
 }
 
-/* ===== MCU2_STATUS_0 ===== */
-void ttr_mcu2_status_0_unpack(ttr_mcu2_status_0_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU2_STATUS_CORE ===== */
+void ttr_mcu2_status_core_unpack(ttr_mcu2_status_core_t *dst, const ttr_can_frame_t *frame)
 {
     dst->SPEED_FB = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.762951f) + (-25000.0f));
     dst->ID_FB = (float)((float)ttr_get_bits(frame->data, 16u, 16u) * (0.00610361f) + (-200.0f));
@@ -201,8 +201,8 @@ void ttr_mcu2_status_0_unpack(ttr_mcu2_status_0_t *dst, const ttr_can_frame_t *f
     dst->SYS_ACTIVE = ttr_get_bits(frame->data, 50u, 1u) != 0u;
     dst->SYS_LIMIT_ACTIVE = ttr_get_bits(frame->data, 51u, 1u) != 0u;
     dst->FW_ACTIVE = ttr_get_bits(frame->data, 52u, 1u) != 0u;
-    dst->MTPA_ACTIVE = ttr_get_bits(frame->data, 53u, 1u) != 0u;
-    dst->RECV_CTRL_CMD_ACTIVE = ttr_get_bits(frame->data, 54u, 1u) != 0u;
+    dst->RECV_CTRL_CMD_ACTIVE = ttr_get_bits(frame->data, 53u, 1u) != 0u;
+    dst->ASC_ACTIVE = ttr_get_bits(frame->data, 54u, 1u) != 0u;
     dst->SYS_FAULT = ttr_get_bits(frame->data, 56u, 1u) != 0u;
     dst->VOLTAGE_SAT_ACTIVE = ttr_get_bits(frame->data, 57u, 1u) != 0u;
     dst->U_OCP_FAULT = ttr_get_bits(frame->data, 58u, 1u) != 0u;
@@ -213,11 +213,11 @@ void ttr_mcu2_status_0_unpack(ttr_mcu2_status_0_t *dst, const ttr_can_frame_t *f
     dst->W_GATE_FAULT = ttr_get_bits(frame->data, 63u, 1u) != 0u;
 }
 
-void ttr_mcu2_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_0_t *src)
+void ttr_mcu2_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_core_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU2_STATUS_0;
-    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_0;
+    frame->id = TTR_CAN_ID_MCU2_STATUS_CORE;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_CORE;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->SPEED_FB - (-25000.0f)) / (0.762951f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->ID_FB - (-200.0f)) / (0.00610361f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 16u, (uint64_t)_raw); }
@@ -227,8 +227,8 @@ void ttr_mcu2_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_0_t *s
     ttr_set_bits(frame->data, 50u, 1u, src->SYS_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 51u, 1u, src->SYS_LIMIT_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 52u, 1u, src->FW_ACTIVE ? 1u : 0u);
-    ttr_set_bits(frame->data, 53u, 1u, src->MTPA_ACTIVE ? 1u : 0u);
-    ttr_set_bits(frame->data, 54u, 1u, src->RECV_CTRL_CMD_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 53u, 1u, src->RECV_CTRL_CMD_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 54u, 1u, src->ASC_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 56u, 1u, src->SYS_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 57u, 1u, src->VOLTAGE_SAT_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 58u, 1u, src->U_OCP_FAULT ? 1u : 0u);
@@ -239,8 +239,8 @@ void ttr_mcu2_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_0_t *s
     ttr_set_bits(frame->data, 63u, 1u, src->W_GATE_FAULT ? 1u : 0u);
 }
 
-/* ===== MCU3_STATUS_0 ===== */
-void ttr_mcu3_status_0_unpack(ttr_mcu3_status_0_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU3_STATUS_CORE ===== */
+void ttr_mcu3_status_core_unpack(ttr_mcu3_status_core_t *dst, const ttr_can_frame_t *frame)
 {
     dst->SPEED_FB = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.762951f) + (-25000.0f));
     dst->ID_FB = (float)((float)ttr_get_bits(frame->data, 16u, 16u) * (0.00610361f) + (-200.0f));
@@ -250,8 +250,8 @@ void ttr_mcu3_status_0_unpack(ttr_mcu3_status_0_t *dst, const ttr_can_frame_t *f
     dst->SYS_ACTIVE = ttr_get_bits(frame->data, 50u, 1u) != 0u;
     dst->SYS_LIMIT_ACTIVE = ttr_get_bits(frame->data, 51u, 1u) != 0u;
     dst->FW_ACTIVE = ttr_get_bits(frame->data, 52u, 1u) != 0u;
-    dst->MTPA_ACTIVE = ttr_get_bits(frame->data, 53u, 1u) != 0u;
-    dst->RECV_CTRL_CMD_ACTIVE = ttr_get_bits(frame->data, 54u, 1u) != 0u;
+    dst->RECV_CTRL_CMD_ACTIVE = ttr_get_bits(frame->data, 53u, 1u) != 0u;
+    dst->ASC_ACTIVE = ttr_get_bits(frame->data, 54u, 1u) != 0u;
     dst->SYS_FAULT = ttr_get_bits(frame->data, 56u, 1u) != 0u;
     dst->VOLTAGE_SAT_ACTIVE = ttr_get_bits(frame->data, 57u, 1u) != 0u;
     dst->U_OCP_FAULT = ttr_get_bits(frame->data, 58u, 1u) != 0u;
@@ -262,11 +262,11 @@ void ttr_mcu3_status_0_unpack(ttr_mcu3_status_0_t *dst, const ttr_can_frame_t *f
     dst->W_GATE_FAULT = ttr_get_bits(frame->data, 63u, 1u) != 0u;
 }
 
-void ttr_mcu3_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_0_t *src)
+void ttr_mcu3_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_core_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU3_STATUS_0;
-    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_0;
+    frame->id = TTR_CAN_ID_MCU3_STATUS_CORE;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_CORE;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->SPEED_FB - (-25000.0f)) / (0.762951f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->ID_FB - (-200.0f)) / (0.00610361f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 16u, (uint64_t)_raw); }
@@ -276,8 +276,8 @@ void ttr_mcu3_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_0_t *s
     ttr_set_bits(frame->data, 50u, 1u, src->SYS_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 51u, 1u, src->SYS_LIMIT_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 52u, 1u, src->FW_ACTIVE ? 1u : 0u);
-    ttr_set_bits(frame->data, 53u, 1u, src->MTPA_ACTIVE ? 1u : 0u);
-    ttr_set_bits(frame->data, 54u, 1u, src->RECV_CTRL_CMD_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 53u, 1u, src->RECV_CTRL_CMD_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 54u, 1u, src->ASC_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 56u, 1u, src->SYS_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 57u, 1u, src->VOLTAGE_SAT_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 58u, 1u, src->U_OCP_FAULT ? 1u : 0u);
@@ -288,8 +288,8 @@ void ttr_mcu3_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_0_t *s
     ttr_set_bits(frame->data, 63u, 1u, src->W_GATE_FAULT ? 1u : 0u);
 }
 
-/* ===== MCU4_STATUS_0 ===== */
-void ttr_mcu4_status_0_unpack(ttr_mcu4_status_0_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU4_STATUS_CORE ===== */
+void ttr_mcu4_status_core_unpack(ttr_mcu4_status_core_t *dst, const ttr_can_frame_t *frame)
 {
     dst->SPEED_FB = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.762951f) + (-25000.0f));
     dst->ID_FB = (float)((float)ttr_get_bits(frame->data, 16u, 16u) * (0.00610361f) + (-200.0f));
@@ -299,8 +299,8 @@ void ttr_mcu4_status_0_unpack(ttr_mcu4_status_0_t *dst, const ttr_can_frame_t *f
     dst->SYS_ACTIVE = ttr_get_bits(frame->data, 50u, 1u) != 0u;
     dst->SYS_LIMIT_ACTIVE = ttr_get_bits(frame->data, 51u, 1u) != 0u;
     dst->FW_ACTIVE = ttr_get_bits(frame->data, 52u, 1u) != 0u;
-    dst->MTPA_ACTIVE = ttr_get_bits(frame->data, 53u, 1u) != 0u;
-    dst->RECV_CTRL_CMD_ACTIVE = ttr_get_bits(frame->data, 54u, 1u) != 0u;
+    dst->RECV_CTRL_CMD_ACTIVE = ttr_get_bits(frame->data, 53u, 1u) != 0u;
+    dst->ASC_ACTIVE = ttr_get_bits(frame->data, 54u, 1u) != 0u;
     dst->SYS_FAULT = ttr_get_bits(frame->data, 56u, 1u) != 0u;
     dst->VOLTAGE_SAT_ACTIVE = ttr_get_bits(frame->data, 57u, 1u) != 0u;
     dst->U_OCP_FAULT = ttr_get_bits(frame->data, 58u, 1u) != 0u;
@@ -311,11 +311,11 @@ void ttr_mcu4_status_0_unpack(ttr_mcu4_status_0_t *dst, const ttr_can_frame_t *f
     dst->W_GATE_FAULT = ttr_get_bits(frame->data, 63u, 1u) != 0u;
 }
 
-void ttr_mcu4_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_0_t *src)
+void ttr_mcu4_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_core_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU4_STATUS_0;
-    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_0;
+    frame->id = TTR_CAN_ID_MCU4_STATUS_CORE;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_CORE;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->SPEED_FB - (-25000.0f)) / (0.762951f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->ID_FB - (-200.0f)) / (0.00610361f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 16u, (uint64_t)_raw); }
@@ -325,8 +325,8 @@ void ttr_mcu4_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_0_t *s
     ttr_set_bits(frame->data, 50u, 1u, src->SYS_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 51u, 1u, src->SYS_LIMIT_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 52u, 1u, src->FW_ACTIVE ? 1u : 0u);
-    ttr_set_bits(frame->data, 53u, 1u, src->MTPA_ACTIVE ? 1u : 0u);
-    ttr_set_bits(frame->data, 54u, 1u, src->RECV_CTRL_CMD_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 53u, 1u, src->RECV_CTRL_CMD_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 54u, 1u, src->ASC_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 56u, 1u, src->SYS_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 57u, 1u, src->VOLTAGE_SAT_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 58u, 1u, src->U_OCP_FAULT ? 1u : 0u);
@@ -985,6 +985,21 @@ void ttr_debug_mcu4_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_d
     { uint32_t _u; memcpy(&_u, &src->ID_FW_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
 }
 
+/* ===== DEBUG_DTU_CONTROL ===== */
+void ttr_debug_dtu_control_unpack(ttr_debug_dtu_control_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->ENABLE_DEBUG = ttr_get_bits(frame->data, 0u, 1u) != 0u;
+}
+
+void ttr_debug_dtu_control_pack(ttr_can_frame_t *frame, const ttr_debug_dtu_control_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_DEBUG_DTU_CONTROL;
+    frame->dlc = TTR_CAN_DLC_DEBUG_DTU_CONTROL;
+    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 1u, src->ENABLE_DEBUG ? 1u : 0u);
+}
+
 /* ===== VCU_VCU_STATE ===== */
 void ttr_vcu_vcu_state_unpack(ttr_vcu_vcu_state_t *dst, const ttr_can_frame_t *frame)
 {
@@ -1025,16 +1040,17 @@ void ttr_vcu_vcu_error_unpack(ttr_vcu_vcu_error_t *dst, const ttr_can_frame_t *f
 {
     dst->APPS1_ERR = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->APPS2_ERR = ttr_get_bits(frame->data, 1u, 1u) != 0u;
-    dst->BSE_R_ERR = ttr_get_bits(frame->data, 2u, 1u) != 0u;
-    dst->BSE_F_ERR = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->STEERING_ERR = ttr_get_bits(frame->data, 4u, 1u) != 0u;
-    dst->MCU1_ERR = ttr_get_bits(frame->data, 5u, 1u) != 0u;
-    dst->MCU2_ERR = ttr_get_bits(frame->data, 6u, 1u) != 0u;
-    dst->MCU3_ERR = ttr_get_bits(frame->data, 7u, 1u) != 0u;
-    dst->MCU4_ERR = ttr_get_bits(frame->data, 8u, 1u) != 0u;
-    dst->AMS_ERR = ttr_get_bits(frame->data, 9u, 1u) != 0u;
-    dst->MOTOR_DIRECTION_ERR = ttr_get_bits(frame->data, 10u, 1u) != 0u;
-    dst->IMU_ERR = ttr_get_bits(frame->data, 11u, 1u) != 0u;
+    dst->APPS_PLAUSIBILITY_ERR = ttr_get_bits(frame->data, 2u, 1u) != 0u;
+    dst->BSE_R_ERR = ttr_get_bits(frame->data, 3u, 1u) != 0u;
+    dst->BSE_F_ERR = ttr_get_bits(frame->data, 4u, 1u) != 0u;
+    dst->STEERING_ERR = ttr_get_bits(frame->data, 5u, 1u) != 0u;
+    dst->MCU1_ERR = ttr_get_bits(frame->data, 6u, 1u) != 0u;
+    dst->MCU2_ERR = ttr_get_bits(frame->data, 7u, 1u) != 0u;
+    dst->MCU3_ERR = ttr_get_bits(frame->data, 8u, 1u) != 0u;
+    dst->MCU4_ERR = ttr_get_bits(frame->data, 9u, 1u) != 0u;
+    dst->AMS_ERR = ttr_get_bits(frame->data, 10u, 1u) != 0u;
+    dst->MOTOR_DIRECTION_ERR = ttr_get_bits(frame->data, 11u, 1u) != 0u;
+    dst->IMU_ERR = ttr_get_bits(frame->data, 12u, 1u) != 0u;
 }
 
 void ttr_vcu_vcu_error_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_error_t *src)
@@ -1045,16 +1061,17 @@ void ttr_vcu_vcu_error_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_error_t *s
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->APPS1_ERR ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->APPS2_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 2u, 1u, src->BSE_R_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 3u, 1u, src->BSE_F_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 1u, src->STEERING_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 5u, 1u, src->MCU1_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 6u, 1u, src->MCU2_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 7u, 1u, src->MCU3_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 8u, 1u, src->MCU4_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 9u, 1u, src->AMS_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 10u, 1u, src->MOTOR_DIRECTION_ERR ? 1u : 0u);
-    ttr_set_bits(frame->data, 11u, 1u, src->IMU_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 2u, 1u, src->APPS_PLAUSIBILITY_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 3u, 1u, src->BSE_R_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 4u, 1u, src->BSE_F_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 5u, 1u, src->STEERING_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 6u, 1u, src->MCU1_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 7u, 1u, src->MCU2_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 8u, 1u, src->MCU3_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 9u, 1u, src->MCU4_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 10u, 1u, src->AMS_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 11u, 1u, src->MOTOR_DIRECTION_ERR ? 1u : 0u);
+    ttr_set_bits(frame->data, 12u, 1u, src->IMU_ERR ? 1u : 0u);
 }
 
 /* ===== VCU_VCU_ONLINE ===== */
@@ -1203,6 +1220,25 @@ void ttr_vcu_vcu_cpu_task_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_
     { float _r = ((float)src->DYC_TASK_PERIOD_MAX_MS - (0.0f)) / (0.0015259021896696422f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 112u, 16u, (uint64_t)_raw); }
 }
 
+/* ===== VCU_VCU_SYSTEM_STATUS ===== */
+void ttr_vcu_vcu_system_status_unpack(ttr_vcu_vcu_system_status_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->GLV_VOLTAGE = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.0004576659038901602f) + (0.0f));
+    dst->GLV_CURRENT = (float)((float)ttr_get_bits(frame->data, 16u, 16u) * (0.0004576659038901602f) + (0.0f));
+    dst->REGEN_TORQUE_LIMIT = (float)((float)ttr_get_bits(frame->data, 32u, 12u) * (0.009768009768009768f) + (0.0f));
+}
+
+void ttr_vcu_vcu_system_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_system_status_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_VCU_VCU_SYSTEM_STATUS;
+    frame->dlc = TTR_CAN_DLC_VCU_VCU_SYSTEM_STATUS;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    { float _r = ((float)src->GLV_VOLTAGE - (0.0f)) / (0.0004576659038901602f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->GLV_CURRENT - (0.0f)) / (0.0004576659038901602f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->REGEN_TORQUE_LIMIT - (0.0f)) / (0.009768009768009768f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 12u, (uint64_t)_raw); }
+}
+
 /* ===== VCU_VCU_MCU_CAN_STATUS ===== */
 void ttr_vcu_vcu_mcu_can_status_unpack(ttr_vcu_vcu_mcu_can_status_t *dst, const ttr_can_frame_t *frame)
 {
@@ -1263,6 +1299,9 @@ void ttr_vcu_vcu_dyc_status_unpack(ttr_vcu_vcu_dyc_status_t *dst, const ttr_can_
     dst->DYC_ALLOWED = ttr_get_bits(frame->data, 18u, 1u) != 0u;
     dst->DYC_CONTROL_ACTIVE = ttr_get_bits(frame->data, 19u, 1u) != 0u;
     dst->DYC_ALLOCATOR_SATURATED = ttr_get_bits(frame->data, 20u, 1u) != 0u;
+    dst->DYC_FORWARD_MOTION = ttr_get_bits(frame->data, 21u, 1u) != 0u;
+    dst->DYC_ZERO_THROTTLE = ttr_get_bits(frame->data, 22u, 1u) != 0u;
+    dst->DYC_NEGATIVE_TORQUE_ACTIVE = ttr_get_bits(frame->data, 23u, 1u) != 0u;
     dst->DYC_PID_ENABLE_FADE = (float)((float)ttr_get_bits(frame->data, 24u, 8u) * (0.00392156862745098f) + (0.0f));
     dst->DYC_ACCEL_CG_X_MPS2 = (float)((float)ttr_get_bits(frame->data, 32u, 16u) * (0.0009155413138017853f) + (-30.0f));
     dst->DYC_ACCEL_CG_Y_MPS2 = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.0009155413138017853f) + (-30.0f));
@@ -1280,6 +1319,10 @@ void ttr_vcu_vcu_dyc_status_unpack(ttr_vcu_vcu_dyc_status_t *dst, const ttr_can_
     dst->DYC_TORQUE_DELTA_FR_NM = (float)((float)ttr_get_bits(frame->data, 240u, 16u) * (0.0009155413138017853f) + (-30.0f));
     dst->DYC_TORQUE_DELTA_RL_NM = (float)((float)ttr_get_bits(frame->data, 256u, 16u) * (0.0012207217517357137f) + (-40.0f));
     dst->DYC_TORQUE_DELTA_RR_NM = (float)((float)ttr_get_bits(frame->data, 272u, 16u) * (0.0012207217517357137f) + (-40.0f));
+    dst->DYC_TORQUE_FL_NM = (float)((float)ttr_get_bits(frame->data, 288u, 16u) * (0.0009155413138017853f) + (-30.0f));
+    dst->DYC_TORQUE_FR_NM = (float)((float)ttr_get_bits(frame->data, 304u, 16u) * (0.0009155413138017853f) + (-30.0f));
+    dst->DYC_TORQUE_RL_NM = (float)((float)ttr_get_bits(frame->data, 320u, 16u) * (0.0012207217517357137f) + (-40.0f));
+    dst->DYC_TORQUE_RR_NM = (float)((float)ttr_get_bits(frame->data, 336u, 16u) * (0.0012207217517357137f) + (-40.0f));
 }
 
 void ttr_vcu_vcu_dyc_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dyc_status_t *src)
@@ -1300,6 +1343,9 @@ void ttr_vcu_vcu_dyc_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dyc_s
     ttr_set_bits(frame->data, 18u, 1u, src->DYC_ALLOWED ? 1u : 0u);
     ttr_set_bits(frame->data, 19u, 1u, src->DYC_CONTROL_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 20u, 1u, src->DYC_ALLOCATOR_SATURATED ? 1u : 0u);
+    ttr_set_bits(frame->data, 21u, 1u, src->DYC_FORWARD_MOTION ? 1u : 0u);
+    ttr_set_bits(frame->data, 22u, 1u, src->DYC_ZERO_THROTTLE ? 1u : 0u);
+    ttr_set_bits(frame->data, 23u, 1u, src->DYC_NEGATIVE_TORQUE_ACTIVE ? 1u : 0u);
     { float _r = ((float)src->DYC_PID_ENABLE_FADE - (0.0f)) / (0.00392156862745098f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 24u, 8u, (uint64_t)_raw); }
     { float _r = ((float)src->DYC_ACCEL_CG_X_MPS2 - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->DYC_ACCEL_CG_Y_MPS2 - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
@@ -1317,6 +1363,10 @@ void ttr_vcu_vcu_dyc_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dyc_s
     { float _r = ((float)src->DYC_TORQUE_DELTA_FR_NM - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 240u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->DYC_TORQUE_DELTA_RL_NM - (-40.0f)) / (0.0012207217517357137f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 256u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->DYC_TORQUE_DELTA_RR_NM - (-40.0f)) / (0.0012207217517357137f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 272u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->DYC_TORQUE_FL_NM - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 288u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->DYC_TORQUE_FR_NM - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 304u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->DYC_TORQUE_RL_NM - (-40.0f)) / (0.0012207217517357137f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 320u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->DYC_TORQUE_RR_NM - (-40.0f)) / (0.0012207217517357137f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 336u, 16u, (uint64_t)_raw); }
 }
 
 /* ===== VCU_VCU_SENSOR1 ===== */
@@ -1359,23 +1409,6 @@ void ttr_vcu_vcu_sensor2_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sensor2_
     { float _r = ((float)src->APPS2_PU - (0.0f)) / (0.0015259021896696422f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->STEERING_ANGLE - (-180.0f)) / (0.005493247882810712f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->CAR_SPEED - (0.0f)) / (0.004577706569008927f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
-}
-
-/* ===== VCU_VCU_SENSOR3 ===== */
-void ttr_vcu_vcu_sensor3_unpack(ttr_vcu_vcu_sensor3_t *dst, const ttr_can_frame_t *frame)
-{
-    dst->GLV_VOLTAGE = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.0004576659038901602f) + (0.0f));
-    dst->GLV_CURRENT = (float)((float)ttr_get_bits(frame->data, 16u, 16u) * (0.0004576659038901602f) + (0.0f));
-}
-
-void ttr_vcu_vcu_sensor3_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sensor3_t *src)
-{
-    uint16_t i;
-    frame->id = TTR_CAN_ID_VCU_VCU_SENSOR3;
-    frame->dlc = TTR_CAN_DLC_VCU_VCU_SENSOR3;
-    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
-    { float _r = ((float)src->GLV_VOLTAGE - (0.0f)) / (0.0004576659038901602f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->GLV_CURRENT - (0.0f)) / (0.0004576659038901602f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 16u, (uint64_t)_raw); }
 }
 
 /* ===== VCU_VCU_IMU_Q ===== */
@@ -1460,8 +1493,8 @@ void ttr_vcu_vcu_gps_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_gps_t *src)
     ttr_set_bits(frame->data, 72u, 56u, (uint64_t)src->TIME);
 }
 
-/* ===== AMS_AMS_STATUS0 ===== */
-void ttr_ams_ams_status0_unpack(ttr_ams_ams_status0_t *dst, const ttr_can_frame_t *frame)
+/* ===== AMS_AMS_STATUS_BASIC ===== */
+void ttr_ams_ams_status_basic_unpack(ttr_ams_ams_status_basic_t *dst, const ttr_can_frame_t *frame)
 {
     dst->AMS_STATE = (uint8_t)ttr_get_bits(frame->data, 0u, 2u);
     dst->BUS_OVER_CURRENT_ERR = ttr_get_bits(frame->data, 2u, 1u) != 0u;
@@ -1482,12 +1515,12 @@ void ttr_ams_ams_status0_unpack(ttr_ams_ams_status0_t *dst, const ttr_can_frame_
     dst->AMS_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 184u, 8u);
 }
 
-void ttr_ams_ams_status0_pack(ttr_can_frame_t *frame, const ttr_ams_ams_status0_t *src)
+void ttr_ams_ams_status_basic_pack(ttr_can_frame_t *frame, const ttr_ams_ams_status_basic_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_AMS_AMS_STATUS0;
-    frame->dlc = TTR_CAN_DLC_AMS_AMS_STATUS0;
-    for (i = 0; i < 24u; ++i) { frame->data[i] = 0u; }
+    frame->id = TTR_CAN_ID_AMS_AMS_STATUS_BASIC;
+    frame->dlc = TTR_CAN_DLC_AMS_AMS_STATUS_BASIC;
+    for (i = 0; i < 32u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 2u, (uint64_t)src->AMS_STATE);
     ttr_set_bits(frame->data, 2u, 1u, src->BUS_OVER_CURRENT_ERR ? 1u : 0u);
     ttr_set_bits(frame->data, 3u, 1u, src->LTC_CONNECTION_LOSS ? 1u : 0u);
@@ -1505,6 +1538,27 @@ void ttr_ams_ams_status0_pack(ttr_can_frame_t *frame, const ttr_ams_ams_status0_
     { float _r = ((float)src->TEMPERATURE_MIN - (-50.0f)) / (0.0038147554741741053f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 152u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->TEMPERATURE_DELTA - (-50.0f)) / (0.0038147554741741053f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 168u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 184u, 8u, (uint64_t)src->AMS_HEARTBEAT);
+}
+
+/* ===== AMS_AMS_STATUS_LIMIT ===== */
+void ttr_ams_ams_status_limit_unpack(ttr_ams_ams_status_limit_t *dst, const ttr_can_frame_t *frame)
+{
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 0u, 32u); memcpy(&dst->CHARGE_CURRENT_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->CHARGE_POWER_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->DISCHARGE_CURRENT_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->DISCHARGE_POWER_LIMIT, &_u, sizeof(_u)); }
+}
+
+void ttr_ams_ams_status_limit_pack(ttr_can_frame_t *frame, const ttr_ams_ams_status_limit_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_AMS_AMS_STATUS_LIMIT;
+    frame->dlc = TTR_CAN_DLC_AMS_AMS_STATUS_LIMIT;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    { uint32_t _u; memcpy(&_u, &src->CHARGE_CURRENT_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 0u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->CHARGE_POWER_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->DISCHARGE_CURRENT_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->DISCHARGE_POWER_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
 }
 
 /* ===== AMS_AMS_MODULE_1 ===== */
@@ -2171,88 +2225,127 @@ void ttr_ams_ams_module_8_pack(ttr_can_frame_t *frame, const ttr_ams_ams_module_
     ttr_set_bits(frame->data, 349u, 1u, src->C13_BALANCE_STATE ? 1u : 0u);
 }
 
-/* ===== MCU1_STATUS_1 ===== */
-void ttr_mcu1_status_1_unpack(ttr_mcu1_status_1_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU1_STATUS_SYSTEM ===== */
+void ttr_mcu1_status_system_unpack(ttr_mcu1_status_system_t *dst, const ttr_can_frame_t *frame)
 {
     dst->ENCODER_FAULT = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->OVP_FAULT = ttr_get_bits(frame->data, 1u, 1u) != 0u;
     dst->UVP_FAULT = ttr_get_bits(frame->data, 2u, 1u) != 0u;
     dst->RECV_CTRL_LOSS_FAULT = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->DIRECTION_STATE = ttr_get_bits(frame->data, 4u, 1u) != 0u;
-    dst->ID_REF = (float)((float)ttr_get_bits(frame->data, 16u, 12u) * (0.0976801f) + (-200.0f));
-    dst->IQ_REF = (float)((float)ttr_get_bits(frame->data, 28u, 12u) * (0.0976801f) + (-200.0f));
-    dst->VDC_FB = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.0106813f) + (0.0f));
+    dst->U_GATE_OTP_FAULT = ttr_get_bits(frame->data, 4u, 1u) != 0u;
+    dst->V_GATE_OTP_FAULT = ttr_get_bits(frame->data, 5u, 1u) != 0u;
+    dst->MOTOR_OTP_FAULT = ttr_get_bits(frame->data, 6u, 1u) != 0u;
+    dst->W_GATE_OTP_FAULT = ttr_get_bits(frame->data, 7u, 1u) != 0u;
+    dst->DIRECTION_STATE = ttr_get_bits(frame->data, 8u, 1u) != 0u;
+    dst->RECV_MODE_BROADCAST_STATE = ttr_get_bits(frame->data, 9u, 1u) != 0u;
+    dst->RECV_MODE_STANDALONE_STATE = ttr_get_bits(frame->data, 10u, 1u) != 0u;
+    dst->FW_EN_ECHO = ttr_get_bits(frame->data, 11u, 1u) != 0u;
+    dst->RUN_MODE_STATE = (uint8_t)ttr_get_bits(frame->data, 12u, 2u);
+    dst->TORQUE_CMD_ECHO = (float)((float)ttr_get_bits(frame->data, 16u, 12u) * (0.014652014652014652f) + (-30.0f));
+    dst->TORQUE_FB = (float)((float)ttr_get_bits(frame->data, 28u, 12u) * (0.014652014652014652f) + (-30.0f));
+    dst->VDC_FB = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.010681315327687495f) + (0.0f));
     dst->POWER_FB = (float)((float)ttr_get_bits(frame->data, 56u, 16u) * (1.22072f) + (-40000.0f));
-    dst->TORQUE_FB = (float)((float)ttr_get_bits(frame->data, 72u, 16u) * (0.0009155413138017853f) + (-30.0f));
-    dst->MCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 88u, 8u);
+    dst->MOTOR_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->U_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 84u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->V_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 96u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->W_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 108u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->MCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 120u, 8u);
 }
 
-void ttr_mcu1_status_1_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_1_t *src)
+void ttr_mcu1_status_system_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_system_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU1_STATUS_1;
-    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_1;
-    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    frame->id = TTR_CAN_ID_MCU1_STATUS_SYSTEM;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_SYSTEM;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->ENCODER_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->OVP_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 2u, 1u, src->UVP_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 3u, 1u, src->RECV_CTRL_LOSS_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 1u, src->DIRECTION_STATE ? 1u : 0u);
-    { float _r = ((float)src->ID_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 12u, (uint64_t)_raw); }
-    { float _r = ((float)src->IQ_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 28u, 12u, (uint64_t)_raw); }
-    { float _r = ((float)src->VDC_FB - (0.0f)) / (0.0106813f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 4u, 1u, src->U_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 5u, 1u, src->V_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 6u, 1u, src->MOTOR_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 7u, 1u, src->W_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 8u, 1u, src->DIRECTION_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 9u, 1u, src->RECV_MODE_BROADCAST_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 10u, 1u, src->RECV_MODE_STANDALONE_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 11u, 1u, src->FW_EN_ECHO ? 1u : 0u);
+    ttr_set_bits(frame->data, 12u, 2u, (uint64_t)src->RUN_MODE_STATE);
+    { float _r = ((float)src->TORQUE_CMD_ECHO - (-30.0f)) / (0.014652014652014652f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->TORQUE_FB - (-30.0f)) / (0.014652014652014652f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 28u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VDC_FB - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->POWER_FB - (-40000.0f)) / (1.22072f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 56u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->TORQUE_FB - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 16u, (uint64_t)_raw); }
-    ttr_set_bits(frame->data, 88u, 8u, (uint64_t)src->MCU_HEARTBEAT);
+    { float _r = ((float)src->MOTOR_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->U_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 84u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->V_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->W_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 108u, 12u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 120u, 8u, (uint64_t)src->MCU_HEARTBEAT);
 }
 
-/* ===== MCU1_STATUS_2 ===== */
-void ttr_mcu1_status_2_unpack(ttr_mcu1_status_2_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU1_STATUS_FOC ===== */
+void ttr_mcu1_status_foc_unpack(ttr_mcu1_status_foc_t *dst, const ttr_can_frame_t *frame)
 {
-    dst->RUN_MODE_STATE = (uint8_t)ttr_get_bits(frame->data, 0u, 2u);
-    dst->RECV_MODE_BROADCAST_STATE = ttr_get_bits(frame->data, 2u, 1u) != 0u;
-    dst->RECV_MODE_STANDALONE_STATE = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->MCU_ID_STATE = (uint8_t)ttr_get_bits(frame->data, 4u, 4u);
-    dst->FLASH_LAST_ERROR_STATE = (uint8_t)ttr_get_bits(frame->data, 8u, 4u);
-    dst->FW_EN_ECHO = ttr_get_bits(frame->data, 12u, 1u) != 0u;
-    dst->MTPA_EN_ECHO = ttr_get_bits(frame->data, 13u, 1u) != 0u;
-    dst->MOTOR_OTP_FAULT = ttr_get_bits(frame->data, 16u, 1u) != 0u;
-    dst->U_GATE_OTP_FAULT = ttr_get_bits(frame->data, 17u, 1u) != 0u;
-    dst->V_GATE_OTP_FAULT = ttr_get_bits(frame->data, 18u, 1u) != 0u;
-    dst->W_GATE_OTP_FAULT = ttr_get_bits(frame->data, 19u, 1u) != 0u;
-    dst->TORQUE_CMD_ECHO = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.0007629510948348211f) + (-25.0f));
-    dst->MOTOR_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 64u, 16u) * (0.00335698f) + (-20.0f));
-    dst->U_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 80u, 16u) * (0.00335698f) + (-20.0f));
-    dst->V_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 96u, 16u) * (0.00335698f) + (-20.0f));
-    dst->W_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 112u, 16u) * (0.00335698f) + (-20.0f));
+    dst->IQ_REF = (float)((float)ttr_get_bits(frame->data, 0u, 12u) * (0.0976801f) + (-200.0f));
+    dst->ID_REF = (float)((float)ttr_get_bits(frame->data, 12u, 12u) * (0.0976801f) + (-200.0f));
+    dst->ID_FW = (float)((float)ttr_get_bits(frame->data, 24u, 12u) * (0.0976801f) + (-200.0f));
+    dst->VD_REQ = (float)((float)ttr_get_bits(frame->data, 36u, 12u) * (0.3418803418803419f) + (-700.0f));
+    dst->VQ_REQ = (float)((float)ttr_get_bits(frame->data, 48u, 12u) * (0.3418803418803419f) + (-700.0f));
+    dst->VMAG = (float)((float)ttr_get_bits(frame->data, 60u, 12u) * (0.17094017094017094f) + (0.0f));
+    dst->VOUT_MAX = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.17094017094017094f) + (0.0f));
 }
 
-void ttr_mcu1_status_2_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_2_t *src)
+void ttr_mcu1_status_foc_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_foc_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU1_STATUS_2;
-    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_2;
+    frame->id = TTR_CAN_ID_MCU1_STATUS_FOC;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_FOC;
+    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    { float _r = ((float)src->IQ_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->ID_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 12u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->ID_FW - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 24u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VD_REQ - (-700.0f)) / (0.3418803418803419f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 36u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VQ_REQ - (-700.0f)) / (0.3418803418803419f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VMAG - (0.0f)) / (0.17094017094017094f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 60u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VOUT_MAX - (0.0f)) / (0.17094017094017094f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+}
+
+/* ===== MCU1_STATUS_DEBUG ===== */
+void ttr_mcu1_status_debug_unpack(ttr_mcu1_status_debug_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->ISR_DURATION_US = (float)((float)ttr_get_bits(frame->data, 0u, 8u) * (0.4980392156862745f) + (0.0f));
+    dst->BOOT_COUNT = (uint16_t)ttr_get_bits(frame->data, 8u, 16u);
+    dst->ENCODER_ERR_COUNT = (uint16_t)ttr_get_bits(frame->data, 24u, 16u);
+    dst->PI_IQ_UI = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.02136263065537499f) + (-700.0f));
+    dst->PI_ID_UI = (float)((float)ttr_get_bits(frame->data, 56u, 16u) * (0.02136263065537499f) + (-700.0f));
+    dst->MCU_ID_STATE = (uint8_t)ttr_get_bits(frame->data, 72u, 4u);
+    dst->FLASH_LAST_ERROR_STATE = (uint8_t)ttr_get_bits(frame->data, 76u, 4u);
+    dst->RESET_CAUSE = (uint8_t)ttr_get_bits(frame->data, 80u, 4u);
+    dst->SOFT_STOP_REASON = (uint8_t)ttr_get_bits(frame->data, 84u, 4u);
+    dst->UPTIME_S = (uint16_t)ttr_get_bits(frame->data, 88u, 16u);
+    dst->ENCODER_THETA = (float)((float)ttr_get_bits(frame->data, 104u, 12u) * (0.08791208791208792f) + (0.0f));
+}
+
+void ttr_mcu1_status_debug_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_debug_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_MCU1_STATUS_DEBUG;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_DEBUG;
     for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
-    ttr_set_bits(frame->data, 0u, 2u, (uint64_t)src->RUN_MODE_STATE);
-    ttr_set_bits(frame->data, 2u, 1u, src->RECV_MODE_BROADCAST_STATE ? 1u : 0u);
-    ttr_set_bits(frame->data, 3u, 1u, src->RECV_MODE_STANDALONE_STATE ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 4u, (uint64_t)src->MCU_ID_STATE);
-    ttr_set_bits(frame->data, 8u, 4u, (uint64_t)src->FLASH_LAST_ERROR_STATE);
-    ttr_set_bits(frame->data, 12u, 1u, src->FW_EN_ECHO ? 1u : 0u);
-    ttr_set_bits(frame->data, 13u, 1u, src->MTPA_EN_ECHO ? 1u : 0u);
-    ttr_set_bits(frame->data, 16u, 1u, src->MOTOR_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 17u, 1u, src->U_GATE_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 18u, 1u, src->V_GATE_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 19u, 1u, src->W_GATE_OTP_FAULT ? 1u : 0u);
-    { float _r = ((float)src->TORQUE_CMD_ECHO - (-25.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->MOTOR_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 64u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->U_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 80u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->V_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->W_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 112u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->ISR_DURATION_US - (0.0f)) / (0.4980392156862745f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 8u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 8u, 16u, (uint64_t)src->BOOT_COUNT);
+    ttr_set_bits(frame->data, 24u, 16u, (uint64_t)src->ENCODER_ERR_COUNT);
+    { float _r = ((float)src->PI_IQ_UI - (-700.0f)) / (0.02136263065537499f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->PI_ID_UI - (-700.0f)) / (0.02136263065537499f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 56u, 16u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 72u, 4u, (uint64_t)src->MCU_ID_STATE);
+    ttr_set_bits(frame->data, 76u, 4u, (uint64_t)src->FLASH_LAST_ERROR_STATE);
+    ttr_set_bits(frame->data, 80u, 4u, (uint64_t)src->RESET_CAUSE);
+    ttr_set_bits(frame->data, 84u, 4u, (uint64_t)src->SOFT_STOP_REASON);
+    ttr_set_bits(frame->data, 88u, 16u, (uint64_t)src->UPTIME_S);
+    { float _r = ((float)src->ENCODER_THETA - (0.0f)) / (0.08791208791208792f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 104u, 12u, (uint64_t)_raw); }
 }
 
-/* ===== MCU1_STATUS_U ===== */
-void ttr_mcu1_status_u_unpack(ttr_mcu1_status_u_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU1_STATUS_GATE_U ===== */
+void ttr_mcu1_status_gate_u_unpack(ttr_mcu1_status_gate_u_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -2286,11 +2379,11 @@ void ttr_mcu1_status_u_unpack(ttr_mcu1_status_u_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu1_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_u_t *src)
+void ttr_mcu1_status_gate_u_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_gate_u_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU1_STATUS_U;
-    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_U;
+    frame->id = TTR_CAN_ID_MCU1_STATUS_GATE_U;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_GATE_U;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -2324,8 +2417,8 @@ void ttr_mcu1_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_u_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU1_STATUS_V ===== */
-void ttr_mcu1_status_v_unpack(ttr_mcu1_status_v_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU1_STATUS_GATE_V ===== */
+void ttr_mcu1_status_gate_v_unpack(ttr_mcu1_status_gate_v_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -2359,11 +2452,11 @@ void ttr_mcu1_status_v_unpack(ttr_mcu1_status_v_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu1_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_v_t *src)
+void ttr_mcu1_status_gate_v_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_gate_v_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU1_STATUS_V;
-    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_V;
+    frame->id = TTR_CAN_ID_MCU1_STATUS_GATE_V;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_GATE_V;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -2397,8 +2490,8 @@ void ttr_mcu1_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_v_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU1_STATUS_W ===== */
-void ttr_mcu1_status_w_unpack(ttr_mcu1_status_w_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU1_STATUS_GATE_W ===== */
+void ttr_mcu1_status_gate_w_unpack(ttr_mcu1_status_gate_w_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -2432,11 +2525,11 @@ void ttr_mcu1_status_w_unpack(ttr_mcu1_status_w_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu1_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_w_t *src)
+void ttr_mcu1_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_gate_w_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU1_STATUS_W;
-    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_W;
+    frame->id = TTR_CAN_ID_MCU1_STATUS_GATE_W;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_GATE_W;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -2470,8 +2563,8 @@ void ttr_mcu1_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_w_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU1_STATUS_CAN ===== */
-void ttr_mcu1_status_can_unpack(ttr_mcu1_status_can_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU1_STATUS_COMM ===== */
+void ttr_mcu1_status_comm_unpack(ttr_mcu1_status_comm_t *dst, const ttr_can_frame_t *frame)
 {
     dst->CMD_MISS_CONSEC_AVG = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.0007629510948348211f) + (0.0f));
     dst->CMD_MISS_CONSEC_MAX = (uint16_t)ttr_get_bits(frame->data, 16u, 16u);
@@ -2483,11 +2576,11 @@ void ttr_mcu1_status_can_unpack(ttr_mcu1_status_can_t *dst, const ttr_can_frame_
     dst->REC = (uint16_t)ttr_get_bits(frame->data, 112u, 16u);
 }
 
-void ttr_mcu1_status_can_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_can_t *src)
+void ttr_mcu1_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_comm_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU1_STATUS_CAN;
-    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_CAN;
+    frame->id = TTR_CAN_ID_MCU1_STATUS_COMM;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_COMM;
     for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->CMD_MISS_CONSEC_AVG - (0.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->CMD_MISS_CONSEC_MAX);
@@ -2552,16 +2645,15 @@ void ttr_mcu1_parameter_limit_unpack(ttr_mcu1_parameter_limit_t *dst, const ttr_
 {
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 0u, 32u); memcpy(&dst->CURRENT_LINE_LIMIT, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->CURRENT_ID_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->FW_ID_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->TORQUE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->OVER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->UNDER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_SOFT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_HARD, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 256u, 32u); memcpy(&dst->MOTOR_TEMP_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 288u, 32u); memcpy(&dst->GATE_TEMP_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 320u, 32u); memcpy(&dst->VQ_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 352u, 32u); memcpy(&dst->MODULATION_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->TORQUE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->OVER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->UNDER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_SOFT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_HARD, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->MOTOR_TEMP_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 256u, 32u); memcpy(&dst->GATE_TEMP_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 288u, 32u); memcpy(&dst->VQ_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 320u, 32u); memcpy(&dst->MODULATION_LIMIT, &_u, sizeof(_u)); }
 }
 
 void ttr_mcu1_parameter_limit_pack(ttr_can_frame_t *frame, const ttr_mcu1_parameter_limit_t *src)
@@ -2572,16 +2664,15 @@ void ttr_mcu1_parameter_limit_pack(ttr_can_frame_t *frame, const ttr_mcu1_parame
     for (i = 0; i < 48u; ++i) { frame->data[i] = 0u; }
     { uint32_t _u; memcpy(&_u, &src->CURRENT_LINE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 0u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->CURRENT_ID_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->FW_ID_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->TORQUE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->OVER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->UNDER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_SOFT, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_HARD, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->MOTOR_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 256u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->GATE_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 288u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VQ_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 320u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->MODULATION_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 352u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->TORQUE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->OVER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->UNDER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_SOFT, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_HARD, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->MOTOR_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->GATE_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 256u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VQ_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 288u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->MODULATION_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 320u, 32u, _u); }
 }
 
 /* ===== MCU1_PARAMETER_OFFSET ===== */
@@ -2614,10 +2705,6 @@ void ttr_mcu1_parameter_slew_rate_unpack(ttr_mcu1_parameter_slew_rate_t *dst, co
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->TORQUE_SLEW_NEG_NM_PER_S, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->SPEED_SLEW_POS_RPM_PER_S, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->SPEED_SLEW_NEG_RPM_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->ID_MTPA_ATTACK_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->ID_MTPA_RELEASE_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->ID_FW_ATTACK_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->ID_FW_RELEASE_SLEW_A_PER_S, &_u, sizeof(_u)); }
 }
 
 void ttr_mcu1_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu1_parameter_slew_rate_t *src)
@@ -2630,94 +2717,129 @@ void ttr_mcu1_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu1_pa
     { uint32_t _u; memcpy(&_u, &src->TORQUE_SLEW_NEG_NM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->SPEED_SLEW_POS_RPM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->SPEED_SLEW_NEG_RPM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_MTPA_ATTACK_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_MTPA_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_FW_ATTACK_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_FW_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
 }
 
-/* ===== MCU2_STATUS_1 ===== */
-void ttr_mcu2_status_1_unpack(ttr_mcu2_status_1_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU2_STATUS_SYSTEM ===== */
+void ttr_mcu2_status_system_unpack(ttr_mcu2_status_system_t *dst, const ttr_can_frame_t *frame)
 {
     dst->ENCODER_FAULT = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->OVP_FAULT = ttr_get_bits(frame->data, 1u, 1u) != 0u;
     dst->UVP_FAULT = ttr_get_bits(frame->data, 2u, 1u) != 0u;
     dst->RECV_CTRL_LOSS_FAULT = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->DIRECTION_STATE = ttr_get_bits(frame->data, 4u, 1u) != 0u;
-    dst->ID_REF = (float)((float)ttr_get_bits(frame->data, 16u, 12u) * (0.0976801f) + (-200.0f));
-    dst->IQ_REF = (float)((float)ttr_get_bits(frame->data, 28u, 12u) * (0.0976801f) + (-200.0f));
-    dst->VDC_FB = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.0106813f) + (0.0f));
+    dst->U_GATE_OTP_FAULT = ttr_get_bits(frame->data, 4u, 1u) != 0u;
+    dst->V_GATE_OTP_FAULT = ttr_get_bits(frame->data, 5u, 1u) != 0u;
+    dst->MOTOR_OTP_FAULT = ttr_get_bits(frame->data, 6u, 1u) != 0u;
+    dst->W_GATE_OTP_FAULT = ttr_get_bits(frame->data, 7u, 1u) != 0u;
+    dst->DIRECTION_STATE = ttr_get_bits(frame->data, 8u, 1u) != 0u;
+    dst->RECV_MODE_BROADCAST_STATE = ttr_get_bits(frame->data, 9u, 1u) != 0u;
+    dst->RECV_MODE_STANDALONE_STATE = ttr_get_bits(frame->data, 10u, 1u) != 0u;
+    dst->FW_EN_ECHO = ttr_get_bits(frame->data, 11u, 1u) != 0u;
+    dst->RUN_MODE_STATE = (uint8_t)ttr_get_bits(frame->data, 12u, 2u);
+    dst->TORQUE_CMD_ECHO = (float)((float)ttr_get_bits(frame->data, 16u, 12u) * (0.014652014652014652f) + (-30.0f));
+    dst->TORQUE_FB = (float)((float)ttr_get_bits(frame->data, 28u, 12u) * (0.014652014652014652f) + (-30.0f));
+    dst->VDC_FB = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.010681315327687495f) + (0.0f));
     dst->POWER_FB = (float)((float)ttr_get_bits(frame->data, 56u, 16u) * (1.22072f) + (-40000.0f));
-    dst->TORQUE_FB = (float)((float)ttr_get_bits(frame->data, 72u, 16u) * (0.0009155413138017853f) + (-30.0f));
-    dst->MCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 88u, 8u);
+    dst->MOTOR_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->U_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 84u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->V_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 96u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->W_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 108u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->MCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 120u, 8u);
 }
 
-void ttr_mcu2_status_1_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_1_t *src)
+void ttr_mcu2_status_system_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_system_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU2_STATUS_1;
-    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_1;
-    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    frame->id = TTR_CAN_ID_MCU2_STATUS_SYSTEM;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_SYSTEM;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->ENCODER_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->OVP_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 2u, 1u, src->UVP_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 3u, 1u, src->RECV_CTRL_LOSS_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 1u, src->DIRECTION_STATE ? 1u : 0u);
-    { float _r = ((float)src->ID_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 12u, (uint64_t)_raw); }
-    { float _r = ((float)src->IQ_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 28u, 12u, (uint64_t)_raw); }
-    { float _r = ((float)src->VDC_FB - (0.0f)) / (0.0106813f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 4u, 1u, src->U_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 5u, 1u, src->V_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 6u, 1u, src->MOTOR_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 7u, 1u, src->W_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 8u, 1u, src->DIRECTION_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 9u, 1u, src->RECV_MODE_BROADCAST_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 10u, 1u, src->RECV_MODE_STANDALONE_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 11u, 1u, src->FW_EN_ECHO ? 1u : 0u);
+    ttr_set_bits(frame->data, 12u, 2u, (uint64_t)src->RUN_MODE_STATE);
+    { float _r = ((float)src->TORQUE_CMD_ECHO - (-30.0f)) / (0.014652014652014652f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->TORQUE_FB - (-30.0f)) / (0.014652014652014652f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 28u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VDC_FB - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->POWER_FB - (-40000.0f)) / (1.22072f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 56u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->TORQUE_FB - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 16u, (uint64_t)_raw); }
-    ttr_set_bits(frame->data, 88u, 8u, (uint64_t)src->MCU_HEARTBEAT);
+    { float _r = ((float)src->MOTOR_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->U_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 84u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->V_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->W_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 108u, 12u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 120u, 8u, (uint64_t)src->MCU_HEARTBEAT);
 }
 
-/* ===== MCU2_STATUS_2 ===== */
-void ttr_mcu2_status_2_unpack(ttr_mcu2_status_2_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU2_STATUS_FOC ===== */
+void ttr_mcu2_status_foc_unpack(ttr_mcu2_status_foc_t *dst, const ttr_can_frame_t *frame)
 {
-    dst->RUN_MODE_STATE = (uint8_t)ttr_get_bits(frame->data, 0u, 2u);
-    dst->RECV_MODE_BROADCAST_STATE = ttr_get_bits(frame->data, 2u, 1u) != 0u;
-    dst->RECV_MODE_STANDALONE_STATE = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->MCU_ID_STATE = (uint8_t)ttr_get_bits(frame->data, 4u, 4u);
-    dst->FLASH_LAST_ERROR_STATE = (uint8_t)ttr_get_bits(frame->data, 8u, 4u);
-    dst->FW_EN_ECHO = ttr_get_bits(frame->data, 12u, 1u) != 0u;
-    dst->MTPA_EN_ECHO = ttr_get_bits(frame->data, 13u, 1u) != 0u;
-    dst->MOTOR_OTP_FAULT = ttr_get_bits(frame->data, 16u, 1u) != 0u;
-    dst->U_GATE_OTP_FAULT = ttr_get_bits(frame->data, 17u, 1u) != 0u;
-    dst->V_GATE_OTP_FAULT = ttr_get_bits(frame->data, 18u, 1u) != 0u;
-    dst->W_GATE_OTP_FAULT = ttr_get_bits(frame->data, 19u, 1u) != 0u;
-    dst->TORQUE_CMD_ECHO = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.0007629510948348211f) + (-25.0f));
-    dst->MOTOR_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 64u, 16u) * (0.00335698f) + (-20.0f));
-    dst->U_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 80u, 16u) * (0.00335698f) + (-20.0f));
-    dst->V_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 96u, 16u) * (0.00335698f) + (-20.0f));
-    dst->W_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 112u, 16u) * (0.00335698f) + (-20.0f));
+    dst->IQ_REF = (float)((float)ttr_get_bits(frame->data, 0u, 12u) * (0.0976801f) + (-200.0f));
+    dst->ID_REF = (float)((float)ttr_get_bits(frame->data, 12u, 12u) * (0.0976801f) + (-200.0f));
+    dst->ID_FW = (float)((float)ttr_get_bits(frame->data, 24u, 12u) * (0.0976801f) + (-200.0f));
+    dst->VD_REQ = (float)((float)ttr_get_bits(frame->data, 36u, 12u) * (0.3418803418803419f) + (-700.0f));
+    dst->VQ_REQ = (float)((float)ttr_get_bits(frame->data, 48u, 12u) * (0.3418803418803419f) + (-700.0f));
+    dst->VMAG = (float)((float)ttr_get_bits(frame->data, 60u, 12u) * (0.17094017094017094f) + (0.0f));
+    dst->VOUT_MAX = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.17094017094017094f) + (0.0f));
 }
 
-void ttr_mcu2_status_2_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_2_t *src)
+void ttr_mcu2_status_foc_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_foc_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU2_STATUS_2;
-    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_2;
+    frame->id = TTR_CAN_ID_MCU2_STATUS_FOC;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_FOC;
+    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    { float _r = ((float)src->IQ_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->ID_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 12u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->ID_FW - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 24u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VD_REQ - (-700.0f)) / (0.3418803418803419f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 36u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VQ_REQ - (-700.0f)) / (0.3418803418803419f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VMAG - (0.0f)) / (0.17094017094017094f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 60u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VOUT_MAX - (0.0f)) / (0.17094017094017094f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+}
+
+/* ===== MCU2_STATUS_DEBUG ===== */
+void ttr_mcu2_status_debug_unpack(ttr_mcu2_status_debug_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->ISR_DURATION_US = (float)((float)ttr_get_bits(frame->data, 0u, 8u) * (0.4980392156862745f) + (0.0f));
+    dst->BOOT_COUNT = (uint16_t)ttr_get_bits(frame->data, 8u, 16u);
+    dst->ENCODER_ERR_COUNT = (uint16_t)ttr_get_bits(frame->data, 24u, 16u);
+    dst->PI_IQ_UI = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.02136263065537499f) + (-700.0f));
+    dst->PI_ID_UI = (float)((float)ttr_get_bits(frame->data, 56u, 16u) * (0.02136263065537499f) + (-700.0f));
+    dst->MCU_ID_STATE = (uint8_t)ttr_get_bits(frame->data, 72u, 4u);
+    dst->FLASH_LAST_ERROR_STATE = (uint8_t)ttr_get_bits(frame->data, 76u, 4u);
+    dst->RESET_CAUSE = (uint8_t)ttr_get_bits(frame->data, 80u, 4u);
+    dst->SOFT_STOP_REASON = (uint8_t)ttr_get_bits(frame->data, 84u, 4u);
+    dst->UPTIME_S = (uint16_t)ttr_get_bits(frame->data, 88u, 16u);
+    dst->ENCODER_THETA = (float)((float)ttr_get_bits(frame->data, 104u, 12u) * (0.08791208791208792f) + (0.0f));
+}
+
+void ttr_mcu2_status_debug_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_debug_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_MCU2_STATUS_DEBUG;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_DEBUG;
     for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
-    ttr_set_bits(frame->data, 0u, 2u, (uint64_t)src->RUN_MODE_STATE);
-    ttr_set_bits(frame->data, 2u, 1u, src->RECV_MODE_BROADCAST_STATE ? 1u : 0u);
-    ttr_set_bits(frame->data, 3u, 1u, src->RECV_MODE_STANDALONE_STATE ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 4u, (uint64_t)src->MCU_ID_STATE);
-    ttr_set_bits(frame->data, 8u, 4u, (uint64_t)src->FLASH_LAST_ERROR_STATE);
-    ttr_set_bits(frame->data, 12u, 1u, src->FW_EN_ECHO ? 1u : 0u);
-    ttr_set_bits(frame->data, 13u, 1u, src->MTPA_EN_ECHO ? 1u : 0u);
-    ttr_set_bits(frame->data, 16u, 1u, src->MOTOR_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 17u, 1u, src->U_GATE_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 18u, 1u, src->V_GATE_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 19u, 1u, src->W_GATE_OTP_FAULT ? 1u : 0u);
-    { float _r = ((float)src->TORQUE_CMD_ECHO - (-25.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->MOTOR_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 64u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->U_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 80u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->V_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->W_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 112u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->ISR_DURATION_US - (0.0f)) / (0.4980392156862745f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 8u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 8u, 16u, (uint64_t)src->BOOT_COUNT);
+    ttr_set_bits(frame->data, 24u, 16u, (uint64_t)src->ENCODER_ERR_COUNT);
+    { float _r = ((float)src->PI_IQ_UI - (-700.0f)) / (0.02136263065537499f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->PI_ID_UI - (-700.0f)) / (0.02136263065537499f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 56u, 16u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 72u, 4u, (uint64_t)src->MCU_ID_STATE);
+    ttr_set_bits(frame->data, 76u, 4u, (uint64_t)src->FLASH_LAST_ERROR_STATE);
+    ttr_set_bits(frame->data, 80u, 4u, (uint64_t)src->RESET_CAUSE);
+    ttr_set_bits(frame->data, 84u, 4u, (uint64_t)src->SOFT_STOP_REASON);
+    ttr_set_bits(frame->data, 88u, 16u, (uint64_t)src->UPTIME_S);
+    { float _r = ((float)src->ENCODER_THETA - (0.0f)) / (0.08791208791208792f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 104u, 12u, (uint64_t)_raw); }
 }
 
-/* ===== MCU2_STATUS_U ===== */
-void ttr_mcu2_status_u_unpack(ttr_mcu2_status_u_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU2_STATUS_GATE_U ===== */
+void ttr_mcu2_status_gate_u_unpack(ttr_mcu2_status_gate_u_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -2751,11 +2873,11 @@ void ttr_mcu2_status_u_unpack(ttr_mcu2_status_u_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu2_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_u_t *src)
+void ttr_mcu2_status_gate_u_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_gate_u_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU2_STATUS_U;
-    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_U;
+    frame->id = TTR_CAN_ID_MCU2_STATUS_GATE_U;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_GATE_U;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -2789,8 +2911,8 @@ void ttr_mcu2_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_u_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU2_STATUS_V ===== */
-void ttr_mcu2_status_v_unpack(ttr_mcu2_status_v_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU2_STATUS_GATE_V ===== */
+void ttr_mcu2_status_gate_v_unpack(ttr_mcu2_status_gate_v_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -2824,11 +2946,11 @@ void ttr_mcu2_status_v_unpack(ttr_mcu2_status_v_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu2_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_v_t *src)
+void ttr_mcu2_status_gate_v_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_gate_v_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU2_STATUS_V;
-    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_V;
+    frame->id = TTR_CAN_ID_MCU2_STATUS_GATE_V;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_GATE_V;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -2862,8 +2984,8 @@ void ttr_mcu2_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_v_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU2_STATUS_W ===== */
-void ttr_mcu2_status_w_unpack(ttr_mcu2_status_w_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU2_STATUS_GATE_W ===== */
+void ttr_mcu2_status_gate_w_unpack(ttr_mcu2_status_gate_w_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -2897,11 +3019,11 @@ void ttr_mcu2_status_w_unpack(ttr_mcu2_status_w_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu2_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_w_t *src)
+void ttr_mcu2_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_gate_w_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU2_STATUS_W;
-    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_W;
+    frame->id = TTR_CAN_ID_MCU2_STATUS_GATE_W;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_GATE_W;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -2935,8 +3057,8 @@ void ttr_mcu2_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_w_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU2_STATUS_CAN ===== */
-void ttr_mcu2_status_can_unpack(ttr_mcu2_status_can_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU2_STATUS_COMM ===== */
+void ttr_mcu2_status_comm_unpack(ttr_mcu2_status_comm_t *dst, const ttr_can_frame_t *frame)
 {
     dst->CMD_MISS_CONSEC_AVG = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.0007629510948348211f) + (0.0f));
     dst->CMD_MISS_CONSEC_MAX = (uint16_t)ttr_get_bits(frame->data, 16u, 16u);
@@ -2948,11 +3070,11 @@ void ttr_mcu2_status_can_unpack(ttr_mcu2_status_can_t *dst, const ttr_can_frame_
     dst->REC = (uint16_t)ttr_get_bits(frame->data, 112u, 16u);
 }
 
-void ttr_mcu2_status_can_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_can_t *src)
+void ttr_mcu2_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_comm_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU2_STATUS_CAN;
-    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_CAN;
+    frame->id = TTR_CAN_ID_MCU2_STATUS_COMM;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_COMM;
     for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->CMD_MISS_CONSEC_AVG - (0.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->CMD_MISS_CONSEC_MAX);
@@ -3017,16 +3139,15 @@ void ttr_mcu2_parameter_limit_unpack(ttr_mcu2_parameter_limit_t *dst, const ttr_
 {
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 0u, 32u); memcpy(&dst->CURRENT_LINE_LIMIT, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->CURRENT_ID_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->FW_ID_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->TORQUE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->OVER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->UNDER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_SOFT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_HARD, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 256u, 32u); memcpy(&dst->MOTOR_TEMP_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 288u, 32u); memcpy(&dst->GATE_TEMP_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 320u, 32u); memcpy(&dst->VQ_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 352u, 32u); memcpy(&dst->MODULATION_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->TORQUE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->OVER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->UNDER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_SOFT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_HARD, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->MOTOR_TEMP_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 256u, 32u); memcpy(&dst->GATE_TEMP_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 288u, 32u); memcpy(&dst->VQ_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 320u, 32u); memcpy(&dst->MODULATION_LIMIT, &_u, sizeof(_u)); }
 }
 
 void ttr_mcu2_parameter_limit_pack(ttr_can_frame_t *frame, const ttr_mcu2_parameter_limit_t *src)
@@ -3037,16 +3158,15 @@ void ttr_mcu2_parameter_limit_pack(ttr_can_frame_t *frame, const ttr_mcu2_parame
     for (i = 0; i < 48u; ++i) { frame->data[i] = 0u; }
     { uint32_t _u; memcpy(&_u, &src->CURRENT_LINE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 0u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->CURRENT_ID_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->FW_ID_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->TORQUE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->OVER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->UNDER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_SOFT, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_HARD, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->MOTOR_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 256u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->GATE_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 288u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VQ_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 320u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->MODULATION_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 352u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->TORQUE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->OVER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->UNDER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_SOFT, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_HARD, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->MOTOR_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->GATE_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 256u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VQ_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 288u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->MODULATION_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 320u, 32u, _u); }
 }
 
 /* ===== MCU2_PARAMETER_OFFSET ===== */
@@ -3079,10 +3199,6 @@ void ttr_mcu2_parameter_slew_rate_unpack(ttr_mcu2_parameter_slew_rate_t *dst, co
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->TORQUE_SLEW_NEG_NM_PER_S, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->SPEED_SLEW_POS_RPM_PER_S, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->SPEED_SLEW_NEG_RPM_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->ID_MTPA_ATTACK_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->ID_MTPA_RELEASE_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->ID_FW_ATTACK_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->ID_FW_RELEASE_SLEW_A_PER_S, &_u, sizeof(_u)); }
 }
 
 void ttr_mcu2_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu2_parameter_slew_rate_t *src)
@@ -3095,94 +3211,129 @@ void ttr_mcu2_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu2_pa
     { uint32_t _u; memcpy(&_u, &src->TORQUE_SLEW_NEG_NM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->SPEED_SLEW_POS_RPM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->SPEED_SLEW_NEG_RPM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_MTPA_ATTACK_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_MTPA_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_FW_ATTACK_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_FW_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
 }
 
-/* ===== MCU3_STATUS_1 ===== */
-void ttr_mcu3_status_1_unpack(ttr_mcu3_status_1_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU3_STATUS_SYSTEM ===== */
+void ttr_mcu3_status_system_unpack(ttr_mcu3_status_system_t *dst, const ttr_can_frame_t *frame)
 {
     dst->ENCODER_FAULT = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->OVP_FAULT = ttr_get_bits(frame->data, 1u, 1u) != 0u;
     dst->UVP_FAULT = ttr_get_bits(frame->data, 2u, 1u) != 0u;
     dst->RECV_CTRL_LOSS_FAULT = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->DIRECTION_STATE = ttr_get_bits(frame->data, 4u, 1u) != 0u;
-    dst->ID_REF = (float)((float)ttr_get_bits(frame->data, 16u, 12u) * (0.0976801f) + (-200.0f));
-    dst->IQ_REF = (float)((float)ttr_get_bits(frame->data, 28u, 12u) * (0.0976801f) + (-200.0f));
-    dst->VDC_FB = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.0106813f) + (0.0f));
+    dst->U_GATE_OTP_FAULT = ttr_get_bits(frame->data, 4u, 1u) != 0u;
+    dst->V_GATE_OTP_FAULT = ttr_get_bits(frame->data, 5u, 1u) != 0u;
+    dst->MOTOR_OTP_FAULT = ttr_get_bits(frame->data, 6u, 1u) != 0u;
+    dst->W_GATE_OTP_FAULT = ttr_get_bits(frame->data, 7u, 1u) != 0u;
+    dst->DIRECTION_STATE = ttr_get_bits(frame->data, 8u, 1u) != 0u;
+    dst->RECV_MODE_BROADCAST_STATE = ttr_get_bits(frame->data, 9u, 1u) != 0u;
+    dst->RECV_MODE_STANDALONE_STATE = ttr_get_bits(frame->data, 10u, 1u) != 0u;
+    dst->FW_EN_ECHO = ttr_get_bits(frame->data, 11u, 1u) != 0u;
+    dst->RUN_MODE_STATE = (uint8_t)ttr_get_bits(frame->data, 12u, 2u);
+    dst->TORQUE_CMD_ECHO = (float)((float)ttr_get_bits(frame->data, 16u, 12u) * (0.014652014652014652f) + (-30.0f));
+    dst->TORQUE_FB = (float)((float)ttr_get_bits(frame->data, 28u, 12u) * (0.014652014652014652f) + (-30.0f));
+    dst->VDC_FB = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.010681315327687495f) + (0.0f));
     dst->POWER_FB = (float)((float)ttr_get_bits(frame->data, 56u, 16u) * (1.22072f) + (-40000.0f));
-    dst->TORQUE_FB = (float)((float)ttr_get_bits(frame->data, 72u, 16u) * (0.0009155413138017853f) + (-30.0f));
-    dst->MCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 88u, 8u);
+    dst->MOTOR_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->U_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 84u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->V_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 96u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->W_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 108u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->MCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 120u, 8u);
 }
 
-void ttr_mcu3_status_1_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_1_t *src)
+void ttr_mcu3_status_system_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_system_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU3_STATUS_1;
-    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_1;
-    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    frame->id = TTR_CAN_ID_MCU3_STATUS_SYSTEM;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_SYSTEM;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->ENCODER_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->OVP_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 2u, 1u, src->UVP_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 3u, 1u, src->RECV_CTRL_LOSS_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 1u, src->DIRECTION_STATE ? 1u : 0u);
-    { float _r = ((float)src->ID_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 12u, (uint64_t)_raw); }
-    { float _r = ((float)src->IQ_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 28u, 12u, (uint64_t)_raw); }
-    { float _r = ((float)src->VDC_FB - (0.0f)) / (0.0106813f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 4u, 1u, src->U_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 5u, 1u, src->V_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 6u, 1u, src->MOTOR_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 7u, 1u, src->W_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 8u, 1u, src->DIRECTION_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 9u, 1u, src->RECV_MODE_BROADCAST_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 10u, 1u, src->RECV_MODE_STANDALONE_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 11u, 1u, src->FW_EN_ECHO ? 1u : 0u);
+    ttr_set_bits(frame->data, 12u, 2u, (uint64_t)src->RUN_MODE_STATE);
+    { float _r = ((float)src->TORQUE_CMD_ECHO - (-30.0f)) / (0.014652014652014652f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->TORQUE_FB - (-30.0f)) / (0.014652014652014652f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 28u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VDC_FB - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->POWER_FB - (-40000.0f)) / (1.22072f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 56u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->TORQUE_FB - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 16u, (uint64_t)_raw); }
-    ttr_set_bits(frame->data, 88u, 8u, (uint64_t)src->MCU_HEARTBEAT);
+    { float _r = ((float)src->MOTOR_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->U_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 84u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->V_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->W_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 108u, 12u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 120u, 8u, (uint64_t)src->MCU_HEARTBEAT);
 }
 
-/* ===== MCU3_STATUS_2 ===== */
-void ttr_mcu3_status_2_unpack(ttr_mcu3_status_2_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU3_STATUS_FOC ===== */
+void ttr_mcu3_status_foc_unpack(ttr_mcu3_status_foc_t *dst, const ttr_can_frame_t *frame)
 {
-    dst->RUN_MODE_STATE = (uint8_t)ttr_get_bits(frame->data, 0u, 2u);
-    dst->RECV_MODE_BROADCAST_STATE = ttr_get_bits(frame->data, 2u, 1u) != 0u;
-    dst->RECV_MODE_STANDALONE_STATE = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->MCU_ID_STATE = (uint8_t)ttr_get_bits(frame->data, 4u, 4u);
-    dst->FLASH_LAST_ERROR_STATE = (uint8_t)ttr_get_bits(frame->data, 8u, 4u);
-    dst->FW_EN_ECHO = ttr_get_bits(frame->data, 12u, 1u) != 0u;
-    dst->MTPA_EN_ECHO = ttr_get_bits(frame->data, 13u, 1u) != 0u;
-    dst->MOTOR_OTP_FAULT = ttr_get_bits(frame->data, 16u, 1u) != 0u;
-    dst->U_GATE_OTP_FAULT = ttr_get_bits(frame->data, 17u, 1u) != 0u;
-    dst->V_GATE_OTP_FAULT = ttr_get_bits(frame->data, 18u, 1u) != 0u;
-    dst->W_GATE_OTP_FAULT = ttr_get_bits(frame->data, 19u, 1u) != 0u;
-    dst->TORQUE_CMD_ECHO = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.0007629510948348211f) + (-25.0f));
-    dst->MOTOR_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 64u, 16u) * (0.00335698f) + (-20.0f));
-    dst->U_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 80u, 16u) * (0.00335698f) + (-20.0f));
-    dst->V_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 96u, 16u) * (0.00335698f) + (-20.0f));
-    dst->W_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 112u, 16u) * (0.00335698f) + (-20.0f));
+    dst->IQ_REF = (float)((float)ttr_get_bits(frame->data, 0u, 12u) * (0.0976801f) + (-200.0f));
+    dst->ID_REF = (float)((float)ttr_get_bits(frame->data, 12u, 12u) * (0.0976801f) + (-200.0f));
+    dst->ID_FW = (float)((float)ttr_get_bits(frame->data, 24u, 12u) * (0.0976801f) + (-200.0f));
+    dst->VD_REQ = (float)((float)ttr_get_bits(frame->data, 36u, 12u) * (0.3418803418803419f) + (-700.0f));
+    dst->VQ_REQ = (float)((float)ttr_get_bits(frame->data, 48u, 12u) * (0.3418803418803419f) + (-700.0f));
+    dst->VMAG = (float)((float)ttr_get_bits(frame->data, 60u, 12u) * (0.17094017094017094f) + (0.0f));
+    dst->VOUT_MAX = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.17094017094017094f) + (0.0f));
 }
 
-void ttr_mcu3_status_2_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_2_t *src)
+void ttr_mcu3_status_foc_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_foc_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU3_STATUS_2;
-    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_2;
+    frame->id = TTR_CAN_ID_MCU3_STATUS_FOC;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_FOC;
+    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    { float _r = ((float)src->IQ_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->ID_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 12u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->ID_FW - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 24u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VD_REQ - (-700.0f)) / (0.3418803418803419f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 36u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VQ_REQ - (-700.0f)) / (0.3418803418803419f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VMAG - (0.0f)) / (0.17094017094017094f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 60u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VOUT_MAX - (0.0f)) / (0.17094017094017094f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+}
+
+/* ===== MCU3_STATUS_DEBUG ===== */
+void ttr_mcu3_status_debug_unpack(ttr_mcu3_status_debug_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->ISR_DURATION_US = (float)((float)ttr_get_bits(frame->data, 0u, 8u) * (0.4980392156862745f) + (0.0f));
+    dst->BOOT_COUNT = (uint16_t)ttr_get_bits(frame->data, 8u, 16u);
+    dst->ENCODER_ERR_COUNT = (uint16_t)ttr_get_bits(frame->data, 24u, 16u);
+    dst->PI_IQ_UI = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.02136263065537499f) + (-700.0f));
+    dst->PI_ID_UI = (float)((float)ttr_get_bits(frame->data, 56u, 16u) * (0.02136263065537499f) + (-700.0f));
+    dst->MCU_ID_STATE = (uint8_t)ttr_get_bits(frame->data, 72u, 4u);
+    dst->FLASH_LAST_ERROR_STATE = (uint8_t)ttr_get_bits(frame->data, 76u, 4u);
+    dst->RESET_CAUSE = (uint8_t)ttr_get_bits(frame->data, 80u, 4u);
+    dst->SOFT_STOP_REASON = (uint8_t)ttr_get_bits(frame->data, 84u, 4u);
+    dst->UPTIME_S = (uint16_t)ttr_get_bits(frame->data, 88u, 16u);
+    dst->ENCODER_THETA = (float)((float)ttr_get_bits(frame->data, 104u, 12u) * (0.08791208791208792f) + (0.0f));
+}
+
+void ttr_mcu3_status_debug_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_debug_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_MCU3_STATUS_DEBUG;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_DEBUG;
     for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
-    ttr_set_bits(frame->data, 0u, 2u, (uint64_t)src->RUN_MODE_STATE);
-    ttr_set_bits(frame->data, 2u, 1u, src->RECV_MODE_BROADCAST_STATE ? 1u : 0u);
-    ttr_set_bits(frame->data, 3u, 1u, src->RECV_MODE_STANDALONE_STATE ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 4u, (uint64_t)src->MCU_ID_STATE);
-    ttr_set_bits(frame->data, 8u, 4u, (uint64_t)src->FLASH_LAST_ERROR_STATE);
-    ttr_set_bits(frame->data, 12u, 1u, src->FW_EN_ECHO ? 1u : 0u);
-    ttr_set_bits(frame->data, 13u, 1u, src->MTPA_EN_ECHO ? 1u : 0u);
-    ttr_set_bits(frame->data, 16u, 1u, src->MOTOR_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 17u, 1u, src->U_GATE_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 18u, 1u, src->V_GATE_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 19u, 1u, src->W_GATE_OTP_FAULT ? 1u : 0u);
-    { float _r = ((float)src->TORQUE_CMD_ECHO - (-25.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->MOTOR_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 64u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->U_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 80u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->V_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->W_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 112u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->ISR_DURATION_US - (0.0f)) / (0.4980392156862745f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 8u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 8u, 16u, (uint64_t)src->BOOT_COUNT);
+    ttr_set_bits(frame->data, 24u, 16u, (uint64_t)src->ENCODER_ERR_COUNT);
+    { float _r = ((float)src->PI_IQ_UI - (-700.0f)) / (0.02136263065537499f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->PI_ID_UI - (-700.0f)) / (0.02136263065537499f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 56u, 16u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 72u, 4u, (uint64_t)src->MCU_ID_STATE);
+    ttr_set_bits(frame->data, 76u, 4u, (uint64_t)src->FLASH_LAST_ERROR_STATE);
+    ttr_set_bits(frame->data, 80u, 4u, (uint64_t)src->RESET_CAUSE);
+    ttr_set_bits(frame->data, 84u, 4u, (uint64_t)src->SOFT_STOP_REASON);
+    ttr_set_bits(frame->data, 88u, 16u, (uint64_t)src->UPTIME_S);
+    { float _r = ((float)src->ENCODER_THETA - (0.0f)) / (0.08791208791208792f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 104u, 12u, (uint64_t)_raw); }
 }
 
-/* ===== MCU3_STATUS_U ===== */
-void ttr_mcu3_status_u_unpack(ttr_mcu3_status_u_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU3_STATUS_GATE_U ===== */
+void ttr_mcu3_status_gate_u_unpack(ttr_mcu3_status_gate_u_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -3216,11 +3367,11 @@ void ttr_mcu3_status_u_unpack(ttr_mcu3_status_u_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu3_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_u_t *src)
+void ttr_mcu3_status_gate_u_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_gate_u_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU3_STATUS_U;
-    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_U;
+    frame->id = TTR_CAN_ID_MCU3_STATUS_GATE_U;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_GATE_U;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -3254,8 +3405,8 @@ void ttr_mcu3_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_u_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU3_STATUS_V ===== */
-void ttr_mcu3_status_v_unpack(ttr_mcu3_status_v_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU3_STATUS_GATE_V ===== */
+void ttr_mcu3_status_gate_v_unpack(ttr_mcu3_status_gate_v_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -3289,11 +3440,11 @@ void ttr_mcu3_status_v_unpack(ttr_mcu3_status_v_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu3_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_v_t *src)
+void ttr_mcu3_status_gate_v_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_gate_v_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU3_STATUS_V;
-    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_V;
+    frame->id = TTR_CAN_ID_MCU3_STATUS_GATE_V;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_GATE_V;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -3327,8 +3478,8 @@ void ttr_mcu3_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_v_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU3_STATUS_W ===== */
-void ttr_mcu3_status_w_unpack(ttr_mcu3_status_w_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU3_STATUS_GATE_W ===== */
+void ttr_mcu3_status_gate_w_unpack(ttr_mcu3_status_gate_w_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -3362,11 +3513,11 @@ void ttr_mcu3_status_w_unpack(ttr_mcu3_status_w_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu3_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_w_t *src)
+void ttr_mcu3_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_gate_w_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU3_STATUS_W;
-    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_W;
+    frame->id = TTR_CAN_ID_MCU3_STATUS_GATE_W;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_GATE_W;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -3400,8 +3551,8 @@ void ttr_mcu3_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_w_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU3_STATUS_CAN ===== */
-void ttr_mcu3_status_can_unpack(ttr_mcu3_status_can_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU3_STATUS_COMM ===== */
+void ttr_mcu3_status_comm_unpack(ttr_mcu3_status_comm_t *dst, const ttr_can_frame_t *frame)
 {
     dst->CMD_MISS_CONSEC_AVG = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.0007629510948348211f) + (0.0f));
     dst->CMD_MISS_CONSEC_MAX = (uint16_t)ttr_get_bits(frame->data, 16u, 16u);
@@ -3413,11 +3564,11 @@ void ttr_mcu3_status_can_unpack(ttr_mcu3_status_can_t *dst, const ttr_can_frame_
     dst->REC = (uint16_t)ttr_get_bits(frame->data, 112u, 16u);
 }
 
-void ttr_mcu3_status_can_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_can_t *src)
+void ttr_mcu3_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_comm_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU3_STATUS_CAN;
-    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_CAN;
+    frame->id = TTR_CAN_ID_MCU3_STATUS_COMM;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_COMM;
     for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->CMD_MISS_CONSEC_AVG - (0.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->CMD_MISS_CONSEC_MAX);
@@ -3482,16 +3633,15 @@ void ttr_mcu3_parameter_limit_unpack(ttr_mcu3_parameter_limit_t *dst, const ttr_
 {
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 0u, 32u); memcpy(&dst->CURRENT_LINE_LIMIT, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->CURRENT_ID_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->FW_ID_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->TORQUE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->OVER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->UNDER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_SOFT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_HARD, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 256u, 32u); memcpy(&dst->MOTOR_TEMP_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 288u, 32u); memcpy(&dst->GATE_TEMP_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 320u, 32u); memcpy(&dst->VQ_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 352u, 32u); memcpy(&dst->MODULATION_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->TORQUE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->OVER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->UNDER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_SOFT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_HARD, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->MOTOR_TEMP_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 256u, 32u); memcpy(&dst->GATE_TEMP_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 288u, 32u); memcpy(&dst->VQ_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 320u, 32u); memcpy(&dst->MODULATION_LIMIT, &_u, sizeof(_u)); }
 }
 
 void ttr_mcu3_parameter_limit_pack(ttr_can_frame_t *frame, const ttr_mcu3_parameter_limit_t *src)
@@ -3502,16 +3652,15 @@ void ttr_mcu3_parameter_limit_pack(ttr_can_frame_t *frame, const ttr_mcu3_parame
     for (i = 0; i < 48u; ++i) { frame->data[i] = 0u; }
     { uint32_t _u; memcpy(&_u, &src->CURRENT_LINE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 0u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->CURRENT_ID_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->FW_ID_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->TORQUE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->OVER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->UNDER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_SOFT, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_HARD, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->MOTOR_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 256u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->GATE_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 288u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VQ_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 320u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->MODULATION_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 352u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->TORQUE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->OVER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->UNDER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_SOFT, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_HARD, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->MOTOR_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->GATE_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 256u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VQ_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 288u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->MODULATION_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 320u, 32u, _u); }
 }
 
 /* ===== MCU3_PARAMETER_OFFSET ===== */
@@ -3544,10 +3693,6 @@ void ttr_mcu3_parameter_slew_rate_unpack(ttr_mcu3_parameter_slew_rate_t *dst, co
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->TORQUE_SLEW_NEG_NM_PER_S, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->SPEED_SLEW_POS_RPM_PER_S, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->SPEED_SLEW_NEG_RPM_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->ID_MTPA_ATTACK_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->ID_MTPA_RELEASE_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->ID_FW_ATTACK_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->ID_FW_RELEASE_SLEW_A_PER_S, &_u, sizeof(_u)); }
 }
 
 void ttr_mcu3_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu3_parameter_slew_rate_t *src)
@@ -3560,94 +3705,129 @@ void ttr_mcu3_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu3_pa
     { uint32_t _u; memcpy(&_u, &src->TORQUE_SLEW_NEG_NM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->SPEED_SLEW_POS_RPM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->SPEED_SLEW_NEG_RPM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_MTPA_ATTACK_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_MTPA_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_FW_ATTACK_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_FW_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
 }
 
-/* ===== MCU4_STATUS_1 ===== */
-void ttr_mcu4_status_1_unpack(ttr_mcu4_status_1_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU4_STATUS_SYSTEM ===== */
+void ttr_mcu4_status_system_unpack(ttr_mcu4_status_system_t *dst, const ttr_can_frame_t *frame)
 {
     dst->ENCODER_FAULT = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->OVP_FAULT = ttr_get_bits(frame->data, 1u, 1u) != 0u;
     dst->UVP_FAULT = ttr_get_bits(frame->data, 2u, 1u) != 0u;
     dst->RECV_CTRL_LOSS_FAULT = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->DIRECTION_STATE = ttr_get_bits(frame->data, 4u, 1u) != 0u;
-    dst->ID_REF = (float)((float)ttr_get_bits(frame->data, 16u, 12u) * (0.0976801f) + (-200.0f));
-    dst->IQ_REF = (float)((float)ttr_get_bits(frame->data, 28u, 12u) * (0.0976801f) + (-200.0f));
-    dst->VDC_FB = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.0106813f) + (0.0f));
+    dst->U_GATE_OTP_FAULT = ttr_get_bits(frame->data, 4u, 1u) != 0u;
+    dst->V_GATE_OTP_FAULT = ttr_get_bits(frame->data, 5u, 1u) != 0u;
+    dst->MOTOR_OTP_FAULT = ttr_get_bits(frame->data, 6u, 1u) != 0u;
+    dst->W_GATE_OTP_FAULT = ttr_get_bits(frame->data, 7u, 1u) != 0u;
+    dst->DIRECTION_STATE = ttr_get_bits(frame->data, 8u, 1u) != 0u;
+    dst->RECV_MODE_BROADCAST_STATE = ttr_get_bits(frame->data, 9u, 1u) != 0u;
+    dst->RECV_MODE_STANDALONE_STATE = ttr_get_bits(frame->data, 10u, 1u) != 0u;
+    dst->FW_EN_ECHO = ttr_get_bits(frame->data, 11u, 1u) != 0u;
+    dst->RUN_MODE_STATE = (uint8_t)ttr_get_bits(frame->data, 12u, 2u);
+    dst->TORQUE_CMD_ECHO = (float)((float)ttr_get_bits(frame->data, 16u, 12u) * (0.014652014652014652f) + (-30.0f));
+    dst->TORQUE_FB = (float)((float)ttr_get_bits(frame->data, 28u, 12u) * (0.014652014652014652f) + (-30.0f));
+    dst->VDC_FB = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.010681315327687495f) + (0.0f));
     dst->POWER_FB = (float)((float)ttr_get_bits(frame->data, 56u, 16u) * (1.22072f) + (-40000.0f));
-    dst->TORQUE_FB = (float)((float)ttr_get_bits(frame->data, 72u, 16u) * (0.0009155413138017853f) + (-30.0f));
-    dst->MCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 88u, 8u);
+    dst->MOTOR_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->U_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 84u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->V_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 96u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->W_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 108u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->MCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 120u, 8u);
 }
 
-void ttr_mcu4_status_1_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_1_t *src)
+void ttr_mcu4_status_system_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_system_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU4_STATUS_1;
-    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_1;
-    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    frame->id = TTR_CAN_ID_MCU4_STATUS_SYSTEM;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_SYSTEM;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->ENCODER_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->OVP_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 2u, 1u, src->UVP_FAULT ? 1u : 0u);
     ttr_set_bits(frame->data, 3u, 1u, src->RECV_CTRL_LOSS_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 1u, src->DIRECTION_STATE ? 1u : 0u);
-    { float _r = ((float)src->ID_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 12u, (uint64_t)_raw); }
-    { float _r = ((float)src->IQ_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 28u, 12u, (uint64_t)_raw); }
-    { float _r = ((float)src->VDC_FB - (0.0f)) / (0.0106813f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 4u, 1u, src->U_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 5u, 1u, src->V_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 6u, 1u, src->MOTOR_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 7u, 1u, src->W_GATE_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 8u, 1u, src->DIRECTION_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 9u, 1u, src->RECV_MODE_BROADCAST_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 10u, 1u, src->RECV_MODE_STANDALONE_STATE ? 1u : 0u);
+    ttr_set_bits(frame->data, 11u, 1u, src->FW_EN_ECHO ? 1u : 0u);
+    ttr_set_bits(frame->data, 12u, 2u, (uint64_t)src->RUN_MODE_STATE);
+    { float _r = ((float)src->TORQUE_CMD_ECHO - (-30.0f)) / (0.014652014652014652f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->TORQUE_FB - (-30.0f)) / (0.014652014652014652f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 28u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VDC_FB - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->POWER_FB - (-40000.0f)) / (1.22072f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 56u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->TORQUE_FB - (-30.0f)) / (0.0009155413138017853f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 16u, (uint64_t)_raw); }
-    ttr_set_bits(frame->data, 88u, 8u, (uint64_t)src->MCU_HEARTBEAT);
+    { float _r = ((float)src->MOTOR_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->U_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 84u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->V_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->W_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 108u, 12u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 120u, 8u, (uint64_t)src->MCU_HEARTBEAT);
 }
 
-/* ===== MCU4_STATUS_2 ===== */
-void ttr_mcu4_status_2_unpack(ttr_mcu4_status_2_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU4_STATUS_FOC ===== */
+void ttr_mcu4_status_foc_unpack(ttr_mcu4_status_foc_t *dst, const ttr_can_frame_t *frame)
 {
-    dst->RUN_MODE_STATE = (uint8_t)ttr_get_bits(frame->data, 0u, 2u);
-    dst->RECV_MODE_BROADCAST_STATE = ttr_get_bits(frame->data, 2u, 1u) != 0u;
-    dst->RECV_MODE_STANDALONE_STATE = ttr_get_bits(frame->data, 3u, 1u) != 0u;
-    dst->MCU_ID_STATE = (uint8_t)ttr_get_bits(frame->data, 4u, 4u);
-    dst->FLASH_LAST_ERROR_STATE = (uint8_t)ttr_get_bits(frame->data, 8u, 4u);
-    dst->FW_EN_ECHO = ttr_get_bits(frame->data, 12u, 1u) != 0u;
-    dst->MTPA_EN_ECHO = ttr_get_bits(frame->data, 13u, 1u) != 0u;
-    dst->MOTOR_OTP_FAULT = ttr_get_bits(frame->data, 16u, 1u) != 0u;
-    dst->U_GATE_OTP_FAULT = ttr_get_bits(frame->data, 17u, 1u) != 0u;
-    dst->V_GATE_OTP_FAULT = ttr_get_bits(frame->data, 18u, 1u) != 0u;
-    dst->W_GATE_OTP_FAULT = ttr_get_bits(frame->data, 19u, 1u) != 0u;
-    dst->TORQUE_CMD_ECHO = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.0007629510948348211f) + (-25.0f));
-    dst->MOTOR_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 64u, 16u) * (0.00335698f) + (-20.0f));
-    dst->U_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 80u, 16u) * (0.00335698f) + (-20.0f));
-    dst->V_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 96u, 16u) * (0.00335698f) + (-20.0f));
-    dst->W_PHASE_TEMPERATURE_FB = (float)((float)ttr_get_bits(frame->data, 112u, 16u) * (0.00335698f) + (-20.0f));
+    dst->IQ_REF = (float)((float)ttr_get_bits(frame->data, 0u, 12u) * (0.0976801f) + (-200.0f));
+    dst->ID_REF = (float)((float)ttr_get_bits(frame->data, 12u, 12u) * (0.0976801f) + (-200.0f));
+    dst->ID_FW = (float)((float)ttr_get_bits(frame->data, 24u, 12u) * (0.0976801f) + (-200.0f));
+    dst->VD_REQ = (float)((float)ttr_get_bits(frame->data, 36u, 12u) * (0.3418803418803419f) + (-700.0f));
+    dst->VQ_REQ = (float)((float)ttr_get_bits(frame->data, 48u, 12u) * (0.3418803418803419f) + (-700.0f));
+    dst->VMAG = (float)((float)ttr_get_bits(frame->data, 60u, 12u) * (0.17094017094017094f) + (0.0f));
+    dst->VOUT_MAX = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.17094017094017094f) + (0.0f));
 }
 
-void ttr_mcu4_status_2_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_2_t *src)
+void ttr_mcu4_status_foc_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_foc_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU4_STATUS_2;
-    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_2;
+    frame->id = TTR_CAN_ID_MCU4_STATUS_FOC;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_FOC;
+    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    { float _r = ((float)src->IQ_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->ID_REF - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 12u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->ID_FW - (-200.0f)) / (0.0976801f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 24u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VD_REQ - (-700.0f)) / (0.3418803418803419f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 36u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VQ_REQ - (-700.0f)) / (0.3418803418803419f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VMAG - (0.0f)) / (0.17094017094017094f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 60u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->VOUT_MAX - (0.0f)) / (0.17094017094017094f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+}
+
+/* ===== MCU4_STATUS_DEBUG ===== */
+void ttr_mcu4_status_debug_unpack(ttr_mcu4_status_debug_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->ISR_DURATION_US = (float)((float)ttr_get_bits(frame->data, 0u, 8u) * (0.4980392156862745f) + (0.0f));
+    dst->BOOT_COUNT = (uint16_t)ttr_get_bits(frame->data, 8u, 16u);
+    dst->ENCODER_ERR_COUNT = (uint16_t)ttr_get_bits(frame->data, 24u, 16u);
+    dst->PI_IQ_UI = (float)((float)ttr_get_bits(frame->data, 40u, 16u) * (0.02136263065537499f) + (-700.0f));
+    dst->PI_ID_UI = (float)((float)ttr_get_bits(frame->data, 56u, 16u) * (0.02136263065537499f) + (-700.0f));
+    dst->MCU_ID_STATE = (uint8_t)ttr_get_bits(frame->data, 72u, 4u);
+    dst->FLASH_LAST_ERROR_STATE = (uint8_t)ttr_get_bits(frame->data, 76u, 4u);
+    dst->RESET_CAUSE = (uint8_t)ttr_get_bits(frame->data, 80u, 4u);
+    dst->SOFT_STOP_REASON = (uint8_t)ttr_get_bits(frame->data, 84u, 4u);
+    dst->UPTIME_S = (uint16_t)ttr_get_bits(frame->data, 88u, 16u);
+    dst->ENCODER_THETA = (float)((float)ttr_get_bits(frame->data, 104u, 12u) * (0.08791208791208792f) + (0.0f));
+}
+
+void ttr_mcu4_status_debug_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_debug_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_MCU4_STATUS_DEBUG;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_DEBUG;
     for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
-    ttr_set_bits(frame->data, 0u, 2u, (uint64_t)src->RUN_MODE_STATE);
-    ttr_set_bits(frame->data, 2u, 1u, src->RECV_MODE_BROADCAST_STATE ? 1u : 0u);
-    ttr_set_bits(frame->data, 3u, 1u, src->RECV_MODE_STANDALONE_STATE ? 1u : 0u);
-    ttr_set_bits(frame->data, 4u, 4u, (uint64_t)src->MCU_ID_STATE);
-    ttr_set_bits(frame->data, 8u, 4u, (uint64_t)src->FLASH_LAST_ERROR_STATE);
-    ttr_set_bits(frame->data, 12u, 1u, src->FW_EN_ECHO ? 1u : 0u);
-    ttr_set_bits(frame->data, 13u, 1u, src->MTPA_EN_ECHO ? 1u : 0u);
-    ttr_set_bits(frame->data, 16u, 1u, src->MOTOR_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 17u, 1u, src->U_GATE_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 18u, 1u, src->V_GATE_OTP_FAULT ? 1u : 0u);
-    ttr_set_bits(frame->data, 19u, 1u, src->W_GATE_OTP_FAULT ? 1u : 0u);
-    { float _r = ((float)src->TORQUE_CMD_ECHO - (-25.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->MOTOR_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 64u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->U_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 80u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->V_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 16u, (uint64_t)_raw); }
-    { float _r = ((float)src->W_PHASE_TEMPERATURE_FB - (-20.0f)) / (0.00335698f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 112u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->ISR_DURATION_US - (0.0f)) / (0.4980392156862745f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 8u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 8u, 16u, (uint64_t)src->BOOT_COUNT);
+    ttr_set_bits(frame->data, 24u, 16u, (uint64_t)src->ENCODER_ERR_COUNT);
+    { float _r = ((float)src->PI_IQ_UI - (-700.0f)) / (0.02136263065537499f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 40u, 16u, (uint64_t)_raw); }
+    { float _r = ((float)src->PI_ID_UI - (-700.0f)) / (0.02136263065537499f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 56u, 16u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 72u, 4u, (uint64_t)src->MCU_ID_STATE);
+    ttr_set_bits(frame->data, 76u, 4u, (uint64_t)src->FLASH_LAST_ERROR_STATE);
+    ttr_set_bits(frame->data, 80u, 4u, (uint64_t)src->RESET_CAUSE);
+    ttr_set_bits(frame->data, 84u, 4u, (uint64_t)src->SOFT_STOP_REASON);
+    ttr_set_bits(frame->data, 88u, 16u, (uint64_t)src->UPTIME_S);
+    { float _r = ((float)src->ENCODER_THETA - (0.0f)) / (0.08791208791208792f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 104u, 12u, (uint64_t)_raw); }
 }
 
-/* ===== MCU4_STATUS_U ===== */
-void ttr_mcu4_status_u_unpack(ttr_mcu4_status_u_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU4_STATUS_GATE_U ===== */
+void ttr_mcu4_status_gate_u_unpack(ttr_mcu4_status_gate_u_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -3681,11 +3861,11 @@ void ttr_mcu4_status_u_unpack(ttr_mcu4_status_u_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu4_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_u_t *src)
+void ttr_mcu4_status_gate_u_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_gate_u_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU4_STATUS_U;
-    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_U;
+    frame->id = TTR_CAN_ID_MCU4_STATUS_GATE_U;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_GATE_U;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -3719,8 +3899,8 @@ void ttr_mcu4_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_u_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU4_STATUS_V ===== */
-void ttr_mcu4_status_v_unpack(ttr_mcu4_status_v_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU4_STATUS_GATE_V ===== */
+void ttr_mcu4_status_gate_v_unpack(ttr_mcu4_status_gate_v_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -3754,11 +3934,11 @@ void ttr_mcu4_status_v_unpack(ttr_mcu4_status_v_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu4_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_v_t *src)
+void ttr_mcu4_status_gate_v_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_gate_v_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU4_STATUS_V;
-    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_V;
+    frame->id = TTR_CAN_ID_MCU4_STATUS_GATE_V;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_GATE_V;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -3792,8 +3972,8 @@ void ttr_mcu4_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_v_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU4_STATUS_W ===== */
-void ttr_mcu4_status_w_unpack(ttr_mcu4_status_w_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU4_STATUS_GATE_W ===== */
+void ttr_mcu4_status_gate_w_unpack(ttr_mcu4_status_gate_w_t *dst, const ttr_can_frame_t *frame)
 {
     dst->H_NLSE = ttr_get_bits(frame->data, 0u, 1u) != 0u;
     dst->H_OVLO2 = ttr_get_bits(frame->data, 1u, 1u) != 0u;
@@ -3827,11 +4007,11 @@ void ttr_mcu4_status_w_unpack(ttr_mcu4_status_w_t *dst, const ttr_can_frame_t *f
     dst->VOLTAGE = (float)((float)ttr_get_bits(frame->data, 48u, 16u) * (0.010681315327687495f) + (0.0f));
 }
 
-void ttr_mcu4_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_w_t *src)
+void ttr_mcu4_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_gate_w_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU4_STATUS_W;
-    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_W;
+    frame->id = TTR_CAN_ID_MCU4_STATUS_GATE_W;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_GATE_W;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 1u, src->H_NLSE ? 1u : 0u);
     ttr_set_bits(frame->data, 1u, 1u, src->H_OVLO2 ? 1u : 0u);
@@ -3865,8 +4045,8 @@ void ttr_mcu4_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_w_t *s
     { float _r = ((float)src->VOLTAGE - (0.0f)) / (0.010681315327687495f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
 }
 
-/* ===== MCU4_STATUS_CAN ===== */
-void ttr_mcu4_status_can_unpack(ttr_mcu4_status_can_t *dst, const ttr_can_frame_t *frame)
+/* ===== MCU4_STATUS_COMM ===== */
+void ttr_mcu4_status_comm_unpack(ttr_mcu4_status_comm_t *dst, const ttr_can_frame_t *frame)
 {
     dst->CMD_MISS_CONSEC_AVG = (float)((float)ttr_get_bits(frame->data, 0u, 16u) * (0.0007629510948348211f) + (0.0f));
     dst->CMD_MISS_CONSEC_MAX = (uint16_t)ttr_get_bits(frame->data, 16u, 16u);
@@ -3878,11 +4058,11 @@ void ttr_mcu4_status_can_unpack(ttr_mcu4_status_can_t *dst, const ttr_can_frame_
     dst->REC = (uint16_t)ttr_get_bits(frame->data, 112u, 16u);
 }
 
-void ttr_mcu4_status_can_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_can_t *src)
+void ttr_mcu4_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_comm_t *src)
 {
     uint16_t i;
-    frame->id = TTR_CAN_ID_MCU4_STATUS_CAN;
-    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_CAN;
+    frame->id = TTR_CAN_ID_MCU4_STATUS_COMM;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_COMM;
     for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->CMD_MISS_CONSEC_AVG - (0.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->CMD_MISS_CONSEC_MAX);
@@ -3947,16 +4127,15 @@ void ttr_mcu4_parameter_limit_unpack(ttr_mcu4_parameter_limit_t *dst, const ttr_
 {
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 0u, 32u); memcpy(&dst->CURRENT_LINE_LIMIT, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->CURRENT_ID_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->FW_ID_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->TORQUE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->OVER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->UNDER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_SOFT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_HARD, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 256u, 32u); memcpy(&dst->MOTOR_TEMP_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 288u, 32u); memcpy(&dst->GATE_TEMP_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 320u, 32u); memcpy(&dst->VQ_LIMIT, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 352u, 32u); memcpy(&dst->MODULATION_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->TORQUE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->OVER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->UNDER_VOLTAGE_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_SOFT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->VDC_REGEN_BLOCK_HARD, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->MOTOR_TEMP_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 256u, 32u); memcpy(&dst->GATE_TEMP_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 288u, 32u); memcpy(&dst->VQ_LIMIT, &_u, sizeof(_u)); }
+    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 320u, 32u); memcpy(&dst->MODULATION_LIMIT, &_u, sizeof(_u)); }
 }
 
 void ttr_mcu4_parameter_limit_pack(ttr_can_frame_t *frame, const ttr_mcu4_parameter_limit_t *src)
@@ -3967,16 +4146,15 @@ void ttr_mcu4_parameter_limit_pack(ttr_can_frame_t *frame, const ttr_mcu4_parame
     for (i = 0; i < 48u; ++i) { frame->data[i] = 0u; }
     { uint32_t _u; memcpy(&_u, &src->CURRENT_LINE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 0u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->CURRENT_ID_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->FW_ID_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->TORQUE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->OVER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->UNDER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_SOFT, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_HARD, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->MOTOR_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 256u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->GATE_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 288u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->VQ_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 320u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->MODULATION_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 352u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->TORQUE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->OVER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->UNDER_VOLTAGE_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_SOFT, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VDC_REGEN_BLOCK_HARD, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->MOTOR_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->GATE_TEMP_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 256u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->VQ_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 288u, 32u, _u); }
+    { uint32_t _u; memcpy(&_u, &src->MODULATION_LIMIT, sizeof(_u)); ttr_set_bits(frame->data, 320u, 32u, _u); }
 }
 
 /* ===== MCU4_PARAMETER_OFFSET ===== */
@@ -4009,10 +4187,6 @@ void ttr_mcu4_parameter_slew_rate_unpack(ttr_mcu4_parameter_slew_rate_t *dst, co
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 32u, 32u); memcpy(&dst->TORQUE_SLEW_NEG_NM_PER_S, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 64u, 32u); memcpy(&dst->SPEED_SLEW_POS_RPM_PER_S, &_u, sizeof(_u)); }
     { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 96u, 32u); memcpy(&dst->SPEED_SLEW_NEG_RPM_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 128u, 32u); memcpy(&dst->ID_MTPA_ATTACK_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 160u, 32u); memcpy(&dst->ID_MTPA_RELEASE_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 192u, 32u); memcpy(&dst->ID_FW_ATTACK_SLEW_A_PER_S, &_u, sizeof(_u)); }
-    { uint32_t _u = (uint32_t)ttr_get_bits(frame->data, 224u, 32u); memcpy(&dst->ID_FW_RELEASE_SLEW_A_PER_S, &_u, sizeof(_u)); }
 }
 
 void ttr_mcu4_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu4_parameter_slew_rate_t *src)
@@ -4025,10 +4199,6 @@ void ttr_mcu4_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu4_pa
     { uint32_t _u; memcpy(&_u, &src->TORQUE_SLEW_NEG_NM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 32u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->SPEED_SLEW_POS_RPM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 64u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->SPEED_SLEW_NEG_RPM_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 96u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_MTPA_ATTACK_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 128u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_MTPA_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 160u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_FW_ATTACK_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 192u, 32u, _u); }
-    { uint32_t _u; memcpy(&_u, &src->ID_FW_RELEASE_SLEW_A_PER_S, sizeof(_u)); ttr_set_bits(frame->data, 224u, 32u, _u); }
 }
 
 /* ===== IMU_FRONT_IMU_FRONT_QUATERNION ===== */
@@ -4090,9 +4260,6 @@ bool ttr_ecu_ams_dispatch(ttr_ecu_ams_t *ecu, const ttr_can_frame_t *frame)
         return true;
     case TTR_CAN_ID_VCU_VCU_SENSOR2:
         ttr_vcu_vcu_sensor2_unpack(&ecu->vcu_vcu_sensor2, frame);
-        return true;
-    case TTR_CAN_ID_VCU_VCU_SENSOR3:
-        ttr_vcu_vcu_sensor3_unpack(&ecu->vcu_vcu_sensor3, frame);
         return true;
     default:
         return false;
@@ -4275,17 +4442,20 @@ ttr_ecu_vcu_t ttr_ecu_vcu;
 bool ttr_ecu_vcu_dispatch(ttr_ecu_vcu_t *ecu, const ttr_can_frame_t *frame)
 {
     switch (frame->id) {
-    case TTR_CAN_ID_MCU1_STATUS_0:
-        ttr_mcu1_status_0_unpack(&ecu->mcu1_status_0, frame);
+    case TTR_CAN_ID_MCU1_STATUS_CORE:
+        ttr_mcu1_status_core_unpack(&ecu->mcu1_status_core, frame);
         return true;
-    case TTR_CAN_ID_MCU2_STATUS_0:
-        ttr_mcu2_status_0_unpack(&ecu->mcu2_status_0, frame);
+    case TTR_CAN_ID_MCU2_STATUS_CORE:
+        ttr_mcu2_status_core_unpack(&ecu->mcu2_status_core, frame);
         return true;
-    case TTR_CAN_ID_MCU3_STATUS_0:
-        ttr_mcu3_status_0_unpack(&ecu->mcu3_status_0, frame);
+    case TTR_CAN_ID_MCU3_STATUS_CORE:
+        ttr_mcu3_status_core_unpack(&ecu->mcu3_status_core, frame);
         return true;
-    case TTR_CAN_ID_MCU4_STATUS_0:
-        ttr_mcu4_status_0_unpack(&ecu->mcu4_status_0, frame);
+    case TTR_CAN_ID_MCU4_STATUS_CORE:
+        ttr_mcu4_status_core_unpack(&ecu->mcu4_status_core, frame);
+        return true;
+    case TTR_CAN_ID_DEBUG_DTU_CONTROL:
+        ttr_debug_dtu_control_unpack(&ecu->debug_dtu_control, frame);
         return true;
     default:
         return false;

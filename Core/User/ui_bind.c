@@ -78,7 +78,7 @@ const char *get_var_label_soc_value(void)
 /** 低壓電池電壓。 */
 const char *get_var_label_lv_value(void)
 {
-    if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR3, VD_DEFAULT_TIMEOUT_MS)) {
+    if (VehicleData_IsStale(VD_GROUP_VCU_SYSTEM, VD_DEFAULT_TIMEOUT_MS)) {
         return "LV:" STALE_TEXT;
     }
 
@@ -106,11 +106,11 @@ const char *get_var_label_hv_value(void)
  *
  * 過期時回傳 min 值讓長條歸零,比停在最後一格容易看出異常。
  */
-float get_var_lv(void)
+int32_t get_var_lv(void)
 {
-    if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR3, VD_DEFAULT_TIMEOUT_MS)) {
-        return 0.0f;
+    if (VehicleData_IsStale(VD_GROUP_VCU_SYSTEM, VD_DEFAULT_TIMEOUT_MS)) {
+        return 0;
     }
 
-    return g_vehicle.glv_voltage;
+    return (int32_t)(g_vehicle.glv_voltage + 0.5f);
 }

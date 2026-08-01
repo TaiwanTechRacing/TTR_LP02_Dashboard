@@ -42,7 +42,11 @@ typedef enum {
  * 一份順序不同的對照表,兩邊要人工同步。現在只有這一份定義。
  */
 typedef enum {
-    VD_SDC_CSB = 0,
+    VD_SDC_IMD = 0,       /* 新 DBC 才有 */
+    VD_SDC_AMS,           /* 新 DBC 才有 */
+    VD_SDC_BSPD,          /* 新 DBC 才有 */
+    VD_SDC_PDOC,          /* 新 DBC 才有 */
+    VD_SDC_CSB,
     VD_SDC_LSB,
     VD_SDC_RSB,
     VD_SDC_INRT,
@@ -80,7 +84,7 @@ typedef enum {
     VD_GROUP_VCU_SDC,
     VD_GROUP_VCU_SENSOR1,
     VD_GROUP_VCU_SENSOR2,
-    VD_GROUP_VCU_SENSOR3,
+    VD_GROUP_VCU_SYSTEM,
     VD_GROUP_VCU_ERROR,
     VD_GROUP_VCU_GPS,
     VD_GROUP_AMS_STATUS,
@@ -110,8 +114,9 @@ typedef struct {
     float    apps1_pu;            /* 油門踏板 0~100 */
     uint16_t car_speed_kph;
 
-    /* --- VCU_SENSOR3 --- */
+    /* --- VCU_SYSTEM_STATUS --- */
     float    glv_voltage;         /* 低壓電池電壓 */
+    float    glv_current;
 
     /* --- VCU_ERROR --- */
     uint8_t  error_flags;         /* VD_ERR_* */
@@ -120,13 +125,21 @@ typedef struct {
     uint8_t  latitude;
     uint8_t  longitude;
 
-    /* --- AMS_STATUS0 --- */
+    /* --- AMS_STATUS_BASIC --- */
     float    pack_voltage;        /* 高壓電池組電壓 */
     float    pack_soc;            /* 0~100 */
+    float    pack_current;
+    float    pack_power;
     float    temp_max;
     float    temp_min;
     float    temp_delta;
+    float    cell_v_min;
+    float    cell_v_max;
+    float    cell_v_delta;
+    uint8_t  ams_state;
     bool     cell_over_temp;
+    bool     cell_over_volt;
+    bool     cell_under_volt;
 
     /* --- AMS_MODULE_1..8 --- */
     float    cell_voltage[VD_NUM_CELLS];

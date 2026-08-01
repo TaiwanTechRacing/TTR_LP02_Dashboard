@@ -106,9 +106,9 @@ typedef struct {
 void ttr_charger_ams_control_unpack(ttr_charger_ams_control_t *dst, const ttr_can_frame_t *frame);
 void ttr_charger_ams_control_pack(ttr_can_frame_t *frame, const ttr_charger_ams_control_t *src);
 
-/* ===== MCU1_STATUS_0  (2 ms) ===== */
-#define TTR_CAN_ID_MCU1_STATUS_0   (0xC0u)
-#define TTR_CAN_DLC_MCU1_STATUS_0  (8u)
+/* ===== MCU1_STATUS_CORE  (2 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_CORE   (0xC0u)
+#define TTR_CAN_DLC_MCU1_STATUS_CORE  (8u)
 
 typedef struct {
     float SPEED_FB;  /* RPM */
@@ -119,8 +119,8 @@ typedef struct {
     bool SYS_ACTIVE;  /* false="False", true="True" */
     bool SYS_LIMIT_ACTIVE;  /* false="False", true="True" */
     bool FW_ACTIVE;  /* false="False", true="True" */
-    bool MTPA_ACTIVE;  /* false="False", true="True" */
     bool RECV_CTRL_CMD_ACTIVE;  /* false="False", true="True" */
+    bool ASC_ACTIVE;  /* false="False", true="True" */
     bool SYS_FAULT;  /* false="False", true="True" */
     bool VOLTAGE_SAT_ACTIVE;  /* false="False", true="True" */
     bool U_OCP_FAULT;  /* false="False", true="True" */
@@ -129,14 +129,14 @@ typedef struct {
     bool U_GATE_FAULT;  /* false="False", true="True" */
     bool V_GATE_FAULT;  /* false="False", true="True" */
     bool W_GATE_FAULT;  /* false="False", true="True" */
-} ttr_mcu1_status_0_t;
+} ttr_mcu1_status_core_t;
 
-void ttr_mcu1_status_0_unpack(ttr_mcu1_status_0_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu1_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_0_t *src);
+void ttr_mcu1_status_core_unpack(ttr_mcu1_status_core_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_core_t *src);
 
-/* ===== MCU2_STATUS_0  (2 ms) ===== */
-#define TTR_CAN_ID_MCU2_STATUS_0   (0xE0u)
-#define TTR_CAN_DLC_MCU2_STATUS_0  (8u)
+/* ===== MCU2_STATUS_CORE  (2 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_CORE   (0xE0u)
+#define TTR_CAN_DLC_MCU2_STATUS_CORE  (8u)
 
 typedef struct {
     float SPEED_FB;  /* RPM */
@@ -147,8 +147,8 @@ typedef struct {
     bool SYS_ACTIVE;  /* false="False", true="True" */
     bool SYS_LIMIT_ACTIVE;  /* false="False", true="True" */
     bool FW_ACTIVE;  /* false="False", true="True" */
-    bool MTPA_ACTIVE;  /* false="False", true="True" */
     bool RECV_CTRL_CMD_ACTIVE;  /* false="False", true="True" */
+    bool ASC_ACTIVE;  /* false="False", true="True" */
     bool SYS_FAULT;  /* false="False", true="True" */
     bool VOLTAGE_SAT_ACTIVE;  /* false="False", true="True" */
     bool U_OCP_FAULT;  /* false="False", true="True" */
@@ -157,14 +157,14 @@ typedef struct {
     bool U_GATE_FAULT;  /* false="False", true="True" */
     bool V_GATE_FAULT;  /* false="False", true="True" */
     bool W_GATE_FAULT;  /* false="False", true="True" */
-} ttr_mcu2_status_0_t;
+} ttr_mcu2_status_core_t;
 
-void ttr_mcu2_status_0_unpack(ttr_mcu2_status_0_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu2_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_0_t *src);
+void ttr_mcu2_status_core_unpack(ttr_mcu2_status_core_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_core_t *src);
 
-/* ===== MCU3_STATUS_0  (2 ms) ===== */
-#define TTR_CAN_ID_MCU3_STATUS_0   (0x100u)
-#define TTR_CAN_DLC_MCU3_STATUS_0  (8u)
+/* ===== MCU3_STATUS_CORE  (2 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_CORE   (0x100u)
+#define TTR_CAN_DLC_MCU3_STATUS_CORE  (8u)
 
 typedef struct {
     float SPEED_FB;  /* RPM */
@@ -175,8 +175,8 @@ typedef struct {
     bool SYS_ACTIVE;  /* false="False", true="True" */
     bool SYS_LIMIT_ACTIVE;  /* false="False", true="True" */
     bool FW_ACTIVE;  /* false="False", true="True" */
-    bool MTPA_ACTIVE;  /* false="False", true="True" */
     bool RECV_CTRL_CMD_ACTIVE;  /* false="False", true="True" */
+    bool ASC_ACTIVE;  /* false="False", true="True" */
     bool SYS_FAULT;  /* false="False", true="True" */
     bool VOLTAGE_SAT_ACTIVE;  /* false="False", true="True" */
     bool U_OCP_FAULT;  /* false="False", true="True" */
@@ -185,14 +185,14 @@ typedef struct {
     bool U_GATE_FAULT;  /* false="False", true="True" */
     bool V_GATE_FAULT;  /* false="False", true="True" */
     bool W_GATE_FAULT;  /* false="False", true="True" */
-} ttr_mcu3_status_0_t;
+} ttr_mcu3_status_core_t;
 
-void ttr_mcu3_status_0_unpack(ttr_mcu3_status_0_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu3_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_0_t *src);
+void ttr_mcu3_status_core_unpack(ttr_mcu3_status_core_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_core_t *src);
 
-/* ===== MCU4_STATUS_0  (2 ms) ===== */
-#define TTR_CAN_ID_MCU4_STATUS_0   (0x120u)
-#define TTR_CAN_DLC_MCU4_STATUS_0  (8u)
+/* ===== MCU4_STATUS_CORE  (2 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_CORE   (0x120u)
+#define TTR_CAN_DLC_MCU4_STATUS_CORE  (8u)
 
 typedef struct {
     float SPEED_FB;  /* RPM */
@@ -203,8 +203,8 @@ typedef struct {
     bool SYS_ACTIVE;  /* false="False", true="True" */
     bool SYS_LIMIT_ACTIVE;  /* false="False", true="True" */
     bool FW_ACTIVE;  /* false="False", true="True" */
-    bool MTPA_ACTIVE;  /* false="False", true="True" */
     bool RECV_CTRL_CMD_ACTIVE;  /* false="False", true="True" */
+    bool ASC_ACTIVE;  /* false="False", true="True" */
     bool SYS_FAULT;  /* false="False", true="True" */
     bool VOLTAGE_SAT_ACTIVE;  /* false="False", true="True" */
     bool U_OCP_FAULT;  /* false="False", true="True" */
@@ -213,10 +213,10 @@ typedef struct {
     bool U_GATE_FAULT;  /* false="False", true="True" */
     bool V_GATE_FAULT;  /* false="False", true="True" */
     bool W_GATE_FAULT;  /* false="False", true="True" */
-} ttr_mcu4_status_0_t;
+} ttr_mcu4_status_core_t;
 
-void ttr_mcu4_status_0_unpack(ttr_mcu4_status_0_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu4_status_0_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_0_t *src);
+void ttr_mcu4_status_core_unpack(ttr_mcu4_status_core_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_core_t *src);
 
 /* ===== DEBUG_MCU1_CTRL  (event-based) ===== */
 #define TTR_CAN_ID_DEBUG_MCU1_CTRL   (0x280u)
@@ -646,6 +646,17 @@ typedef struct {
 void ttr_debug_mcu4_parameter_slew_rate_unpack(ttr_debug_mcu4_parameter_slew_rate_t *dst, const ttr_can_frame_t *frame);
 void ttr_debug_mcu4_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_debug_mcu4_parameter_slew_rate_t *src);
 
+/* ===== DEBUG_DTU_CONTROL  (event-based) ===== */
+#define TTR_CAN_ID_DEBUG_DTU_CONTROL   (0x298u)
+#define TTR_CAN_DLC_DEBUG_DTU_CONTROL  (8u)
+
+typedef struct {
+    bool ENABLE_DEBUG;  /* false="False", true="True" */
+} ttr_debug_dtu_control_t;
+
+void ttr_debug_dtu_control_unpack(ttr_debug_dtu_control_t *dst, const ttr_can_frame_t *frame);
+void ttr_debug_dtu_control_pack(ttr_can_frame_t *frame, const ttr_debug_dtu_control_t *src);
+
 /* ===== VCU_VCU_STATE  (10 ms) ===== */
 #define TTR_CAN_ID_VCU_VCU_STATE   (0x420u)
 #define TTR_CAN_DLC_VCU_VCU_STATE  (8u)
@@ -680,6 +691,7 @@ void ttr_vcu_vcu_state_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_state_t *s
 typedef struct {
     bool APPS1_ERR;  /* false="False", true="True" */
     bool APPS2_ERR;  /* false="False", true="True" */
+    bool APPS_PLAUSIBILITY_ERR;  /* false="False", true="True" */
     bool BSE_R_ERR;  /* false="False", true="True" */
     bool BSE_F_ERR;  /* false="False", true="True" */
     bool STEERING_ERR;  /* false="False", true="True" */
@@ -782,6 +794,19 @@ typedef struct {
 void ttr_vcu_vcu_cpu_task_status_unpack(ttr_vcu_vcu_cpu_task_status_t *dst, const ttr_can_frame_t *frame);
 void ttr_vcu_vcu_cpu_task_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_cpu_task_status_t *src);
 
+/* ===== VCU_VCU_SYSTEM_STATUS  (10 ms) ===== */
+#define TTR_CAN_ID_VCU_VCU_SYSTEM_STATUS   (0x426u)
+#define TTR_CAN_DLC_VCU_VCU_SYSTEM_STATUS  (16u)
+
+typedef struct {
+    float GLV_VOLTAGE;  /* V */
+    float GLV_CURRENT;  /* A */
+    float REGEN_TORQUE_LIMIT;
+} ttr_vcu_vcu_system_status_t;
+
+void ttr_vcu_vcu_system_status_unpack(ttr_vcu_vcu_system_status_t *dst, const ttr_can_frame_t *frame);
+void ttr_vcu_vcu_system_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_system_status_t *src);
+
 /* ===== VCU_VCU_MCU_CAN_STATUS  (100 ms) -- Reserved in current firmware; transmitted as zero-filled frame. ===== */
 #define TTR_CAN_ID_VCU_VCU_MCU_CAN_STATUS   (0x42Au)
 #define TTR_CAN_DLC_VCU_VCU_MCU_CAN_STATUS  (32u)
@@ -831,6 +856,9 @@ typedef struct {
     bool DYC_ALLOWED;  /* false="False", true="True" */
     bool DYC_CONTROL_ACTIVE;  /* false="False", true="True" */
     bool DYC_ALLOCATOR_SATURATED;  /* false="False", true="True" */
+    bool DYC_FORWARD_MOTION;  /* false="False", true="True" */
+    bool DYC_ZERO_THROTTLE;  /* false="False", true="True" */
+    bool DYC_NEGATIVE_TORQUE_ACTIVE;  /* false="False", true="True" */
     float DYC_PID_ENABLE_FADE;
     float DYC_ACCEL_CG_X_MPS2;  /* m/s^2 */
     float DYC_ACCEL_CG_Y_MPS2;  /* m/s^2 */
@@ -848,6 +876,10 @@ typedef struct {
     float DYC_TORQUE_DELTA_FR_NM;  /* Nm */
     float DYC_TORQUE_DELTA_RL_NM;  /* Nm */
     float DYC_TORQUE_DELTA_RR_NM;  /* Nm */
+    float DYC_TORQUE_FL_NM;  /* Nm */
+    float DYC_TORQUE_FR_NM;  /* Nm */
+    float DYC_TORQUE_RL_NM;  /* Nm */
+    float DYC_TORQUE_RR_NM;  /* Nm */
 } ttr_vcu_vcu_dyc_status_t;
 
 void ttr_vcu_vcu_dyc_status_unpack(ttr_vcu_vcu_dyc_status_t *dst, const ttr_can_frame_t *frame);
@@ -880,18 +912,6 @@ typedef struct {
 
 void ttr_vcu_vcu_sensor2_unpack(ttr_vcu_vcu_sensor2_t *dst, const ttr_can_frame_t *frame);
 void ttr_vcu_vcu_sensor2_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sensor2_t *src);
-
-/* ===== VCU_VCU_SENSOR3  (6 ms) ===== */
-#define TTR_CAN_ID_VCU_VCU_SENSOR3   (0x432u)
-#define TTR_CAN_DLC_VCU_VCU_SENSOR3  (8u)
-
-typedef struct {
-    float GLV_VOLTAGE;  /* V */
-    float GLV_CURRENT;  /* A */
-} ttr_vcu_vcu_sensor3_t;
-
-void ttr_vcu_vcu_sensor3_unpack(ttr_vcu_vcu_sensor3_t *dst, const ttr_can_frame_t *frame);
-void ttr_vcu_vcu_sensor3_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sensor3_t *src);
 
 /* ===== VCU_VCU_IMU_Q  (6 ms) ===== */
 #define TTR_CAN_ID_VCU_VCU_IMU_Q   (0x435u)
@@ -948,18 +968,18 @@ typedef struct {
 void ttr_vcu_vcu_gps_unpack(ttr_vcu_vcu_gps_t *dst, const ttr_can_frame_t *frame);
 void ttr_vcu_vcu_gps_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_gps_t *src);
 
-/* ===== AMS_AMS_STATUS0  (20 ms) ===== */
-#define TTR_CAN_ID_AMS_AMS_STATUS0   (0x440u)
-#define TTR_CAN_DLC_AMS_AMS_STATUS0  (24u)
+/* ===== AMS_AMS_STATUS_BASIC  (20 ms) ===== */
+#define TTR_CAN_ID_AMS_AMS_STATUS_BASIC   (0x440u)
+#define TTR_CAN_DLC_AMS_AMS_STATUS_BASIC  (32u)
 
 /* AMS_STATE enum values */
-#define TTR_AMS_AMS_STATUS0_AMS_STATE_IDLE       (0u)
-#define TTR_AMS_AMS_STATUS0_AMS_STATE_MEASURE    (1u)
-#define TTR_AMS_AMS_STATUS0_AMS_STATE_BALANCING  (2u)
-#define TTR_AMS_AMS_STATUS0_AMS_STATE_CHARGING   (3u)
+#define TTR_AMS_AMS_STATUS_BASIC_AMS_STATE_IDLE  (0u)
+#define TTR_AMS_AMS_STATUS_BASIC_AMS_STATE_MEASURE (1u)
+#define TTR_AMS_AMS_STATUS_BASIC_AMS_STATE_BALANCING (2u)
+#define TTR_AMS_AMS_STATUS_BASIC_AMS_STATE_CHARGING (3u)
 
 typedef struct {
-    uint8_t AMS_STATE;  /* see TTR_AMS_AMS_STATUS0_AMS_STATE_* */
+    uint8_t AMS_STATE;  /* see TTR_AMS_AMS_STATUS_BASIC_AMS_STATE_* */
     bool BUS_OVER_CURRENT_ERR;  /* false="False", true="True" */
     bool LTC_CONNECTION_LOSS;  /* false="False", true="True" */
     bool CELL_OVER_VOLT_ERR;  /* false="False", true="True" */
@@ -976,10 +996,24 @@ typedef struct {
     float TEMPERATURE_MIN;  /* ° C */
     float TEMPERATURE_DELTA;  /* ° C */
     uint8_t AMS_HEARTBEAT;
-} ttr_ams_ams_status0_t;
+} ttr_ams_ams_status_basic_t;
 
-void ttr_ams_ams_status0_unpack(ttr_ams_ams_status0_t *dst, const ttr_can_frame_t *frame);
-void ttr_ams_ams_status0_pack(ttr_can_frame_t *frame, const ttr_ams_ams_status0_t *src);
+void ttr_ams_ams_status_basic_unpack(ttr_ams_ams_status_basic_t *dst, const ttr_can_frame_t *frame);
+void ttr_ams_ams_status_basic_pack(ttr_can_frame_t *frame, const ttr_ams_ams_status_basic_t *src);
+
+/* ===== AMS_AMS_STATUS_LIMIT  (20 ms) ===== */
+#define TTR_CAN_ID_AMS_AMS_STATUS_LIMIT   (0x441u)
+#define TTR_CAN_DLC_AMS_AMS_STATUS_LIMIT  (16u)
+
+typedef struct {
+    float CHARGE_CURRENT_LIMIT;  /* A */
+    float CHARGE_POWER_LIMIT;  /* W */
+    float DISCHARGE_CURRENT_LIMIT;  /* A */
+    float DISCHARGE_POWER_LIMIT;  /* W */
+} ttr_ams_ams_status_limit_t;
+
+void ttr_ams_ams_status_limit_unpack(ttr_ams_ams_status_limit_t *dst, const ttr_can_frame_t *frame);
+void ttr_ams_ams_status_limit_pack(ttr_can_frame_t *frame, const ttr_ams_ams_status_limit_t *src);
 
 /* ===== AMS_AMS_MODULE_1  (20 ms) ===== */
 #define TTR_CAN_ID_AMS_AMS_MODULE_1   (0x44Au)
@@ -1341,72 +1375,105 @@ typedef struct {
 void ttr_ams_ams_module_8_unpack(ttr_ams_ams_module_8_t *dst, const ttr_can_frame_t *frame);
 void ttr_ams_ams_module_8_pack(ttr_can_frame_t *frame, const ttr_ams_ams_module_8_t *src);
 
-/* ===== MCU1_STATUS_1  (10 ms) ===== */
-#define TTR_CAN_ID_MCU1_STATUS_1   (0x4C1u)
-#define TTR_CAN_DLC_MCU1_STATUS_1  (12u)
+/* ===== MCU1_STATUS_SYSTEM  (10 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_SYSTEM   (0x4C1u)
+#define TTR_CAN_DLC_MCU1_STATUS_SYSTEM  (16u)
+
+/* RUN_MODE_STATE enum values */
+#define TTR_MCU1_STATUS_SYSTEM_RUN_MODE_STATE_TORQUE (0u)
+#define TTR_MCU1_STATUS_SYSTEM_RUN_MODE_STATE_SPEED (1u)
+#define TTR_MCU1_STATUS_SYSTEM_RUN_MODE_STATE_TEST (2u)
 
 typedef struct {
     bool ENCODER_FAULT;  /* false="False", true="True" */
     bool OVP_FAULT;  /* false="False", true="True" */
     bool UVP_FAULT;  /* false="False", true="True" */
     bool RECV_CTRL_LOSS_FAULT;  /* false="False", true="True" */
-    bool DIRECTION_STATE;  /* false="CW", true="CCW" */
-    float ID_REF;  /* A */
-    float IQ_REF;  /* A */
-    float VDC_FB;  /* V */
-    float POWER_FB;  /* P */
-    float TORQUE_FB;  /* NM */
-    uint8_t MCU_HEARTBEAT;
-} ttr_mcu1_status_1_t;
-
-void ttr_mcu1_status_1_unpack(ttr_mcu1_status_1_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu1_status_1_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_1_t *src);
-
-/* ===== MCU1_STATUS_2  (50 ms) ===== */
-#define TTR_CAN_ID_MCU1_STATUS_2   (0x4C2u)
-#define TTR_CAN_DLC_MCU1_STATUS_2  (16u)
-
-/* RUN_MODE_STATE enum values */
-#define TTR_MCU1_STATUS_2_RUN_MODE_STATE_TORQUE  (0u)
-#define TTR_MCU1_STATUS_2_RUN_MODE_STATE_SPEED   (1u)
-#define TTR_MCU1_STATUS_2_RUN_MODE_STATE_TEST    (2u)
-
-/* FLASH_LAST_ERROR_STATE enum values */
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_OK (0u)
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_VERSION (1u)
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_CRC (2u)
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_RANGE (3u)
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_ERASE (4u)
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_PROGRAM (5u)
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_VERIFY (6u)
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_APPLY_BLOCKED (7u)
-#define TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_UNKNOWN (8u)
-
-typedef struct {
-    uint8_t RUN_MODE_STATE;  /* see TTR_MCU1_STATUS_2_RUN_MODE_STATE_* */
-    bool RECV_MODE_BROADCAST_STATE;  /* false="False", true="True" */
-    bool RECV_MODE_STANDALONE_STATE;  /* false="False", true="True" */
-    uint8_t MCU_ID_STATE;
-    uint8_t FLASH_LAST_ERROR_STATE;  /* see TTR_MCU1_STATUS_2_FLASH_LAST_ERROR_STATE_* */
-    bool FW_EN_ECHO;  /* false="False", true="True" */
-    bool MTPA_EN_ECHO;  /* false="False", true="True" */
-    bool MOTOR_OTP_FAULT;  /* false="False", true="True" */
     bool U_GATE_OTP_FAULT;  /* false="False", true="True" */
     bool V_GATE_OTP_FAULT;  /* false="False", true="True" */
+    bool MOTOR_OTP_FAULT;  /* false="False", true="True" */
     bool W_GATE_OTP_FAULT;  /* false="False", true="True" */
+    bool DIRECTION_STATE;  /* false="CW", true="CCW" */
+    bool RECV_MODE_BROADCAST_STATE;  /* false="False", true="True" */
+    bool RECV_MODE_STANDALONE_STATE;  /* false="False", true="True" */
+    bool FW_EN_ECHO;  /* false="False", true="True" */
+    uint8_t RUN_MODE_STATE;  /* see TTR_MCU1_STATUS_SYSTEM_RUN_MODE_STATE_* */
     float TORQUE_CMD_ECHO;  /* C */
+    float TORQUE_FB;  /* NM */
+    float VDC_FB;  /* V */
+    float POWER_FB;  /* P */
     float MOTOR_TEMPERATURE_FB;  /* C */
     float U_PHASE_TEMPERATURE_FB;  /* C */
     float V_PHASE_TEMPERATURE_FB;  /* C */
     float W_PHASE_TEMPERATURE_FB;  /* C */
-} ttr_mcu1_status_2_t;
+    uint8_t MCU_HEARTBEAT;
+} ttr_mcu1_status_system_t;
 
-void ttr_mcu1_status_2_unpack(ttr_mcu1_status_2_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu1_status_2_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_2_t *src);
+void ttr_mcu1_status_system_unpack(ttr_mcu1_status_system_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_system_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_system_t *src);
 
-/* ===== MCU1_STATUS_U  (100 ms) ===== */
-#define TTR_CAN_ID_MCU1_STATUS_U   (0x4C4u)
-#define TTR_CAN_DLC_MCU1_STATUS_U  (8u)
+/* ===== MCU1_STATUS_FOC  (10 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_FOC   (0x4C2u)
+#define TTR_CAN_DLC_MCU1_STATUS_FOC  (12u)
+
+typedef struct {
+    float IQ_REF;  /* A */
+    float ID_REF;  /* A */
+    float ID_FW;  /* A */
+    float VD_REQ;  /* V */
+    float VQ_REQ;  /* V */
+    float VMAG;  /* V */
+    float VOUT_MAX;  /* V */
+} ttr_mcu1_status_foc_t;
+
+void ttr_mcu1_status_foc_unpack(ttr_mcu1_status_foc_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_foc_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_foc_t *src);
+
+/* ===== MCU1_STATUS_DEBUG  (50 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_DEBUG   (0x4C3u)
+#define TTR_CAN_DLC_MCU1_STATUS_DEBUG  (16u)
+
+/* FLASH_LAST_ERROR_STATE enum values */
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_OK (0u)
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_VERSION (1u)
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_CRC (2u)
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_RANGE (3u)
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_ERASE (4u)
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_PROGRAM (5u)
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_VERIFY (6u)
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_APPLY_BLOCKED (7u)
+#define TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_UNKNOWN (8u)
+
+/* RESET_CAUSE enum values */
+#define TTR_MCU1_STATUS_DEBUG_RESET_CAUSE_POR    (0u)
+#define TTR_MCU1_STATUS_DEBUG_RESET_CAUSE_WDRS   (1u)
+#define TTR_MCU1_STATUS_DEBUG_RESET_CAUSE_XRS    (2u)
+
+/* SOFT_STOP_REASON enum values */
+#define TTR_MCU1_STATUS_DEBUG_SOFT_STOP_REASON_SOFT_STOP_NONE (0u)
+#define TTR_MCU1_STATUS_DEBUG_SOFT_STOP_REASON_ENABLE_LOST (1u)
+#define TTR_MCU1_STATUS_DEBUG_SOFT_STOP_REASON_CAN_LOSS (2u)
+
+typedef struct {
+    float ISR_DURATION_US;  /* us */
+    uint16_t BOOT_COUNT;
+    uint16_t ENCODER_ERR_COUNT;
+    float PI_IQ_UI;
+    float PI_ID_UI;
+    uint8_t MCU_ID_STATE;
+    uint8_t FLASH_LAST_ERROR_STATE;  /* see TTR_MCU1_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_* */
+    uint8_t RESET_CAUSE;  /* see TTR_MCU1_STATUS_DEBUG_RESET_CAUSE_* */
+    uint8_t SOFT_STOP_REASON;  /* see TTR_MCU1_STATUS_DEBUG_SOFT_STOP_REASON_* */
+    uint16_t UPTIME_S;  /* s */
+    float ENCODER_THETA;  /* deg */
+} ttr_mcu1_status_debug_t;
+
+void ttr_mcu1_status_debug_unpack(ttr_mcu1_status_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_debug_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_debug_t *src);
+
+/* ===== MCU1_STATUS_GATE_U  (100 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_GATE_U   (0x4C4u)
+#define TTR_CAN_DLC_MCU1_STATUS_GATE_U  (8u)
 
 typedef struct {
     bool H_NLSE;  /* false="False", true="True" */
@@ -1439,54 +1506,14 @@ typedef struct {
     bool L_SASCAW;  /* false="False", true="True" */
     float TEMPERATURE;
     float VOLTAGE;
-} ttr_mcu1_status_u_t;
+} ttr_mcu1_status_gate_u_t;
 
-void ttr_mcu1_status_u_unpack(ttr_mcu1_status_u_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu1_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_u_t *src);
+void ttr_mcu1_status_gate_u_unpack(ttr_mcu1_status_gate_u_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_gate_u_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_gate_u_t *src);
 
-/* ===== MCU1_STATUS_V  (100 ms) ===== */
-#define TTR_CAN_ID_MCU1_STATUS_V   (0x4C5u)
-#define TTR_CAN_DLC_MCU1_STATUS_V  (8u)
-
-typedef struct {
-    bool H_NLSE;  /* false="False", true="True" */
-    bool H_OVLO2;  /* false="False", true="True" */
-    bool H_UVLO2;  /* false="False", true="True" */
-    bool H_OVLO3;  /* false="False", true="True" */
-    bool H_UVLO3;  /* false="False", true="True" */
-    bool H_BDW;  /* false="False", true="True" */
-    bool H_SASC;  /* false="False", true="True" */
-    bool H_DTW;  /* false="False", true="True" */
-    bool H_STPKW;  /* false="False", true="True" */
-    bool H_OSME;  /* false="False", true="True" */
-    bool H_GME;  /* false="False", true="True" */
-    bool H_DDE;  /* false="False", true="True" */
-    bool H_NDBISTW;  /* false="False", true="True" */
-    bool H_SASCAW;  /* false="False", true="True" */
-    bool L_NLSE;  /* false="False", true="True" */
-    bool L_OVLO2;  /* false="False", true="True" */
-    bool L_UVLO2;  /* false="False", true="True" */
-    bool L_OVLO3;  /* false="False", true="True" */
-    bool L_UVLO3;  /* false="False", true="True" */
-    bool L_BDW;  /* false="False", true="True" */
-    bool L_SASC;  /* false="False", true="True" */
-    bool L_DTW;  /* false="False", true="True" */
-    bool L_STPKW;  /* false="False", true="True" */
-    bool L_OSME;  /* false="False", true="True" */
-    bool L_GME;  /* false="False", true="True" */
-    bool L_DDE;  /* false="False", true="True" */
-    bool L_NDBISTW;  /* false="False", true="True" */
-    bool L_SASCAW;  /* false="False", true="True" */
-    float TEMPERATURE;
-    float VOLTAGE;
-} ttr_mcu1_status_v_t;
-
-void ttr_mcu1_status_v_unpack(ttr_mcu1_status_v_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu1_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_v_t *src);
-
-/* ===== MCU1_STATUS_W  (100 ms) ===== */
-#define TTR_CAN_ID_MCU1_STATUS_W   (0x4C6u)
-#define TTR_CAN_DLC_MCU1_STATUS_W  (8u)
+/* ===== MCU1_STATUS_GATE_V  (100 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_GATE_V   (0x4C5u)
+#define TTR_CAN_DLC_MCU1_STATUS_GATE_V  (8u)
 
 typedef struct {
     bool H_NLSE;  /* false="False", true="True" */
@@ -1519,14 +1546,54 @@ typedef struct {
     bool L_SASCAW;  /* false="False", true="True" */
     float TEMPERATURE;
     float VOLTAGE;
-} ttr_mcu1_status_w_t;
+} ttr_mcu1_status_gate_v_t;
 
-void ttr_mcu1_status_w_unpack(ttr_mcu1_status_w_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu1_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_w_t *src);
+void ttr_mcu1_status_gate_v_unpack(ttr_mcu1_status_gate_v_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_gate_v_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_gate_v_t *src);
 
-/* ===== MCU1_STATUS_CAN  (100 ms) ===== */
-#define TTR_CAN_ID_MCU1_STATUS_CAN   (0x4C7u)
-#define TTR_CAN_DLC_MCU1_STATUS_CAN  (16u)
+/* ===== MCU1_STATUS_GATE_W  (100 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_GATE_W   (0x4C6u)
+#define TTR_CAN_DLC_MCU1_STATUS_GATE_W  (8u)
+
+typedef struct {
+    bool H_NLSE;  /* false="False", true="True" */
+    bool H_OVLO2;  /* false="False", true="True" */
+    bool H_UVLO2;  /* false="False", true="True" */
+    bool H_OVLO3;  /* false="False", true="True" */
+    bool H_UVLO3;  /* false="False", true="True" */
+    bool H_BDW;  /* false="False", true="True" */
+    bool H_SASC;  /* false="False", true="True" */
+    bool H_DTW;  /* false="False", true="True" */
+    bool H_STPKW;  /* false="False", true="True" */
+    bool H_OSME;  /* false="False", true="True" */
+    bool H_GME;  /* false="False", true="True" */
+    bool H_DDE;  /* false="False", true="True" */
+    bool H_NDBISTW;  /* false="False", true="True" */
+    bool H_SASCAW;  /* false="False", true="True" */
+    bool L_NLSE;  /* false="False", true="True" */
+    bool L_OVLO2;  /* false="False", true="True" */
+    bool L_UVLO2;  /* false="False", true="True" */
+    bool L_OVLO3;  /* false="False", true="True" */
+    bool L_UVLO3;  /* false="False", true="True" */
+    bool L_BDW;  /* false="False", true="True" */
+    bool L_SASC;  /* false="False", true="True" */
+    bool L_DTW;  /* false="False", true="True" */
+    bool L_STPKW;  /* false="False", true="True" */
+    bool L_OSME;  /* false="False", true="True" */
+    bool L_GME;  /* false="False", true="True" */
+    bool L_DDE;  /* false="False", true="True" */
+    bool L_NDBISTW;  /* false="False", true="True" */
+    bool L_SASCAW;  /* false="False", true="True" */
+    float TEMPERATURE;
+    float VOLTAGE;
+} ttr_mcu1_status_gate_w_t;
+
+void ttr_mcu1_status_gate_w_unpack(ttr_mcu1_status_gate_w_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_gate_w_t *src);
+
+/* ===== MCU1_STATUS_COMM  (100 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_COMM   (0x4C7u)
+#define TTR_CAN_DLC_MCU1_STATUS_COMM  (16u)
 
 typedef struct {
     float CMD_MISS_CONSEC_AVG;
@@ -1537,10 +1604,10 @@ typedef struct {
     uint16_t BUS_OFF_COUNT;
     uint16_t TEC;
     uint16_t REC;
-} ttr_mcu1_status_can_t;
+} ttr_mcu1_status_comm_t;
 
-void ttr_mcu1_status_can_unpack(ttr_mcu1_status_can_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu1_status_can_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_can_t *src);
+void ttr_mcu1_status_comm_unpack(ttr_mcu1_status_comm_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_comm_t *src);
 
 /* ===== MCU1_INFO  (1000 ms) ===== */
 #define TTR_CAN_ID_MCU1_INFO   (0x4D4u)
@@ -1585,7 +1652,6 @@ void ttr_mcu1_parameter_control_pack(ttr_can_frame_t *frame, const ttr_mcu1_para
 typedef struct {
     float CURRENT_LINE_LIMIT;
     float CURRENT_ID_LIMIT;
-    float FW_ID_LIMIT;
     float TORQUE_LIMIT;
     float OVER_VOLTAGE_LIMIT;
     float UNDER_VOLTAGE_LIMIT;
@@ -1624,81 +1690,110 @@ typedef struct {
     float TORQUE_SLEW_NEG_NM_PER_S;
     float SPEED_SLEW_POS_RPM_PER_S;
     float SPEED_SLEW_NEG_RPM_PER_S;
-    float ID_MTPA_ATTACK_SLEW_A_PER_S;
-    float ID_MTPA_RELEASE_SLEW_A_PER_S;
-    float ID_FW_ATTACK_SLEW_A_PER_S;
-    float ID_FW_RELEASE_SLEW_A_PER_S;
 } ttr_mcu1_parameter_slew_rate_t;
 
 void ttr_mcu1_parameter_slew_rate_unpack(ttr_mcu1_parameter_slew_rate_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu1_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu1_parameter_slew_rate_t *src);
 
-/* ===== MCU2_STATUS_1  (10 ms) ===== */
-#define TTR_CAN_ID_MCU2_STATUS_1   (0x4E1u)
-#define TTR_CAN_DLC_MCU2_STATUS_1  (12u)
+/* ===== MCU2_STATUS_SYSTEM  (10 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_SYSTEM   (0x4E1u)
+#define TTR_CAN_DLC_MCU2_STATUS_SYSTEM  (16u)
+
+/* RUN_MODE_STATE enum values */
+#define TTR_MCU2_STATUS_SYSTEM_RUN_MODE_STATE_TORQUE (0u)
+#define TTR_MCU2_STATUS_SYSTEM_RUN_MODE_STATE_SPEED (1u)
+#define TTR_MCU2_STATUS_SYSTEM_RUN_MODE_STATE_TEST (2u)
 
 typedef struct {
     bool ENCODER_FAULT;  /* false="False", true="True" */
     bool OVP_FAULT;  /* false="False", true="True" */
     bool UVP_FAULT;  /* false="False", true="True" */
     bool RECV_CTRL_LOSS_FAULT;  /* false="False", true="True" */
-    bool DIRECTION_STATE;  /* false="CW", true="CCW" */
-    float ID_REF;  /* A */
-    float IQ_REF;  /* A */
-    float VDC_FB;  /* V */
-    float POWER_FB;  /* P */
-    float TORQUE_FB;  /* NM */
-    uint8_t MCU_HEARTBEAT;
-} ttr_mcu2_status_1_t;
-
-void ttr_mcu2_status_1_unpack(ttr_mcu2_status_1_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu2_status_1_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_1_t *src);
-
-/* ===== MCU2_STATUS_2  (50 ms) ===== */
-#define TTR_CAN_ID_MCU2_STATUS_2   (0x4E2u)
-#define TTR_CAN_DLC_MCU2_STATUS_2  (16u)
-
-/* RUN_MODE_STATE enum values */
-#define TTR_MCU2_STATUS_2_RUN_MODE_STATE_TORQUE  (0u)
-#define TTR_MCU2_STATUS_2_RUN_MODE_STATE_SPEED   (1u)
-#define TTR_MCU2_STATUS_2_RUN_MODE_STATE_TEST    (2u)
-
-/* FLASH_LAST_ERROR_STATE enum values */
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_OK (0u)
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_VERSION (1u)
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_CRC (2u)
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_RANGE (3u)
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_ERASE (4u)
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_PROGRAM (5u)
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_VERIFY (6u)
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_APPLY_BLOCKED (7u)
-#define TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_UNKNOWN (8u)
-
-typedef struct {
-    uint8_t RUN_MODE_STATE;  /* see TTR_MCU2_STATUS_2_RUN_MODE_STATE_* */
-    bool RECV_MODE_BROADCAST_STATE;  /* false="False", true="True" */
-    bool RECV_MODE_STANDALONE_STATE;  /* false="False", true="True" */
-    uint8_t MCU_ID_STATE;
-    uint8_t FLASH_LAST_ERROR_STATE;  /* see TTR_MCU2_STATUS_2_FLASH_LAST_ERROR_STATE_* */
-    bool FW_EN_ECHO;  /* false="False", true="True" */
-    bool MTPA_EN_ECHO;  /* false="False", true="True" */
-    bool MOTOR_OTP_FAULT;  /* false="False", true="True" */
     bool U_GATE_OTP_FAULT;  /* false="False", true="True" */
     bool V_GATE_OTP_FAULT;  /* false="False", true="True" */
+    bool MOTOR_OTP_FAULT;  /* false="False", true="True" */
     bool W_GATE_OTP_FAULT;  /* false="False", true="True" */
+    bool DIRECTION_STATE;  /* false="CW", true="CCW" */
+    bool RECV_MODE_BROADCAST_STATE;  /* false="False", true="True" */
+    bool RECV_MODE_STANDALONE_STATE;  /* false="False", true="True" */
+    bool FW_EN_ECHO;  /* false="False", true="True" */
+    uint8_t RUN_MODE_STATE;  /* see TTR_MCU2_STATUS_SYSTEM_RUN_MODE_STATE_* */
     float TORQUE_CMD_ECHO;  /* C */
+    float TORQUE_FB;  /* NM */
+    float VDC_FB;  /* V */
+    float POWER_FB;  /* P */
     float MOTOR_TEMPERATURE_FB;  /* C */
     float U_PHASE_TEMPERATURE_FB;  /* C */
     float V_PHASE_TEMPERATURE_FB;  /* C */
     float W_PHASE_TEMPERATURE_FB;  /* C */
-} ttr_mcu2_status_2_t;
+    uint8_t MCU_HEARTBEAT;
+} ttr_mcu2_status_system_t;
 
-void ttr_mcu2_status_2_unpack(ttr_mcu2_status_2_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu2_status_2_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_2_t *src);
+void ttr_mcu2_status_system_unpack(ttr_mcu2_status_system_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_system_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_system_t *src);
 
-/* ===== MCU2_STATUS_U  (100 ms) ===== */
-#define TTR_CAN_ID_MCU2_STATUS_U   (0x4E4u)
-#define TTR_CAN_DLC_MCU2_STATUS_U  (8u)
+/* ===== MCU2_STATUS_FOC  (10 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_FOC   (0x4E2u)
+#define TTR_CAN_DLC_MCU2_STATUS_FOC  (12u)
+
+typedef struct {
+    float IQ_REF;  /* A */
+    float ID_REF;  /* A */
+    float ID_FW;  /* A */
+    float VD_REQ;  /* V */
+    float VQ_REQ;  /* V */
+    float VMAG;  /* V */
+    float VOUT_MAX;  /* V */
+} ttr_mcu2_status_foc_t;
+
+void ttr_mcu2_status_foc_unpack(ttr_mcu2_status_foc_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_foc_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_foc_t *src);
+
+/* ===== MCU2_STATUS_DEBUG  (50 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_DEBUG   (0x4E3u)
+#define TTR_CAN_DLC_MCU2_STATUS_DEBUG  (16u)
+
+/* FLASH_LAST_ERROR_STATE enum values */
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_OK (0u)
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_VERSION (1u)
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_CRC (2u)
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_RANGE (3u)
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_ERASE (4u)
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_PROGRAM (5u)
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_VERIFY (6u)
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_APPLY_BLOCKED (7u)
+#define TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_UNKNOWN (8u)
+
+/* RESET_CAUSE enum values */
+#define TTR_MCU2_STATUS_DEBUG_RESET_CAUSE_POR    (0u)
+#define TTR_MCU2_STATUS_DEBUG_RESET_CAUSE_WDRS   (1u)
+#define TTR_MCU2_STATUS_DEBUG_RESET_CAUSE_XRS    (2u)
+
+/* SOFT_STOP_REASON enum values */
+#define TTR_MCU2_STATUS_DEBUG_SOFT_STOP_REASON_SOFT_STOP_NONE (0u)
+#define TTR_MCU2_STATUS_DEBUG_SOFT_STOP_REASON_ENABLE_LOST (1u)
+#define TTR_MCU2_STATUS_DEBUG_SOFT_STOP_REASON_CAN_LOSS (2u)
+
+typedef struct {
+    float ISR_DURATION_US;  /* us */
+    uint16_t BOOT_COUNT;
+    uint16_t ENCODER_ERR_COUNT;
+    float PI_IQ_UI;
+    float PI_ID_UI;
+    uint8_t MCU_ID_STATE;
+    uint8_t FLASH_LAST_ERROR_STATE;  /* see TTR_MCU2_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_* */
+    uint8_t RESET_CAUSE;  /* see TTR_MCU2_STATUS_DEBUG_RESET_CAUSE_* */
+    uint8_t SOFT_STOP_REASON;  /* see TTR_MCU2_STATUS_DEBUG_SOFT_STOP_REASON_* */
+    uint16_t UPTIME_S;  /* s */
+    float ENCODER_THETA;  /* deg */
+} ttr_mcu2_status_debug_t;
+
+void ttr_mcu2_status_debug_unpack(ttr_mcu2_status_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_debug_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_debug_t *src);
+
+/* ===== MCU2_STATUS_GATE_U  (100 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_GATE_U   (0x4E4u)
+#define TTR_CAN_DLC_MCU2_STATUS_GATE_U  (8u)
 
 typedef struct {
     bool H_NLSE;  /* false="False", true="True" */
@@ -1731,54 +1826,14 @@ typedef struct {
     bool L_SASCAW;  /* false="False", true="True" */
     float TEMPERATURE;
     float VOLTAGE;
-} ttr_mcu2_status_u_t;
+} ttr_mcu2_status_gate_u_t;
 
-void ttr_mcu2_status_u_unpack(ttr_mcu2_status_u_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu2_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_u_t *src);
+void ttr_mcu2_status_gate_u_unpack(ttr_mcu2_status_gate_u_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_gate_u_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_gate_u_t *src);
 
-/* ===== MCU2_STATUS_V  (100 ms) ===== */
-#define TTR_CAN_ID_MCU2_STATUS_V   (0x4E5u)
-#define TTR_CAN_DLC_MCU2_STATUS_V  (8u)
-
-typedef struct {
-    bool H_NLSE;  /* false="False", true="True" */
-    bool H_OVLO2;  /* false="False", true="True" */
-    bool H_UVLO2;  /* false="False", true="True" */
-    bool H_OVLO3;  /* false="False", true="True" */
-    bool H_UVLO3;  /* false="False", true="True" */
-    bool H_BDW;  /* false="False", true="True" */
-    bool H_SASC;  /* false="False", true="True" */
-    bool H_DTW;  /* false="False", true="True" */
-    bool H_STPKW;  /* false="False", true="True" */
-    bool H_OSME;  /* false="False", true="True" */
-    bool H_GME;  /* false="False", true="True" */
-    bool H_DDE;  /* false="False", true="True" */
-    bool H_NDBISTW;  /* false="False", true="True" */
-    bool H_SASCAW;  /* false="False", true="True" */
-    bool L_NLSE;  /* false="False", true="True" */
-    bool L_OVLO2;  /* false="False", true="True" */
-    bool L_UVLO2;  /* false="False", true="True" */
-    bool L_OVLO3;  /* false="False", true="True" */
-    bool L_UVLO3;  /* false="False", true="True" */
-    bool L_BDW;  /* false="False", true="True" */
-    bool L_SASC;  /* false="False", true="True" */
-    bool L_DTW;  /* false="False", true="True" */
-    bool L_STPKW;  /* false="False", true="True" */
-    bool L_OSME;  /* false="False", true="True" */
-    bool L_GME;  /* false="False", true="True" */
-    bool L_DDE;  /* false="False", true="True" */
-    bool L_NDBISTW;  /* false="False", true="True" */
-    bool L_SASCAW;  /* false="False", true="True" */
-    float TEMPERATURE;
-    float VOLTAGE;
-} ttr_mcu2_status_v_t;
-
-void ttr_mcu2_status_v_unpack(ttr_mcu2_status_v_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu2_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_v_t *src);
-
-/* ===== MCU2_STATUS_W  (100 ms) ===== */
-#define TTR_CAN_ID_MCU2_STATUS_W   (0x4E6u)
-#define TTR_CAN_DLC_MCU2_STATUS_W  (8u)
+/* ===== MCU2_STATUS_GATE_V  (100 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_GATE_V   (0x4E5u)
+#define TTR_CAN_DLC_MCU2_STATUS_GATE_V  (8u)
 
 typedef struct {
     bool H_NLSE;  /* false="False", true="True" */
@@ -1811,14 +1866,54 @@ typedef struct {
     bool L_SASCAW;  /* false="False", true="True" */
     float TEMPERATURE;
     float VOLTAGE;
-} ttr_mcu2_status_w_t;
+} ttr_mcu2_status_gate_v_t;
 
-void ttr_mcu2_status_w_unpack(ttr_mcu2_status_w_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu2_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_w_t *src);
+void ttr_mcu2_status_gate_v_unpack(ttr_mcu2_status_gate_v_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_gate_v_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_gate_v_t *src);
 
-/* ===== MCU2_STATUS_CAN  (100 ms) ===== */
-#define TTR_CAN_ID_MCU2_STATUS_CAN   (0x4E7u)
-#define TTR_CAN_DLC_MCU2_STATUS_CAN  (16u)
+/* ===== MCU2_STATUS_GATE_W  (100 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_GATE_W   (0x4E6u)
+#define TTR_CAN_DLC_MCU2_STATUS_GATE_W  (8u)
+
+typedef struct {
+    bool H_NLSE;  /* false="False", true="True" */
+    bool H_OVLO2;  /* false="False", true="True" */
+    bool H_UVLO2;  /* false="False", true="True" */
+    bool H_OVLO3;  /* false="False", true="True" */
+    bool H_UVLO3;  /* false="False", true="True" */
+    bool H_BDW;  /* false="False", true="True" */
+    bool H_SASC;  /* false="False", true="True" */
+    bool H_DTW;  /* false="False", true="True" */
+    bool H_STPKW;  /* false="False", true="True" */
+    bool H_OSME;  /* false="False", true="True" */
+    bool H_GME;  /* false="False", true="True" */
+    bool H_DDE;  /* false="False", true="True" */
+    bool H_NDBISTW;  /* false="False", true="True" */
+    bool H_SASCAW;  /* false="False", true="True" */
+    bool L_NLSE;  /* false="False", true="True" */
+    bool L_OVLO2;  /* false="False", true="True" */
+    bool L_UVLO2;  /* false="False", true="True" */
+    bool L_OVLO3;  /* false="False", true="True" */
+    bool L_UVLO3;  /* false="False", true="True" */
+    bool L_BDW;  /* false="False", true="True" */
+    bool L_SASC;  /* false="False", true="True" */
+    bool L_DTW;  /* false="False", true="True" */
+    bool L_STPKW;  /* false="False", true="True" */
+    bool L_OSME;  /* false="False", true="True" */
+    bool L_GME;  /* false="False", true="True" */
+    bool L_DDE;  /* false="False", true="True" */
+    bool L_NDBISTW;  /* false="False", true="True" */
+    bool L_SASCAW;  /* false="False", true="True" */
+    float TEMPERATURE;
+    float VOLTAGE;
+} ttr_mcu2_status_gate_w_t;
+
+void ttr_mcu2_status_gate_w_unpack(ttr_mcu2_status_gate_w_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_gate_w_t *src);
+
+/* ===== MCU2_STATUS_COMM  (100 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_COMM   (0x4E7u)
+#define TTR_CAN_DLC_MCU2_STATUS_COMM  (16u)
 
 typedef struct {
     float CMD_MISS_CONSEC_AVG;
@@ -1829,10 +1924,10 @@ typedef struct {
     uint16_t BUS_OFF_COUNT;
     uint16_t TEC;
     uint16_t REC;
-} ttr_mcu2_status_can_t;
+} ttr_mcu2_status_comm_t;
 
-void ttr_mcu2_status_can_unpack(ttr_mcu2_status_can_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu2_status_can_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_can_t *src);
+void ttr_mcu2_status_comm_unpack(ttr_mcu2_status_comm_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_comm_t *src);
 
 /* ===== MCU2_INFO  (1000 ms) ===== */
 #define TTR_CAN_ID_MCU2_INFO   (0x4F4u)
@@ -1877,7 +1972,6 @@ void ttr_mcu2_parameter_control_pack(ttr_can_frame_t *frame, const ttr_mcu2_para
 typedef struct {
     float CURRENT_LINE_LIMIT;
     float CURRENT_ID_LIMIT;
-    float FW_ID_LIMIT;
     float TORQUE_LIMIT;
     float OVER_VOLTAGE_LIMIT;
     float UNDER_VOLTAGE_LIMIT;
@@ -1916,81 +2010,110 @@ typedef struct {
     float TORQUE_SLEW_NEG_NM_PER_S;
     float SPEED_SLEW_POS_RPM_PER_S;
     float SPEED_SLEW_NEG_RPM_PER_S;
-    float ID_MTPA_ATTACK_SLEW_A_PER_S;
-    float ID_MTPA_RELEASE_SLEW_A_PER_S;
-    float ID_FW_ATTACK_SLEW_A_PER_S;
-    float ID_FW_RELEASE_SLEW_A_PER_S;
 } ttr_mcu2_parameter_slew_rate_t;
 
 void ttr_mcu2_parameter_slew_rate_unpack(ttr_mcu2_parameter_slew_rate_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu2_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu2_parameter_slew_rate_t *src);
 
-/* ===== MCU3_STATUS_1  (10 ms) ===== */
-#define TTR_CAN_ID_MCU3_STATUS_1   (0x501u)
-#define TTR_CAN_DLC_MCU3_STATUS_1  (12u)
+/* ===== MCU3_STATUS_SYSTEM  (10 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_SYSTEM   (0x501u)
+#define TTR_CAN_DLC_MCU3_STATUS_SYSTEM  (16u)
+
+/* RUN_MODE_STATE enum values */
+#define TTR_MCU3_STATUS_SYSTEM_RUN_MODE_STATE_TORQUE (0u)
+#define TTR_MCU3_STATUS_SYSTEM_RUN_MODE_STATE_SPEED (1u)
+#define TTR_MCU3_STATUS_SYSTEM_RUN_MODE_STATE_TEST (2u)
 
 typedef struct {
     bool ENCODER_FAULT;  /* false="False", true="True" */
     bool OVP_FAULT;  /* false="False", true="True" */
     bool UVP_FAULT;  /* false="False", true="True" */
     bool RECV_CTRL_LOSS_FAULT;  /* false="False", true="True" */
-    bool DIRECTION_STATE;  /* false="CW", true="CCW" */
-    float ID_REF;  /* A */
-    float IQ_REF;  /* A */
-    float VDC_FB;  /* V */
-    float POWER_FB;  /* P */
-    float TORQUE_FB;  /* NM */
-    uint8_t MCU_HEARTBEAT;
-} ttr_mcu3_status_1_t;
-
-void ttr_mcu3_status_1_unpack(ttr_mcu3_status_1_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu3_status_1_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_1_t *src);
-
-/* ===== MCU3_STATUS_2  (50 ms) ===== */
-#define TTR_CAN_ID_MCU3_STATUS_2   (0x502u)
-#define TTR_CAN_DLC_MCU3_STATUS_2  (16u)
-
-/* RUN_MODE_STATE enum values */
-#define TTR_MCU3_STATUS_2_RUN_MODE_STATE_TORQUE  (0u)
-#define TTR_MCU3_STATUS_2_RUN_MODE_STATE_SPEED   (1u)
-#define TTR_MCU3_STATUS_2_RUN_MODE_STATE_TEST    (2u)
-
-/* FLASH_LAST_ERROR_STATE enum values */
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_OK (0u)
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_VERSION (1u)
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_CRC (2u)
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_RANGE (3u)
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_ERASE (4u)
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_PROGRAM (5u)
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_VERIFY (6u)
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_APPLY_BLOCKED (7u)
-#define TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_UNKNOWN (8u)
-
-typedef struct {
-    uint8_t RUN_MODE_STATE;  /* see TTR_MCU3_STATUS_2_RUN_MODE_STATE_* */
-    bool RECV_MODE_BROADCAST_STATE;  /* false="False", true="True" */
-    bool RECV_MODE_STANDALONE_STATE;  /* false="False", true="True" */
-    uint8_t MCU_ID_STATE;
-    uint8_t FLASH_LAST_ERROR_STATE;  /* see TTR_MCU3_STATUS_2_FLASH_LAST_ERROR_STATE_* */
-    bool FW_EN_ECHO;  /* false="False", true="True" */
-    bool MTPA_EN_ECHO;  /* false="False", true="True" */
-    bool MOTOR_OTP_FAULT;  /* false="False", true="True" */
     bool U_GATE_OTP_FAULT;  /* false="False", true="True" */
     bool V_GATE_OTP_FAULT;  /* false="False", true="True" */
+    bool MOTOR_OTP_FAULT;  /* false="False", true="True" */
     bool W_GATE_OTP_FAULT;  /* false="False", true="True" */
+    bool DIRECTION_STATE;  /* false="CW", true="CCW" */
+    bool RECV_MODE_BROADCAST_STATE;  /* false="False", true="True" */
+    bool RECV_MODE_STANDALONE_STATE;  /* false="False", true="True" */
+    bool FW_EN_ECHO;  /* false="False", true="True" */
+    uint8_t RUN_MODE_STATE;  /* see TTR_MCU3_STATUS_SYSTEM_RUN_MODE_STATE_* */
     float TORQUE_CMD_ECHO;  /* C */
+    float TORQUE_FB;  /* NM */
+    float VDC_FB;  /* V */
+    float POWER_FB;  /* P */
     float MOTOR_TEMPERATURE_FB;  /* C */
     float U_PHASE_TEMPERATURE_FB;  /* C */
     float V_PHASE_TEMPERATURE_FB;  /* C */
     float W_PHASE_TEMPERATURE_FB;  /* C */
-} ttr_mcu3_status_2_t;
+    uint8_t MCU_HEARTBEAT;
+} ttr_mcu3_status_system_t;
 
-void ttr_mcu3_status_2_unpack(ttr_mcu3_status_2_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu3_status_2_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_2_t *src);
+void ttr_mcu3_status_system_unpack(ttr_mcu3_status_system_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_system_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_system_t *src);
 
-/* ===== MCU3_STATUS_U  (100 ms) ===== */
-#define TTR_CAN_ID_MCU3_STATUS_U   (0x504u)
-#define TTR_CAN_DLC_MCU3_STATUS_U  (8u)
+/* ===== MCU3_STATUS_FOC  (10 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_FOC   (0x502u)
+#define TTR_CAN_DLC_MCU3_STATUS_FOC  (12u)
+
+typedef struct {
+    float IQ_REF;  /* A */
+    float ID_REF;  /* A */
+    float ID_FW;  /* A */
+    float VD_REQ;  /* V */
+    float VQ_REQ;  /* V */
+    float VMAG;  /* V */
+    float VOUT_MAX;  /* V */
+} ttr_mcu3_status_foc_t;
+
+void ttr_mcu3_status_foc_unpack(ttr_mcu3_status_foc_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_foc_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_foc_t *src);
+
+/* ===== MCU3_STATUS_DEBUG  (50 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_DEBUG   (0x503u)
+#define TTR_CAN_DLC_MCU3_STATUS_DEBUG  (16u)
+
+/* FLASH_LAST_ERROR_STATE enum values */
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_OK (0u)
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_VERSION (1u)
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_CRC (2u)
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_RANGE (3u)
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_ERASE (4u)
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_PROGRAM (5u)
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_VERIFY (6u)
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_APPLY_BLOCKED (7u)
+#define TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_UNKNOWN (8u)
+
+/* RESET_CAUSE enum values */
+#define TTR_MCU3_STATUS_DEBUG_RESET_CAUSE_POR    (0u)
+#define TTR_MCU3_STATUS_DEBUG_RESET_CAUSE_WDRS   (1u)
+#define TTR_MCU3_STATUS_DEBUG_RESET_CAUSE_XRS    (2u)
+
+/* SOFT_STOP_REASON enum values */
+#define TTR_MCU3_STATUS_DEBUG_SOFT_STOP_REASON_SOFT_STOP_NONE (0u)
+#define TTR_MCU3_STATUS_DEBUG_SOFT_STOP_REASON_ENABLE_LOST (1u)
+#define TTR_MCU3_STATUS_DEBUG_SOFT_STOP_REASON_CAN_LOSS (2u)
+
+typedef struct {
+    float ISR_DURATION_US;  /* us */
+    uint16_t BOOT_COUNT;
+    uint16_t ENCODER_ERR_COUNT;
+    float PI_IQ_UI;
+    float PI_ID_UI;
+    uint8_t MCU_ID_STATE;
+    uint8_t FLASH_LAST_ERROR_STATE;  /* see TTR_MCU3_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_* */
+    uint8_t RESET_CAUSE;  /* see TTR_MCU3_STATUS_DEBUG_RESET_CAUSE_* */
+    uint8_t SOFT_STOP_REASON;  /* see TTR_MCU3_STATUS_DEBUG_SOFT_STOP_REASON_* */
+    uint16_t UPTIME_S;  /* s */
+    float ENCODER_THETA;  /* deg */
+} ttr_mcu3_status_debug_t;
+
+void ttr_mcu3_status_debug_unpack(ttr_mcu3_status_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_debug_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_debug_t *src);
+
+/* ===== MCU3_STATUS_GATE_U  (100 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_GATE_U   (0x504u)
+#define TTR_CAN_DLC_MCU3_STATUS_GATE_U  (8u)
 
 typedef struct {
     bool H_NLSE;  /* false="False", true="True" */
@@ -2023,54 +2146,14 @@ typedef struct {
     bool L_SASCAW;  /* false="False", true="True" */
     float TEMPERATURE;
     float VOLTAGE;
-} ttr_mcu3_status_u_t;
+} ttr_mcu3_status_gate_u_t;
 
-void ttr_mcu3_status_u_unpack(ttr_mcu3_status_u_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu3_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_u_t *src);
+void ttr_mcu3_status_gate_u_unpack(ttr_mcu3_status_gate_u_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_gate_u_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_gate_u_t *src);
 
-/* ===== MCU3_STATUS_V  (100 ms) ===== */
-#define TTR_CAN_ID_MCU3_STATUS_V   (0x505u)
-#define TTR_CAN_DLC_MCU3_STATUS_V  (8u)
-
-typedef struct {
-    bool H_NLSE;  /* false="False", true="True" */
-    bool H_OVLO2;  /* false="False", true="True" */
-    bool H_UVLO2;  /* false="False", true="True" */
-    bool H_OVLO3;  /* false="False", true="True" */
-    bool H_UVLO3;  /* false="False", true="True" */
-    bool H_BDW;  /* false="False", true="True" */
-    bool H_SASC;  /* false="False", true="True" */
-    bool H_DTW;  /* false="False", true="True" */
-    bool H_STPKW;  /* false="False", true="True" */
-    bool H_OSME;  /* false="False", true="True" */
-    bool H_GME;  /* false="False", true="True" */
-    bool H_DDE;  /* false="False", true="True" */
-    bool H_NDBISTW;  /* false="False", true="True" */
-    bool H_SASCAW;  /* false="False", true="True" */
-    bool L_NLSE;  /* false="False", true="True" */
-    bool L_OVLO2;  /* false="False", true="True" */
-    bool L_UVLO2;  /* false="False", true="True" */
-    bool L_OVLO3;  /* false="False", true="True" */
-    bool L_UVLO3;  /* false="False", true="True" */
-    bool L_BDW;  /* false="False", true="True" */
-    bool L_SASC;  /* false="False", true="True" */
-    bool L_DTW;  /* false="False", true="True" */
-    bool L_STPKW;  /* false="False", true="True" */
-    bool L_OSME;  /* false="False", true="True" */
-    bool L_GME;  /* false="False", true="True" */
-    bool L_DDE;  /* false="False", true="True" */
-    bool L_NDBISTW;  /* false="False", true="True" */
-    bool L_SASCAW;  /* false="False", true="True" */
-    float TEMPERATURE;
-    float VOLTAGE;
-} ttr_mcu3_status_v_t;
-
-void ttr_mcu3_status_v_unpack(ttr_mcu3_status_v_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu3_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_v_t *src);
-
-/* ===== MCU3_STATUS_W  (100 ms) ===== */
-#define TTR_CAN_ID_MCU3_STATUS_W   (0x506u)
-#define TTR_CAN_DLC_MCU3_STATUS_W  (8u)
+/* ===== MCU3_STATUS_GATE_V  (100 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_GATE_V   (0x505u)
+#define TTR_CAN_DLC_MCU3_STATUS_GATE_V  (8u)
 
 typedef struct {
     bool H_NLSE;  /* false="False", true="True" */
@@ -2103,14 +2186,54 @@ typedef struct {
     bool L_SASCAW;  /* false="False", true="True" */
     float TEMPERATURE;
     float VOLTAGE;
-} ttr_mcu3_status_w_t;
+} ttr_mcu3_status_gate_v_t;
 
-void ttr_mcu3_status_w_unpack(ttr_mcu3_status_w_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu3_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_w_t *src);
+void ttr_mcu3_status_gate_v_unpack(ttr_mcu3_status_gate_v_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_gate_v_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_gate_v_t *src);
 
-/* ===== MCU3_STATUS_CAN  (100 ms) ===== */
-#define TTR_CAN_ID_MCU3_STATUS_CAN   (0x507u)
-#define TTR_CAN_DLC_MCU3_STATUS_CAN  (16u)
+/* ===== MCU3_STATUS_GATE_W  (100 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_GATE_W   (0x506u)
+#define TTR_CAN_DLC_MCU3_STATUS_GATE_W  (8u)
+
+typedef struct {
+    bool H_NLSE;  /* false="False", true="True" */
+    bool H_OVLO2;  /* false="False", true="True" */
+    bool H_UVLO2;  /* false="False", true="True" */
+    bool H_OVLO3;  /* false="False", true="True" */
+    bool H_UVLO3;  /* false="False", true="True" */
+    bool H_BDW;  /* false="False", true="True" */
+    bool H_SASC;  /* false="False", true="True" */
+    bool H_DTW;  /* false="False", true="True" */
+    bool H_STPKW;  /* false="False", true="True" */
+    bool H_OSME;  /* false="False", true="True" */
+    bool H_GME;  /* false="False", true="True" */
+    bool H_DDE;  /* false="False", true="True" */
+    bool H_NDBISTW;  /* false="False", true="True" */
+    bool H_SASCAW;  /* false="False", true="True" */
+    bool L_NLSE;  /* false="False", true="True" */
+    bool L_OVLO2;  /* false="False", true="True" */
+    bool L_UVLO2;  /* false="False", true="True" */
+    bool L_OVLO3;  /* false="False", true="True" */
+    bool L_UVLO3;  /* false="False", true="True" */
+    bool L_BDW;  /* false="False", true="True" */
+    bool L_SASC;  /* false="False", true="True" */
+    bool L_DTW;  /* false="False", true="True" */
+    bool L_STPKW;  /* false="False", true="True" */
+    bool L_OSME;  /* false="False", true="True" */
+    bool L_GME;  /* false="False", true="True" */
+    bool L_DDE;  /* false="False", true="True" */
+    bool L_NDBISTW;  /* false="False", true="True" */
+    bool L_SASCAW;  /* false="False", true="True" */
+    float TEMPERATURE;
+    float VOLTAGE;
+} ttr_mcu3_status_gate_w_t;
+
+void ttr_mcu3_status_gate_w_unpack(ttr_mcu3_status_gate_w_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_gate_w_t *src);
+
+/* ===== MCU3_STATUS_COMM  (100 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_COMM   (0x507u)
+#define TTR_CAN_DLC_MCU3_STATUS_COMM  (16u)
 
 typedef struct {
     float CMD_MISS_CONSEC_AVG;
@@ -2121,10 +2244,10 @@ typedef struct {
     uint16_t BUS_OFF_COUNT;
     uint16_t TEC;
     uint16_t REC;
-} ttr_mcu3_status_can_t;
+} ttr_mcu3_status_comm_t;
 
-void ttr_mcu3_status_can_unpack(ttr_mcu3_status_can_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu3_status_can_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_can_t *src);
+void ttr_mcu3_status_comm_unpack(ttr_mcu3_status_comm_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_comm_t *src);
 
 /* ===== MCU3_INFO  (1000 ms) ===== */
 #define TTR_CAN_ID_MCU3_INFO   (0x514u)
@@ -2169,7 +2292,6 @@ void ttr_mcu3_parameter_control_pack(ttr_can_frame_t *frame, const ttr_mcu3_para
 typedef struct {
     float CURRENT_LINE_LIMIT;
     float CURRENT_ID_LIMIT;
-    float FW_ID_LIMIT;
     float TORQUE_LIMIT;
     float OVER_VOLTAGE_LIMIT;
     float UNDER_VOLTAGE_LIMIT;
@@ -2208,81 +2330,110 @@ typedef struct {
     float TORQUE_SLEW_NEG_NM_PER_S;
     float SPEED_SLEW_POS_RPM_PER_S;
     float SPEED_SLEW_NEG_RPM_PER_S;
-    float ID_MTPA_ATTACK_SLEW_A_PER_S;
-    float ID_MTPA_RELEASE_SLEW_A_PER_S;
-    float ID_FW_ATTACK_SLEW_A_PER_S;
-    float ID_FW_RELEASE_SLEW_A_PER_S;
 } ttr_mcu3_parameter_slew_rate_t;
 
 void ttr_mcu3_parameter_slew_rate_unpack(ttr_mcu3_parameter_slew_rate_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu3_parameter_slew_rate_pack(ttr_can_frame_t *frame, const ttr_mcu3_parameter_slew_rate_t *src);
 
-/* ===== MCU4_STATUS_1  (10 ms) ===== */
-#define TTR_CAN_ID_MCU4_STATUS_1   (0x521u)
-#define TTR_CAN_DLC_MCU4_STATUS_1  (12u)
+/* ===== MCU4_STATUS_SYSTEM  (10 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_SYSTEM   (0x521u)
+#define TTR_CAN_DLC_MCU4_STATUS_SYSTEM  (16u)
+
+/* RUN_MODE_STATE enum values */
+#define TTR_MCU4_STATUS_SYSTEM_RUN_MODE_STATE_TORQUE (0u)
+#define TTR_MCU4_STATUS_SYSTEM_RUN_MODE_STATE_SPEED (1u)
+#define TTR_MCU4_STATUS_SYSTEM_RUN_MODE_STATE_TEST (2u)
 
 typedef struct {
     bool ENCODER_FAULT;  /* false="False", true="True" */
     bool OVP_FAULT;  /* false="False", true="True" */
     bool UVP_FAULT;  /* false="False", true="True" */
     bool RECV_CTRL_LOSS_FAULT;  /* false="False", true="True" */
-    bool DIRECTION_STATE;  /* false="CW", true="CCW" */
-    float ID_REF;  /* A */
-    float IQ_REF;  /* A */
-    float VDC_FB;  /* V */
-    float POWER_FB;  /* P */
-    float TORQUE_FB;  /* NM */
-    uint8_t MCU_HEARTBEAT;
-} ttr_mcu4_status_1_t;
-
-void ttr_mcu4_status_1_unpack(ttr_mcu4_status_1_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu4_status_1_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_1_t *src);
-
-/* ===== MCU4_STATUS_2  (50 ms) ===== */
-#define TTR_CAN_ID_MCU4_STATUS_2   (0x522u)
-#define TTR_CAN_DLC_MCU4_STATUS_2  (16u)
-
-/* RUN_MODE_STATE enum values */
-#define TTR_MCU4_STATUS_2_RUN_MODE_STATE_TORQUE  (0u)
-#define TTR_MCU4_STATUS_2_RUN_MODE_STATE_SPEED   (1u)
-#define TTR_MCU4_STATUS_2_RUN_MODE_STATE_TEST    (2u)
-
-/* FLASH_LAST_ERROR_STATE enum values */
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_OK (0u)
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_VERSION (1u)
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_CRC (2u)
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_RANGE (3u)
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_ERASE (4u)
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_PROGRAM (5u)
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_VERIFY (6u)
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_APPLY_BLOCKED (7u)
-#define TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_UNKNOWN (8u)
-
-typedef struct {
-    uint8_t RUN_MODE_STATE;  /* see TTR_MCU4_STATUS_2_RUN_MODE_STATE_* */
-    bool RECV_MODE_BROADCAST_STATE;  /* false="False", true="True" */
-    bool RECV_MODE_STANDALONE_STATE;  /* false="False", true="True" */
-    uint8_t MCU_ID_STATE;
-    uint8_t FLASH_LAST_ERROR_STATE;  /* see TTR_MCU4_STATUS_2_FLASH_LAST_ERROR_STATE_* */
-    bool FW_EN_ECHO;  /* false="False", true="True" */
-    bool MTPA_EN_ECHO;  /* false="False", true="True" */
-    bool MOTOR_OTP_FAULT;  /* false="False", true="True" */
     bool U_GATE_OTP_FAULT;  /* false="False", true="True" */
     bool V_GATE_OTP_FAULT;  /* false="False", true="True" */
+    bool MOTOR_OTP_FAULT;  /* false="False", true="True" */
     bool W_GATE_OTP_FAULT;  /* false="False", true="True" */
+    bool DIRECTION_STATE;  /* false="CW", true="CCW" */
+    bool RECV_MODE_BROADCAST_STATE;  /* false="False", true="True" */
+    bool RECV_MODE_STANDALONE_STATE;  /* false="False", true="True" */
+    bool FW_EN_ECHO;  /* false="False", true="True" */
+    uint8_t RUN_MODE_STATE;  /* see TTR_MCU4_STATUS_SYSTEM_RUN_MODE_STATE_* */
     float TORQUE_CMD_ECHO;  /* C */
+    float TORQUE_FB;  /* NM */
+    float VDC_FB;  /* V */
+    float POWER_FB;  /* P */
     float MOTOR_TEMPERATURE_FB;  /* C */
     float U_PHASE_TEMPERATURE_FB;  /* C */
     float V_PHASE_TEMPERATURE_FB;  /* C */
     float W_PHASE_TEMPERATURE_FB;  /* C */
-} ttr_mcu4_status_2_t;
+    uint8_t MCU_HEARTBEAT;
+} ttr_mcu4_status_system_t;
 
-void ttr_mcu4_status_2_unpack(ttr_mcu4_status_2_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu4_status_2_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_2_t *src);
+void ttr_mcu4_status_system_unpack(ttr_mcu4_status_system_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_system_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_system_t *src);
 
-/* ===== MCU4_STATUS_U  (100 ms) ===== */
-#define TTR_CAN_ID_MCU4_STATUS_U   (0x524u)
-#define TTR_CAN_DLC_MCU4_STATUS_U  (8u)
+/* ===== MCU4_STATUS_FOC  (10 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_FOC   (0x522u)
+#define TTR_CAN_DLC_MCU4_STATUS_FOC  (12u)
+
+typedef struct {
+    float IQ_REF;  /* A */
+    float ID_REF;  /* A */
+    float ID_FW;  /* A */
+    float VD_REQ;  /* V */
+    float VQ_REQ;  /* V */
+    float VMAG;  /* V */
+    float VOUT_MAX;  /* V */
+} ttr_mcu4_status_foc_t;
+
+void ttr_mcu4_status_foc_unpack(ttr_mcu4_status_foc_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_foc_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_foc_t *src);
+
+/* ===== MCU4_STATUS_DEBUG  (50 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_DEBUG   (0x523u)
+#define TTR_CAN_DLC_MCU4_STATUS_DEBUG  (16u)
+
+/* FLASH_LAST_ERROR_STATE enum values */
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_OK (0u)
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_VERSION (1u)
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_CRC (2u)
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_RANGE (3u)
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_ERASE (4u)
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_PROGRAM (5u)
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_VERIFY (6u)
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_APPLY_BLOCKED (7u)
+#define TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_UNKNOWN (8u)
+
+/* RESET_CAUSE enum values */
+#define TTR_MCU4_STATUS_DEBUG_RESET_CAUSE_POR    (0u)
+#define TTR_MCU4_STATUS_DEBUG_RESET_CAUSE_WDRS   (1u)
+#define TTR_MCU4_STATUS_DEBUG_RESET_CAUSE_XRS    (2u)
+
+/* SOFT_STOP_REASON enum values */
+#define TTR_MCU4_STATUS_DEBUG_SOFT_STOP_REASON_SOFT_STOP_NONE (0u)
+#define TTR_MCU4_STATUS_DEBUG_SOFT_STOP_REASON_ENABLE_LOST (1u)
+#define TTR_MCU4_STATUS_DEBUG_SOFT_STOP_REASON_CAN_LOSS (2u)
+
+typedef struct {
+    float ISR_DURATION_US;  /* us */
+    uint16_t BOOT_COUNT;
+    uint16_t ENCODER_ERR_COUNT;
+    float PI_IQ_UI;
+    float PI_ID_UI;
+    uint8_t MCU_ID_STATE;
+    uint8_t FLASH_LAST_ERROR_STATE;  /* see TTR_MCU4_STATUS_DEBUG_FLASH_LAST_ERROR_STATE_* */
+    uint8_t RESET_CAUSE;  /* see TTR_MCU4_STATUS_DEBUG_RESET_CAUSE_* */
+    uint8_t SOFT_STOP_REASON;  /* see TTR_MCU4_STATUS_DEBUG_SOFT_STOP_REASON_* */
+    uint16_t UPTIME_S;  /* s */
+    float ENCODER_THETA;  /* deg */
+} ttr_mcu4_status_debug_t;
+
+void ttr_mcu4_status_debug_unpack(ttr_mcu4_status_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_debug_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_debug_t *src);
+
+/* ===== MCU4_STATUS_GATE_U  (100 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_GATE_U   (0x524u)
+#define TTR_CAN_DLC_MCU4_STATUS_GATE_U  (8u)
 
 typedef struct {
     bool H_NLSE;  /* false="False", true="True" */
@@ -2315,54 +2466,14 @@ typedef struct {
     bool L_SASCAW;  /* false="False", true="True" */
     float TEMPERATURE;
     float VOLTAGE;
-} ttr_mcu4_status_u_t;
+} ttr_mcu4_status_gate_u_t;
 
-void ttr_mcu4_status_u_unpack(ttr_mcu4_status_u_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu4_status_u_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_u_t *src);
+void ttr_mcu4_status_gate_u_unpack(ttr_mcu4_status_gate_u_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_gate_u_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_gate_u_t *src);
 
-/* ===== MCU4_STATUS_V  (100 ms) ===== */
-#define TTR_CAN_ID_MCU4_STATUS_V   (0x525u)
-#define TTR_CAN_DLC_MCU4_STATUS_V  (8u)
-
-typedef struct {
-    bool H_NLSE;  /* false="False", true="True" */
-    bool H_OVLO2;  /* false="False", true="True" */
-    bool H_UVLO2;  /* false="False", true="True" */
-    bool H_OVLO3;  /* false="False", true="True" */
-    bool H_UVLO3;  /* false="False", true="True" */
-    bool H_BDW;  /* false="False", true="True" */
-    bool H_SASC;  /* false="False", true="True" */
-    bool H_DTW;  /* false="False", true="True" */
-    bool H_STPKW;  /* false="False", true="True" */
-    bool H_OSME;  /* false="False", true="True" */
-    bool H_GME;  /* false="False", true="True" */
-    bool H_DDE;  /* false="False", true="True" */
-    bool H_NDBISTW;  /* false="False", true="True" */
-    bool H_SASCAW;  /* false="False", true="True" */
-    bool L_NLSE;  /* false="False", true="True" */
-    bool L_OVLO2;  /* false="False", true="True" */
-    bool L_UVLO2;  /* false="False", true="True" */
-    bool L_OVLO3;  /* false="False", true="True" */
-    bool L_UVLO3;  /* false="False", true="True" */
-    bool L_BDW;  /* false="False", true="True" */
-    bool L_SASC;  /* false="False", true="True" */
-    bool L_DTW;  /* false="False", true="True" */
-    bool L_STPKW;  /* false="False", true="True" */
-    bool L_OSME;  /* false="False", true="True" */
-    bool L_GME;  /* false="False", true="True" */
-    bool L_DDE;  /* false="False", true="True" */
-    bool L_NDBISTW;  /* false="False", true="True" */
-    bool L_SASCAW;  /* false="False", true="True" */
-    float TEMPERATURE;
-    float VOLTAGE;
-} ttr_mcu4_status_v_t;
-
-void ttr_mcu4_status_v_unpack(ttr_mcu4_status_v_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu4_status_v_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_v_t *src);
-
-/* ===== MCU4_STATUS_W  (100 ms) ===== */
-#define TTR_CAN_ID_MCU4_STATUS_W   (0x526u)
-#define TTR_CAN_DLC_MCU4_STATUS_W  (8u)
+/* ===== MCU4_STATUS_GATE_V  (100 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_GATE_V   (0x525u)
+#define TTR_CAN_DLC_MCU4_STATUS_GATE_V  (8u)
 
 typedef struct {
     bool H_NLSE;  /* false="False", true="True" */
@@ -2395,14 +2506,54 @@ typedef struct {
     bool L_SASCAW;  /* false="False", true="True" */
     float TEMPERATURE;
     float VOLTAGE;
-} ttr_mcu4_status_w_t;
+} ttr_mcu4_status_gate_v_t;
 
-void ttr_mcu4_status_w_unpack(ttr_mcu4_status_w_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu4_status_w_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_w_t *src);
+void ttr_mcu4_status_gate_v_unpack(ttr_mcu4_status_gate_v_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_gate_v_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_gate_v_t *src);
 
-/* ===== MCU4_STATUS_CAN  (100 ms) ===== */
-#define TTR_CAN_ID_MCU4_STATUS_CAN   (0x527u)
-#define TTR_CAN_DLC_MCU4_STATUS_CAN  (16u)
+/* ===== MCU4_STATUS_GATE_W  (100 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_GATE_W   (0x526u)
+#define TTR_CAN_DLC_MCU4_STATUS_GATE_W  (8u)
+
+typedef struct {
+    bool H_NLSE;  /* false="False", true="True" */
+    bool H_OVLO2;  /* false="False", true="True" */
+    bool H_UVLO2;  /* false="False", true="True" */
+    bool H_OVLO3;  /* false="False", true="True" */
+    bool H_UVLO3;  /* false="False", true="True" */
+    bool H_BDW;  /* false="False", true="True" */
+    bool H_SASC;  /* false="False", true="True" */
+    bool H_DTW;  /* false="False", true="True" */
+    bool H_STPKW;  /* false="False", true="True" */
+    bool H_OSME;  /* false="False", true="True" */
+    bool H_GME;  /* false="False", true="True" */
+    bool H_DDE;  /* false="False", true="True" */
+    bool H_NDBISTW;  /* false="False", true="True" */
+    bool H_SASCAW;  /* false="False", true="True" */
+    bool L_NLSE;  /* false="False", true="True" */
+    bool L_OVLO2;  /* false="False", true="True" */
+    bool L_UVLO2;  /* false="False", true="True" */
+    bool L_OVLO3;  /* false="False", true="True" */
+    bool L_UVLO3;  /* false="False", true="True" */
+    bool L_BDW;  /* false="False", true="True" */
+    bool L_SASC;  /* false="False", true="True" */
+    bool L_DTW;  /* false="False", true="True" */
+    bool L_STPKW;  /* false="False", true="True" */
+    bool L_OSME;  /* false="False", true="True" */
+    bool L_GME;  /* false="False", true="True" */
+    bool L_DDE;  /* false="False", true="True" */
+    bool L_NDBISTW;  /* false="False", true="True" */
+    bool L_SASCAW;  /* false="False", true="True" */
+    float TEMPERATURE;
+    float VOLTAGE;
+} ttr_mcu4_status_gate_w_t;
+
+void ttr_mcu4_status_gate_w_unpack(ttr_mcu4_status_gate_w_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_gate_w_t *src);
+
+/* ===== MCU4_STATUS_COMM  (100 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_COMM   (0x527u)
+#define TTR_CAN_DLC_MCU4_STATUS_COMM  (16u)
 
 typedef struct {
     float CMD_MISS_CONSEC_AVG;
@@ -2413,10 +2564,10 @@ typedef struct {
     uint16_t BUS_OFF_COUNT;
     uint16_t TEC;
     uint16_t REC;
-} ttr_mcu4_status_can_t;
+} ttr_mcu4_status_comm_t;
 
-void ttr_mcu4_status_can_unpack(ttr_mcu4_status_can_t *dst, const ttr_can_frame_t *frame);
-void ttr_mcu4_status_can_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_can_t *src);
+void ttr_mcu4_status_comm_unpack(ttr_mcu4_status_comm_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_comm_t *src);
 
 /* ===== MCU4_INFO  (1000 ms) ===== */
 #define TTR_CAN_ID_MCU4_INFO   (0x534u)
@@ -2461,7 +2612,6 @@ void ttr_mcu4_parameter_control_pack(ttr_can_frame_t *frame, const ttr_mcu4_para
 typedef struct {
     float CURRENT_LINE_LIMIT;
     float CURRENT_ID_LIMIT;
-    float FW_ID_LIMIT;
     float TORQUE_LIMIT;
     float OVER_VOLTAGE_LIMIT;
     float UNDER_VOLTAGE_LIMIT;
@@ -2500,10 +2650,6 @@ typedef struct {
     float TORQUE_SLEW_NEG_NM_PER_S;
     float SPEED_SLEW_POS_RPM_PER_S;
     float SPEED_SLEW_NEG_RPM_PER_S;
-    float ID_MTPA_ATTACK_SLEW_A_PER_S;
-    float ID_MTPA_RELEASE_SLEW_A_PER_S;
-    float ID_FW_ATTACK_SLEW_A_PER_S;
-    float ID_FW_RELEASE_SLEW_A_PER_S;
 } ttr_mcu4_parameter_slew_rate_t;
 
 void ttr_mcu4_parameter_slew_rate_unpack(ttr_mcu4_parameter_slew_rate_t *dst, const ttr_can_frame_t *frame);
@@ -2531,7 +2677,7 @@ typedef struct {
 void ttr_imu_front_imu_front_rateofturn_unpack(ttr_imu_front_imu_front_rateofturn_t *dst, const ttr_can_frame_t *frame);
 void ttr_imu_front_imu_front_rateofturn_pack(ttr_can_frame_t *frame, const ttr_imu_front_imu_front_rateofturn_t *src);
 
-/* ===== IMU_FRONT_IMU_FRONT_ACCELERATION  (2.5 ms) ===== */
+/* ===== IMU_FRONT_IMU_FRONT_ACCELERATION  (3 ms) ===== */
 #define TTR_CAN_ID_IMU_FRONT_IMU_FRONT_ACCELERATION   (0x582u)
 #define TTR_CAN_DLC_IMU_FRONT_IMU_FRONT_ACCELERATION  (8u)
 
@@ -2547,8 +2693,8 @@ typedef struct {
     ttr_charger_ams_control_t charger_ams_control;  /* RX, event-based */
     ttr_vcu_vcu_sensor1_t vcu_vcu_sensor1;  /* RX, 6 ms */
     ttr_vcu_vcu_sensor2_t vcu_vcu_sensor2;  /* RX, 6 ms */
-    ttr_vcu_vcu_sensor3_t vcu_vcu_sensor3;  /* RX, 6 ms */
-    ttr_ams_ams_status0_t ams_ams_status0;  /* TX, 20 ms */
+    ttr_ams_ams_status_basic_t ams_ams_status_basic;  /* TX, 20 ms */
+    ttr_ams_ams_status_limit_t ams_ams_status_limit;  /* TX, 20 ms */
     ttr_ams_ams_module_1_t ams_ams_module_1;  /* TX, 20 ms */
     ttr_ams_ams_module_2_t ams_ams_module_2;  /* TX, 20 ms */
     ttr_ams_ams_module_3_t ams_ams_module_3;  /* TX, 20 ms */
@@ -2600,6 +2746,7 @@ typedef struct {
     ttr_debug_mcu2_parameter_slew_rate_t debug_mcu2_parameter_slew_rate;  /* TX, 1000 ms */
     ttr_debug_mcu3_parameter_slew_rate_t debug_mcu3_parameter_slew_rate;  /* TX, 1000 ms */
     ttr_debug_mcu4_parameter_slew_rate_t debug_mcu4_parameter_slew_rate;  /* TX, 1000 ms */
+    ttr_debug_dtu_control_t debug_dtu_control;  /* TX, event-based */
 } ttr_ecu_debug_t;
 
 extern ttr_ecu_debug_t ttr_ecu_debug;   /* ready-to-use, zero-initialised */
@@ -2611,7 +2758,7 @@ bool ttr_ecu_debug_dispatch(ttr_ecu_debug_t *ecu, const ttr_can_frame_t *frame);
 typedef struct {
     ttr_imu_front_imu_front_quaternion_t imu_front_imu_front_quaternion;  /* TX, 2.5 ms */
     ttr_imu_front_imu_front_rateofturn_t imu_front_imu_front_rateofturn;  /* TX, 2.5 ms */
-    ttr_imu_front_imu_front_acceleration_t imu_front_imu_front_acceleration;  /* TX, 2.5 ms */
+    ttr_imu_front_imu_front_acceleration_t imu_front_imu_front_acceleration;  /* TX, 3 ms */
 } ttr_ecu_imu_front_t;
 
 extern ttr_ecu_imu_front_t ttr_ecu_imu_front;   /* ready-to-use, zero-initialised */
@@ -2623,19 +2770,20 @@ bool ttr_ecu_imu_front_dispatch(ttr_ecu_imu_front_t *ecu, const ttr_can_frame_t 
 typedef struct {
     ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 2 ms */
     ttr_vcu_mcu1_status_control_t vcu_mcu1_status_control;  /* RX, 100 ms */
-    ttr_mcu1_status_0_t mcu1_status_0;  /* TX, 2 ms */
+    ttr_mcu1_status_core_t mcu1_status_core;  /* TX, 2 ms */
     ttr_debug_mcu1_ctrl_t debug_mcu1_ctrl;  /* RX, event-based */
     ttr_debug_mcu1_parameter_control_t debug_mcu1_parameter_control;  /* RX, event-based */
     ttr_debug_mcu1_parameter_limit_t debug_mcu1_parameter_limit;  /* RX, event-based */
     ttr_debug_mcu1_parameter_offset_t debug_mcu1_parameter_offset;  /* RX, event-based */
     ttr_debug_mcu1_parameter_ctrl_cmd_t debug_mcu1_parameter_ctrl_cmd;  /* RX, event-based */
     ttr_debug_mcu1_parameter_slew_rate_t debug_mcu1_parameter_slew_rate;  /* RX, 1000 ms */
-    ttr_mcu1_status_1_t mcu1_status_1;  /* TX, 10 ms */
-    ttr_mcu1_status_2_t mcu1_status_2;  /* TX, 50 ms */
-    ttr_mcu1_status_u_t mcu1_status_u;  /* TX, 100 ms */
-    ttr_mcu1_status_v_t mcu1_status_v;  /* TX, 100 ms */
-    ttr_mcu1_status_w_t mcu1_status_w;  /* TX, 100 ms */
-    ttr_mcu1_status_can_t mcu1_status_can;  /* TX, 100 ms */
+    ttr_mcu1_status_system_t mcu1_status_system;  /* TX, 10 ms */
+    ttr_mcu1_status_foc_t mcu1_status_foc;  /* TX, 10 ms */
+    ttr_mcu1_status_debug_t mcu1_status_debug;  /* TX, 50 ms */
+    ttr_mcu1_status_gate_u_t mcu1_status_gate_u;  /* TX, 100 ms */
+    ttr_mcu1_status_gate_v_t mcu1_status_gate_v;  /* TX, 100 ms */
+    ttr_mcu1_status_gate_w_t mcu1_status_gate_w;  /* TX, 100 ms */
+    ttr_mcu1_status_comm_t mcu1_status_comm;  /* TX, 100 ms */
     ttr_mcu1_info_t mcu1_info;  /* TX, 1000 ms */
     ttr_mcu1_parameter_control_t mcu1_parameter_control;  /* TX, 1000 ms */
     ttr_mcu1_parameter_limit_t mcu1_parameter_limit;  /* TX, 1000 ms */
@@ -2652,19 +2800,20 @@ bool ttr_ecu_mcu1_dispatch(ttr_ecu_mcu1_t *ecu, const ttr_can_frame_t *frame);
 typedef struct {
     ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 2 ms */
     ttr_vcu_mcu2_status_control_t vcu_mcu2_status_control;  /* RX, 100 ms */
-    ttr_mcu2_status_0_t mcu2_status_0;  /* TX, 2 ms */
+    ttr_mcu2_status_core_t mcu2_status_core;  /* TX, 2 ms */
     ttr_debug_mcu2_ctrl_t debug_mcu2_ctrl;  /* RX, event-based */
     ttr_debug_mcu2_parameter_control_t debug_mcu2_parameter_control;  /* RX, event-based */
     ttr_debug_mcu2_parameter_limit_t debug_mcu2_parameter_limit;  /* RX, event-based */
     ttr_debug_mcu2_parameter_offset_t debug_mcu2_parameter_offset;  /* RX, event-based */
     ttr_debug_mcu2_parameter_ctrl_cmd_t debug_mcu2_parameter_ctrl_cmd;  /* RX, event-based */
     ttr_debug_mcu2_parameter_slew_rate_t debug_mcu2_parameter_slew_rate;  /* RX, 1000 ms */
-    ttr_mcu2_status_1_t mcu2_status_1;  /* TX, 10 ms */
-    ttr_mcu2_status_2_t mcu2_status_2;  /* TX, 50 ms */
-    ttr_mcu2_status_u_t mcu2_status_u;  /* TX, 100 ms */
-    ttr_mcu2_status_v_t mcu2_status_v;  /* TX, 100 ms */
-    ttr_mcu2_status_w_t mcu2_status_w;  /* TX, 100 ms */
-    ttr_mcu2_status_can_t mcu2_status_can;  /* TX, 100 ms */
+    ttr_mcu2_status_system_t mcu2_status_system;  /* TX, 10 ms */
+    ttr_mcu2_status_foc_t mcu2_status_foc;  /* TX, 10 ms */
+    ttr_mcu2_status_debug_t mcu2_status_debug;  /* TX, 50 ms */
+    ttr_mcu2_status_gate_u_t mcu2_status_gate_u;  /* TX, 100 ms */
+    ttr_mcu2_status_gate_v_t mcu2_status_gate_v;  /* TX, 100 ms */
+    ttr_mcu2_status_gate_w_t mcu2_status_gate_w;  /* TX, 100 ms */
+    ttr_mcu2_status_comm_t mcu2_status_comm;  /* TX, 100 ms */
     ttr_mcu2_info_t mcu2_info;  /* TX, 1000 ms */
     ttr_mcu2_parameter_control_t mcu2_parameter_control;  /* TX, 1000 ms */
     ttr_mcu2_parameter_limit_t mcu2_parameter_limit;  /* TX, 1000 ms */
@@ -2681,19 +2830,20 @@ bool ttr_ecu_mcu2_dispatch(ttr_ecu_mcu2_t *ecu, const ttr_can_frame_t *frame);
 typedef struct {
     ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 2 ms */
     ttr_vcu_mcu3_status_control_t vcu_mcu3_status_control;  /* RX, 100 ms */
-    ttr_mcu3_status_0_t mcu3_status_0;  /* TX, 2 ms */
+    ttr_mcu3_status_core_t mcu3_status_core;  /* TX, 2 ms */
     ttr_debug_mcu3_ctrl_t debug_mcu3_ctrl;  /* RX, event-based */
     ttr_debug_mcu3_parameter_control_t debug_mcu3_parameter_control;  /* RX, event-based */
     ttr_debug_mcu3_parameter_limit_t debug_mcu3_parameter_limit;  /* RX, event-based */
     ttr_debug_mcu3_parameter_offset_t debug_mcu3_parameter_offset;  /* RX, event-based */
     ttr_debug_mcu3_parameter_ctrl_cmd_t debug_mcu3_parameter_ctrl_cmd;  /* RX, event-based */
     ttr_debug_mcu3_parameter_slew_rate_t debug_mcu3_parameter_slew_rate;  /* RX, 1000 ms */
-    ttr_mcu3_status_1_t mcu3_status_1;  /* TX, 10 ms */
-    ttr_mcu3_status_2_t mcu3_status_2;  /* TX, 50 ms */
-    ttr_mcu3_status_u_t mcu3_status_u;  /* TX, 100 ms */
-    ttr_mcu3_status_v_t mcu3_status_v;  /* TX, 100 ms */
-    ttr_mcu3_status_w_t mcu3_status_w;  /* TX, 100 ms */
-    ttr_mcu3_status_can_t mcu3_status_can;  /* TX, 100 ms */
+    ttr_mcu3_status_system_t mcu3_status_system;  /* TX, 10 ms */
+    ttr_mcu3_status_foc_t mcu3_status_foc;  /* TX, 10 ms */
+    ttr_mcu3_status_debug_t mcu3_status_debug;  /* TX, 50 ms */
+    ttr_mcu3_status_gate_u_t mcu3_status_gate_u;  /* TX, 100 ms */
+    ttr_mcu3_status_gate_v_t mcu3_status_gate_v;  /* TX, 100 ms */
+    ttr_mcu3_status_gate_w_t mcu3_status_gate_w;  /* TX, 100 ms */
+    ttr_mcu3_status_comm_t mcu3_status_comm;  /* TX, 100 ms */
     ttr_mcu3_info_t mcu3_info;  /* TX, 1000 ms */
     ttr_mcu3_parameter_control_t mcu3_parameter_control;  /* TX, 1000 ms */
     ttr_mcu3_parameter_limit_t mcu3_parameter_limit;  /* TX, 1000 ms */
@@ -2710,19 +2860,20 @@ bool ttr_ecu_mcu3_dispatch(ttr_ecu_mcu3_t *ecu, const ttr_can_frame_t *frame);
 typedef struct {
     ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 2 ms */
     ttr_vcu_mcu4_status_control_t vcu_mcu4_status_control;  /* RX, 100 ms */
-    ttr_mcu4_status_0_t mcu4_status_0;  /* TX, 2 ms */
+    ttr_mcu4_status_core_t mcu4_status_core;  /* TX, 2 ms */
     ttr_debug_mcu4_ctrl_t debug_mcu4_ctrl;  /* RX, event-based */
     ttr_debug_mcu4_parameter_control_t debug_mcu4_parameter_control;  /* RX, event-based */
     ttr_debug_mcu4_parameter_limit_t debug_mcu4_parameter_limit;  /* RX, event-based */
     ttr_debug_mcu4_parameter_offset_t debug_mcu4_parameter_offset;  /* RX, event-based */
     ttr_debug_mcu4_parameter_ctrl_cmd_t debug_mcu4_parameter_ctrl_cmd;  /* RX, event-based */
     ttr_debug_mcu4_parameter_slew_rate_t debug_mcu4_parameter_slew_rate;  /* RX, 1000 ms */
-    ttr_mcu4_status_1_t mcu4_status_1;  /* TX, 10 ms */
-    ttr_mcu4_status_2_t mcu4_status_2;  /* TX, 50 ms */
-    ttr_mcu4_status_u_t mcu4_status_u;  /* TX, 100 ms */
-    ttr_mcu4_status_v_t mcu4_status_v;  /* TX, 100 ms */
-    ttr_mcu4_status_w_t mcu4_status_w;  /* TX, 100 ms */
-    ttr_mcu4_status_can_t mcu4_status_can;  /* TX, 100 ms */
+    ttr_mcu4_status_system_t mcu4_status_system;  /* TX, 10 ms */
+    ttr_mcu4_status_foc_t mcu4_status_foc;  /* TX, 10 ms */
+    ttr_mcu4_status_debug_t mcu4_status_debug;  /* TX, 50 ms */
+    ttr_mcu4_status_gate_u_t mcu4_status_gate_u;  /* TX, 100 ms */
+    ttr_mcu4_status_gate_v_t mcu4_status_gate_v;  /* TX, 100 ms */
+    ttr_mcu4_status_gate_w_t mcu4_status_gate_w;  /* TX, 100 ms */
+    ttr_mcu4_status_comm_t mcu4_status_comm;  /* TX, 100 ms */
     ttr_mcu4_info_t mcu4_info;  /* TX, 1000 ms */
     ttr_mcu4_parameter_control_t mcu4_parameter_control;  /* TX, 1000 ms */
     ttr_mcu4_parameter_limit_t mcu4_parameter_limit;  /* TX, 1000 ms */
@@ -2742,21 +2893,22 @@ typedef struct {
     ttr_vcu_mcu2_status_control_t vcu_mcu2_status_control;  /* TX, 100 ms */
     ttr_vcu_mcu3_status_control_t vcu_mcu3_status_control;  /* TX, 100 ms */
     ttr_vcu_mcu4_status_control_t vcu_mcu4_status_control;  /* TX, 100 ms */
-    ttr_mcu1_status_0_t mcu1_status_0;  /* RX, 2 ms */
-    ttr_mcu2_status_0_t mcu2_status_0;  /* RX, 2 ms */
-    ttr_mcu3_status_0_t mcu3_status_0;  /* RX, 2 ms */
-    ttr_mcu4_status_0_t mcu4_status_0;  /* RX, 2 ms */
+    ttr_mcu1_status_core_t mcu1_status_core;  /* RX, 2 ms */
+    ttr_mcu2_status_core_t mcu2_status_core;  /* RX, 2 ms */
+    ttr_mcu3_status_core_t mcu3_status_core;  /* RX, 2 ms */
+    ttr_mcu4_status_core_t mcu4_status_core;  /* RX, 2 ms */
+    ttr_debug_dtu_control_t debug_dtu_control;  /* RX, event-based */
     ttr_vcu_vcu_state_t vcu_vcu_state;  /* TX, 10 ms */
     ttr_vcu_vcu_error_t vcu_vcu_error;  /* TX, 10 ms */
     ttr_vcu_vcu_online_t vcu_vcu_online;  /* TX, 20 ms */
     ttr_vcu_vcu_sdc_t vcu_vcu_sdc;  /* TX, 20 ms */
     ttr_vcu_vcu_io_t vcu_vcu_io;  /* TX, 50 ms */
     ttr_vcu_vcu_cpu_task_status_t vcu_vcu_cpu_task_status;  /* TX, 100 ms */
+    ttr_vcu_vcu_system_status_t vcu_vcu_system_status;  /* TX, 10 ms */
     ttr_vcu_vcu_mcu_can_status_t vcu_vcu_mcu_can_status;  /* TX, 100 ms */
     ttr_vcu_vcu_dyc_status_t vcu_vcu_dyc_status;  /* TX, 10 ms */
     ttr_vcu_vcu_sensor1_t vcu_vcu_sensor1;  /* TX, 6 ms */
     ttr_vcu_vcu_sensor2_t vcu_vcu_sensor2;  /* TX, 6 ms */
-    ttr_vcu_vcu_sensor3_t vcu_vcu_sensor3;  /* TX, 6 ms */
     ttr_vcu_vcu_imu_q_t vcu_vcu_imu_q;  /* TX, 6 ms */
     ttr_vcu_vcu_imu_acc_t vcu_vcu_imu_acc;  /* TX, 6 ms */
     ttr_vcu_vcu_imu_rot_t vcu_vcu_imu_rot;  /* TX, 6 ms */

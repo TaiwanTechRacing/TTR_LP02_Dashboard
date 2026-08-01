@@ -70,6 +70,10 @@ static void decode_one(const ttr_can_frame_t *frame)
         /* 原本這裡是 12 行 read-modify-write 的 bit 搬移,而且位移量從 4 開始
          * (歷史遺留的偏移)。現在 bit 0 就是第一個節點,對齊 vd_sdc_node_t。 */
         uint16_t sdc = 0;
+        sdc |= (uint16_t)((s.IMD_STATUS    & 1u) << VD_SDC_IMD);
+        sdc |= (uint16_t)((s.AMS_STATUS    & 1u) << VD_SDC_AMS);
+        sdc |= (uint16_t)((s.BSPD_STATUS   & 1u) << VD_SDC_BSPD);
+        sdc |= (uint16_t)((s.PDOC_STATUS   & 1u) << VD_SDC_PDOC);
         sdc |= (uint16_t)((s.CSB_STATUS    & 1u) << VD_SDC_CSB);
         sdc |= (uint16_t)((s.LSB_STATUS    & 1u) << VD_SDC_LSB);
         sdc |= (uint16_t)((s.RSB_STATUS    & 1u) << VD_SDC_RSB);
@@ -103,16 +107,18 @@ static void decode_one(const ttr_can_frame_t *frame)
          * 是順時針增加,方向盤是逆時針為正)。 */
         g_vehicle.steering_pct  = 100.0f - (s.STEERING_ANGLE + 180.0f) / 360.0f * 100.0f;
         g_vehicle.apps1_pu      = s.APPS1_PU;
-        g_vehicle.car_speed_kph = s.CAR_SPEED;
+        g_vehicle.car_speed_kph = (uint16_t)(s.CAR_SPEED + 0.5f);   /* 新 DBC 是 float */
         VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR2);
         break;
     }
 
-    case TTR_CAN_ID_VCU_VCU_SENSOR3: {
-        ttr_vcu_vcu_sensor3_t s;
-        ttr_vcu_vcu_sensor3_unpack(&s, frame);
+    /* 低壓電池。舊 DBC 放在 VCU_SENSOR3,新版搬到 VCU_SYSTEM_STATUS。 */
+    case TTR_CAN_ID_VCU_VCU_SYSTEM_STATUS: {
+        ttr_vcu_vcu_system_status_t s;
+        ttr_vcu_vcu_system_status_unpack(&s, frame);
         g_vehicle.glv_voltage = s.GLV_VOLTAGE;
-        VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR3);
+        g_vehicle.glv_current = s.GLV_CURRENT;
+        VehicleData_MarkFresh(VD_GROUP_VCU_SYSTEM);
         break;
     }
 
@@ -138,15 +144,25 @@ static void decode_one(const ttr_can_frame_t *frame)
         break;
     }
 
-    case TTR_CAN_ID_AMS_AMS_STATUS0: {
-        ttr_ams_ams_status0_t s;
-        ttr_ams_ams_status0_unpack(&s, frame);
-        g_vehicle.pack_voltage   = s.PACK_VOLTAGE;
-        g_vehicle.pack_soc       = s.PACK_SOC;
-        g_vehicle.temp_max       = s.TEMPERATURE_MAX;
-        g_vehicle.temp_min       = s.TEMPERATURE_MIN;
-        g_vehicle.temp_delta     = s.TEMPERATURE_DELTA;
-        g_vehicle.cell_over_temp = s.CELL_OVER_TEMP_ERR;
+    /* 高壓電池。舊 DBC 是單一則 AMS_STATUS0,新版拆成 BASIC + LIMIT,
+     * 儀表要顯示的東西全部落在 BASIC。 */
+    case TTR_CAN_ID_AMS_AMS_STATUS_BASIC: {
+        ttr_ams_ams_status_basic_t s;
+        ttr_ams_ams_status_basic_unpack(&s, frame);
+        g_vehicle.pack_voltage    = s.PACK_VOLTAGE;
+        g_vehicle.pack_soc        = s.PACK_SOC;
+        g_vehicle.pack_current    = s.PACK_CURRENT;
+        g_vehicle.pack_power      = s.PACK_POWER;
+        g_vehicle.temp_max        = s.TEMPERATURE_MAX;
+        g_vehicle.temp_min        = s.TEMPERATURE_MIN;
+        g_vehicle.temp_delta      = s.TEMPERATURE_DELTA;
+        g_vehicle.cell_v_min      = s.CELL_V_MIN;
+        g_vehicle.cell_v_max      = s.CELL_V_MAX;
+        g_vehicle.cell_v_delta    = s.CELL_V_DELTA;
+        g_vehicle.ams_state       = s.AMS_STATE;
+        g_vehicle.cell_over_temp  = s.CELL_OVER_TEMP_ERR;
+        g_vehicle.cell_over_volt  = s.CELL_OVER_VOLT_ERR;
+        g_vehicle.cell_under_volt = s.CELL_UNDER_VOLT_ERR;
         VehicleData_MarkFresh(VD_GROUP_AMS_STATUS);
         break;
     }
