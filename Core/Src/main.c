@@ -35,6 +35,7 @@
 #include "bsp_qspi.h"
 #include "vehicle_data.h"
 #include "can_decode.h"
+#include "ui_bind.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -315,6 +316,7 @@ int main(void)
       welcome_done = true;
       screen_ID_now = 1;
       loadScreen(screens[screen_ID_now]);
+      UIBind_StartStartupSweep();
     }
 
     /*
@@ -328,6 +330,7 @@ int main(void)
     {
       last_ui_update = now;
       ui_tick();
+      UIBind_ApplyDynamicStyles();
     }
 
     if ((now - last_button_scan) >= BUTTON_SCAN_PERIOD_MS)

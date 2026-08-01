@@ -31,14 +31,11 @@ void create_screen_welcome() {
     {
         lv_obj_t *parent_obj = obj;
         {
-            // tt
             lv_obj_t *obj = lv_image_create(parent_obj);
-            objects.tt = obj;
-            lv_obj_set_pos(obj, 131, 97);
+            lv_obj_set_pos(obj, 128, 106);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_image_set_src(obj, &img_ttr_logo_2);
             lv_image_set_scale(obj, 500);
-            lv_image_set_inner_align(obj, LV_IMAGE_ALIGN_DEFAULT);
         }
     }
     
@@ -60,8 +57,9 @@ void create_screen_main() {
             // readyLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.ready_label = obj;
-            lv_obj_set_pos(obj, -119, 102);
+            lv_obj_set_pos(obj, -119, 103);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_recolor(obj, true);
             add_style_text(obj);
             lv_obj_set_style_text_color(obj, lv_color_hex(0x3fff00), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -72,7 +70,7 @@ void create_screen_main() {
             // hvSOCLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.hv_soc_label = obj;
-            lv_obj_set_pos(obj, 397, 206);
+            lv_obj_set_pos(obj, 389, 195);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -82,14 +80,14 @@ void create_screen_main() {
             // lvVoltageLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.lv_voltage_label = obj;
-            lv_obj_set_pos(obj, 239, 239);
+            lv_obj_set_pos(obj, 231, 233);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_label_set_text(obj, "");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 397, 10);
+            lv_obj_set_pos(obj, 393, 10);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -122,12 +120,8 @@ void create_screen_main() {
             // hvSocBar
             lv_obj_t *obj = lv_bar_create(parent_obj);
             objects.hv_soc_bar = obj;
-            lv_obj_set_pos(obj, 408, 43);
-            lv_obj_set_size(obj, 53, 157);
-            lv_bar_set_range(obj, 18, 30);
-            lv_bar_set_mode(obj, LV_BAR_MODE_RANGE);
-            lv_bar_set_value(obj, 0, LV_ANIM_ON);
-            lv_bar_set_start_value(obj, 0, LV_ANIM_ON);
+            lv_obj_set_pos(obj, 404, 43);
+            lv_obj_set_size(obj, 53, 149);
             add_style_bar(obj);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0x02ff02), LV_PART_INDICATOR | LV_STATE_DEFAULT);
             lv_obj_set_style_bg_opa(obj, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
@@ -143,7 +137,7 @@ void create_screen_main() {
             // hvVoltageLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.hv_voltage_label = obj;
-            lv_obj_set_pos(obj, 360, 239);
+            lv_obj_set_pos(obj, 348, 232);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_label_set_text(obj, "");
@@ -191,7 +185,7 @@ void tick_screen_main() {
         }
     }
     {
-        int32_t new_val = get_var_lv();
+        int32_t new_val = get_var_soc();
         int32_t cur_val = lv_bar_get_value(objects.hv_soc_bar);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.hv_soc_bar;

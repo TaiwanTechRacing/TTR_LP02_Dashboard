@@ -21,7 +21,6 @@ typedef struct _objects_t {
     lv_obj_t *welcome;
     lv_obj_t *main;
     lv_obj_t *debug1;
-    lv_obj_t *tt;
     lv_obj_t *ready_label;
     lv_obj_t *hv_soc_label;
     lv_obj_t *lv_voltage_label;
