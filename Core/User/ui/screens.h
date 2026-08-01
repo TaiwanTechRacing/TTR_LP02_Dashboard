@@ -35,6 +35,7 @@ typedef struct _objects_t {
     lv_obj_t *ready_label_1;
     lv_obj_t *obj0;
     lv_obj_t *hv_soc_label;
+    lv_obj_t *soc_bar;
     lv_obj_t *obj1;
     lv_obj_t *km_label;
     lv_obj_t *speed_label;
@@ -44,7 +45,6 @@ typedef struct _objects_t {
     lv_obj_t *hv_voltage_label;
     lv_obj_t *obj3;
     lv_obj_t *mode_label;
-    lv_obj_t *obj4;
     lv_obj_t *gif;
     lv_obj_t *gif_1;
     lv_obj_t *gif_2;

@@ -958,7 +958,9 @@
 #define LV_USE_LIBJPEG_TURBO 0
 
 /** GIF decoder library */
-#define LV_USE_GIF 0
+/* Animations on the debug pages. Data lives in QSPI, not internal flash -
+ * see Core/User/gif_pages.c and tools/make_qspi_image.py. */
+#define LV_USE_GIF 1
 #if LV_USE_GIF
     /** GIF decoder accelerate */
     #define LV_GIF_CACHE_DECODE_DATA 0

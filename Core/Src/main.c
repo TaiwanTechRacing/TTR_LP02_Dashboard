@@ -36,6 +36,7 @@
 #include "vehicle_data.h"
 #include "can_decode.h"
 #include "ui_bind.h"
+#include "gif_pages.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -252,6 +253,10 @@ int main(void)
   ui_init();
   DebugOverlay_Init();
 
+  /* Animations come from QSPI. Does nothing if the part is blank, so a
+   * board that has never been programmed still boots normally. */
+  GifPages_Init();
+
   TxHeader.Identifier = 0x580;
   TxHeader.IdType = FDCAN_STANDARD_ID;
   TxHeader.TxFrameType = FDCAN_DATA_FRAME;
@@ -338,6 +343,7 @@ int main(void)
       welcome_done = true;
       screen_ID_now = 1;
       loadScreen(screens[screen_ID_now]);
+      GifPages_SetVisiblePage(screen_ID_now);
       UIBind_ArmStartupSweep();
     }
 
@@ -772,6 +778,7 @@ static void ScanButtons(void)
 
     screen_ID_now = (uint8_t)next;
     loadScreen(screens[screen_ID_now]);
+    GifPages_SetVisiblePage(screen_ID_now);
   }
 }
 

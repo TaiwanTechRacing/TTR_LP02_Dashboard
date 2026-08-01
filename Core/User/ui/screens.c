@@ -111,6 +111,20 @@ void create_screen_main() {
                     add_style_text(obj);
                     lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text_static(obj, "SOC");
+                    {
+                        lv_obj_t *parent_obj = obj;
+                        {
+                            // socBar
+                            lv_obj_t *obj = lv_bar_create(parent_obj);
+                            objects.soc_bar = obj;
+                            lv_obj_set_pos(obj, 0, 27);
+                            lv_obj_set_size(obj, 50, 138);
+                            lv_obj_set_style_bg_color(obj, lv_color_hex(0x2df321), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+                            lv_obj_set_style_radius(obj, 7, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+                            lv_obj_set_style_bg_color(obj, lv_color_hex(0x2df321), LV_PART_MAIN | LV_STATE_DEFAULT);
+                            lv_obj_set_style_radius(obj, 7, LV_PART_MAIN | LV_STATE_DEFAULT);
+                        }
+                    }
                 }
             }
         }
@@ -134,10 +148,10 @@ void create_screen_main() {
                     // kmLabel
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.km_label = obj;
-                    lv_obj_set_pos(obj, 240, 153);
+                    lv_obj_set_pos(obj, 282, 147);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_text(obj);
-                    lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_40, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text_static(obj, "Km/h");
                 }
                 {
@@ -157,7 +171,7 @@ void create_screen_main() {
                     // readyLabel
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.ready_label = obj;
-                    lv_obj_set_pos(obj, -71, 73);
+                    lv_obj_set_pos(obj, -81, 73);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_label_set_recolor(obj, true);
                     add_style_text(obj);
@@ -235,16 +249,6 @@ void create_screen_main() {
                 }
             }
         }
-        {
-            lv_obj_t *obj = lv_bar_create(parent_obj);
-            objects.obj4 = obj;
-            lv_obj_set_pos(obj, 407, 41);
-            lv_obj_set_size(obj, 50, 138);
-            lv_obj_set_style_bg_color(obj, lv_color_hex(0x2df321), LV_PART_INDICATOR | LV_STATE_DEFAULT);
-            lv_obj_set_style_radius(obj, 7, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-            lv_obj_set_style_bg_color(obj, lv_color_hex(0x2df321), LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_radius(obj, 7, LV_PART_MAIN | LV_STATE_DEFAULT);
-        }
     }
     
     tick_screen_main();
@@ -257,6 +261,15 @@ void tick_screen_main() {
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.hv_soc_label;
             lv_label_set_text(objects.hv_soc_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        int32_t new_val = get_var_soc();
+        int32_t cur_val = lv_bar_get_value(objects.soc_bar);
+        if (new_val != cur_val) {
+            tick_value_change_obj = objects.soc_bar;
+            lv_bar_set_value(objects.soc_bar, new_val, LV_ANIM_ON);
             tick_value_change_obj = NULL;
         }
     }
@@ -302,15 +315,6 @@ void tick_screen_main() {
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.mode_label;
             lv_label_set_text(objects.mode_label, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.obj4);
-        if (new_val != cur_val) {
-            tick_value_change_obj = objects.obj4;
-            lv_bar_set_value(objects.obj4, new_val, LV_ANIM_ON);
             tick_value_change_obj = NULL;
         }
     }
