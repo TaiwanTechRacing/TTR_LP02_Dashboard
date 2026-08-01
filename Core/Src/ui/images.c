@@ -1,6 +1,6 @@
 #include "images.h"
 
-const ext_img_desc_t images[22] = {
+const ext_img_desc_t images[26] = {
     { "logo", &img_logo },
     { "steeringWheel", &img_steering_wheel },
     { "RacingPage_Background", &img_racing_page_background },
@@ -23,4 +23,8 @@ const ext_img_desc_t images[22] = {
     { "BAT", &img_bat },
     { "RP", &img_rp },
     { "BAT_Bg", &img_bat_bg },
+    { "partner logo", &img_partner_logo },
+    { "0622", &img_0622 },
+    { "0622_RBG2", &img_0622_rbg2 },
+    { "speed_page", &img_speed_page },
 };

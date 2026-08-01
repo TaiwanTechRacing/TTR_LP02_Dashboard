@@ -9,9 +9,8 @@ extern "C" {
 
 typedef struct _objects_t {
     lv_obj_t *welcome;
-    lv_obj_t *check;
+    lv_obj_t *speed;
     lv_obj_t *racing;
-    lv_obj_t *factory_switch;
     lv_obj_t *factory_bat_sum;
     lv_obj_t *factory_bat_p1;
     lv_obj_t *factory_bat_p2;
@@ -19,9 +18,15 @@ typedef struct _objects_t {
     lv_obj_t *factory_bat_p4;
     lv_obj_t *factory_mot;
     lv_obj_t *tt;
-    lv_obj_t *press_text;
-    lv_obj_t *counter;
-    lv_obj_t *power_status_2;
+    lv_obj_t *tt_1;
+    lv_obj_t *speed_pure;
+    lv_obj_t *rtd_pure;
+    lv_obj_t *drive_mode_pure;
+    lv_obj_t *speed_unit;
+    lv_obj_t *error_pure;
+    lv_obj_t *error_pure_1;
+    lv_obj_t *lap_time;
+    lv_obj_t *tebppc_warn;
     lv_obj_t *speed_process;
     lv_obj_t *steering_wheel_dir;
     lv_obj_t *acc_process;
@@ -29,7 +34,7 @@ typedef struct _objects_t {
     lv_obj_t *pressure_indicator;
     lv_obj_t *fans_indicator;
     lv_obj_t *temp_indicator;
-    lv_obj_t *speed;
+    lv_obj_t *speed_r;
     lv_obj_t *text;
     lv_obj_t *rtd;
     lv_obj_t *text_10;
@@ -50,25 +55,15 @@ typedef struct _objects_t {
     lv_obj_t *ios__9;
     lv_obj_t *ios__10;
     lv_obj_t *ios__11;
-    lv_obj_t *text_12;
-    lv_obj_t *l_cockpit;
-    lv_obj_t *l_left;
-    lv_obj_t *l_right;
-    lv_obj_t *l_inertia;
-    lv_obj_t *l_bots;
-    lv_obj_t *l_m1il;
-    lv_obj_t *l_m2il;
-    lv_obj_t *l_m3il;
-    lv_obj_t *l_m4il;
-    lv_obj_t *l_mcu;
-    lv_obj_t *l_tsms;
-    lv_obj_t *l_msd;
+    lv_obj_t *drive_mode;
     lv_obj_t *text_16;
     lv_obj_t *glv_v;
     lv_obj_t *glv_soc;
     lv_obj_t *acc_volt;
     lv_obj_t *acc_soc;
-    lv_obj_t *ts_volt;
+    lv_obj_t *acc_max_temp;
+    lv_obj_t *acc_min_temp;
+    lv_obj_t *acc_diff_temp;
     lv_obj_t *text_17;
     lv_obj_t *c1v1;
     lv_obj_t *c1v2;
@@ -288,28 +283,24 @@ extern objects_t objects;
 
 enum ScreensEnum {
     SCREEN_ID_WELCOME = 1,
-    SCREEN_ID_CHECK = 2,
+    SCREEN_ID_SPEED = 2,
     SCREEN_ID_RACING = 3,
-    SCREEN_ID_FACTORY_SWITCH = 4,
-    SCREEN_ID_FACTORY_BAT_SUM = 5,
-    SCREEN_ID_FACTORY_BAT_P1 = 6,
-    SCREEN_ID_FACTORY_BAT_P2 = 7,
-    SCREEN_ID_FACTORY_BAT_P3 = 8,
-    SCREEN_ID_FACTORY_BAT_P4 = 9,
-    SCREEN_ID_FACTORY_MOT = 10,
+    SCREEN_ID_FACTORY_BAT_SUM = 4,
+    SCREEN_ID_FACTORY_BAT_P1 = 5,
+    SCREEN_ID_FACTORY_BAT_P2 = 6,
+    SCREEN_ID_FACTORY_BAT_P3 = 7,
+    SCREEN_ID_FACTORY_BAT_P4 = 8,
+    SCREEN_ID_FACTORY_MOT = 9,
 };
 
 void create_screen_welcome();
 void tick_screen_welcome();
 
-void create_screen_check();
-void tick_screen_check();
+void create_screen_speed();
+void tick_screen_speed();
 
 void create_screen_racing();
 void tick_screen_racing();
-
-void create_screen_factory_switch();
-void tick_screen_factory_switch();
 
 void create_screen_factory_bat_sum();
 void tick_screen_factory_bat_sum();

@@ -31,6 +31,15 @@ void create_screen_welcome() {
             lv_image_set_src(obj, &img_ttr_logo_2);
             lv_image_set_inner_align(obj, LV_IMAGE_ALIGN_DEFAULT);
         }
+        {
+            // tt_1
+            lv_obj_t *obj = lv_image_create(parent_obj);
+            objects.tt_1 = obj;
+            lv_obj_set_pos(obj, 145, 194);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_image_set_src(obj, &img_partner_logo);
+            lv_image_set_inner_align(obj, LV_IMAGE_ALIGN_DEFAULT);
+        }
     }
     
     tick_screen_welcome();
@@ -39,56 +48,103 @@ void create_screen_welcome() {
 void tick_screen_welcome() {
 }
 
-void create_screen_check() {
+void create_screen_speed() {
     lv_obj_t *obj = lv_obj_create(0);
-    objects.check = obj;
+    objects.speed = obj;
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 480, 272);
-    lv_obj_set_style_bg_color(obj, lv_color_hex(0xff000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_image_src(obj, &img_speed_page, LV_PART_MAIN | LV_STATE_DEFAULT);
     {
         lv_obj_t *parent_obj = obj;
         {
-            // Press_text
+            // speed_pure
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.press_text = obj;
-            lv_obj_set_pos(obj, 147, 192);
+            objects.speed_pure = obj;
+            lv_obj_set_pos(obj, 126, 122);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &ui_font_speed_150, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_color(obj, lv_color_hex(0xffe1ff00), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "000");
+        }
+        {
+            // RTD_pure
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.rtd_pure = obj;
+            lv_obj_set_pos(obj, 195, 70);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_color(obj, lv_color_hex(0xffff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "P");
+        }
+        {
+            // DriveMode_pure
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.drive_mode_pure = obj;
+            lv_obj_set_pos(obj, 250, 79);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "OFF");
+        }
+        {
+            // speed_unit
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.speed_unit = obj;
+            lv_obj_set_pos(obj, 354, 203);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "km/h");
+        }
+        {
+            // ERROR_pure
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.error_pure = obj;
+            lv_obj_set_pos(obj, 0, 20);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0xffff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_opa(obj, 100, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "Press Each Button");
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "ERR - MCU1 MCU2 MCU3 MCU4 AMS");
         }
         {
-            lv_obj_t *obj = lv_image_create(parent_obj);
-            lv_obj_set_pos(obj, 160, 64);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_image_set_src(obj, &img_steering_wheel);
-        }
-        {
-            // counter
+            // ERROR_pure_1
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.counter = obj;
-            lv_obj_set_pos(obj, 228, 89);
+            objects.error_pure_1 = obj;
+            lv_obj_set_pos(obj, 0, 49);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0xfffff000), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_opa(obj, 100, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "WARN - TEBPPC CELL_OVT");
+        }
+        {
+            // Lap_time
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.lap_time = obj;
+            lv_obj_set_pos(obj, 224, 231);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "10");
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "00:00");
         }
         {
-            // Power_Status_2
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.power_status_2 = obj;
-            lv_obj_set_pos(obj, 245, 89);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "s");
+            // TEBPPC_warn
+            lv_obj_t *obj = lv_msgbox_create(parent_obj);
+            objects.tebppc_warn = obj;
+            lv_obj_set_pos(obj, 0, 71);
+            lv_obj_set_size(obj, 480, 147);
+            lv_obj_set_style_align(obj, LV_ALIGN_DEFAULT, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0xfffff000), LV_PART_MAIN | LV_STATE_DEFAULT);
         }
     }
     
-    tick_screen_check();
+    tick_screen_speed();
 }
 
-void tick_screen_check() {
+void tick_screen_speed() {
 }
 
 void create_screen_racing() {
@@ -96,15 +152,15 @@ void create_screen_racing() {
     objects.racing = obj;
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 480, 272);
-    lv_obj_set_style_bg_image_src(obj, &img_rp, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_image_src(obj, &img_0622_rbg2, LV_PART_MAIN | LV_STATE_DEFAULT);
     {
         lv_obj_t *parent_obj = obj;
         {
             // Speed_Process
             lv_obj_t *obj = lv_arc_create(parent_obj);
             objects.speed_process = obj;
-            lv_obj_set_pos(obj, 143, 27);
-            lv_obj_set_size(obj, 195, 195);
+            lv_obj_set_pos(obj, 106, 17);
+            lv_obj_set_size(obj, 270, 270);
             lv_arc_set_value(obj, 50);
             lv_arc_set_bg_start_angle(obj, 120);
             lv_arc_set_bg_end_angle(obj, 240);
@@ -117,9 +173,10 @@ void create_screen_racing() {
             // SteeringWheel_Dir
             lv_obj_t *obj = lv_arc_create(parent_obj);
             objects.steering_wheel_dir = obj;
-            lv_obj_set_pos(obj, 125, 9);
-            lv_obj_set_size(obj, 230, 230);
-            lv_arc_set_value(obj, 50);
+            lv_obj_set_pos(obj, 116, 8);
+            lv_obj_set_size(obj, 250, 250);
+            lv_arc_set_range(obj, -180, 180);
+            lv_arc_set_value(obj, 0);
             lv_arc_set_bg_start_angle(obj, 240);
             lv_arc_set_bg_end_angle(obj, 300);
             lv_arc_set_mode(obj, LV_ARC_MODE_SYMMETRICAL);
@@ -133,8 +190,8 @@ void create_screen_racing() {
             // Acc_Process
             lv_obj_t *obj = lv_arc_create(parent_obj);
             objects.acc_process = obj;
-            lv_obj_set_pos(obj, 125, 9);
-            lv_obj_set_size(obj, 230, 230);
+            lv_obj_set_pos(obj, 90, 2);
+            lv_obj_set_size(obj, 300, 300);
             lv_arc_set_value(obj, 50);
             lv_arc_set_bg_start_angle(obj, 330);
             lv_arc_set_bg_end_angle(obj, 30);
@@ -149,8 +206,8 @@ void create_screen_racing() {
             // brake_process
             lv_obj_t *obj = lv_arc_create(parent_obj);
             objects.brake_process = obj;
-            lv_obj_set_pos(obj, 125, 9);
-            lv_obj_set_size(obj, 230, 230);
+            lv_obj_set_pos(obj, 90, 2);
+            lv_obj_set_size(obj, 300, 300);
             lv_arc_set_value(obj, 50);
             lv_arc_set_bg_start_angle(obj, 150);
             lv_arc_set_bg_end_angle(obj, 210);
@@ -186,20 +243,20 @@ void create_screen_racing() {
             lv_image_set_src(obj, &img_temp);
         }
         {
-            // Speed
+            // Speed_R
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.speed = obj;
-            lv_obj_set_pos(obj, 192, 98);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            objects.speed_r = obj;
+            lv_obj_set_pos(obj, 169, 106);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, 61);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &ui_font_speed_90, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "000");
         }
         {
             // Text
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.text = obj;
-            lv_obj_set_pos(obj, 225, 144);
+            lv_obj_set_pos(obj, 307, 150);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -209,7 +266,7 @@ void create_screen_racing() {
             // RTD
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.rtd = obj;
-            lv_obj_set_pos(obj, 230, 37);
+            lv_obj_set_pos(obj, 205, 45);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -237,7 +294,7 @@ void create_screen_racing() {
             // HV_Volt_R
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.hv_volt_r = obj;
-            lv_obj_set_pos(obj, 196, 183);
+            lv_obj_set_pos(obj, 196, 205);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -247,7 +304,7 @@ void create_screen_racing() {
             // GLV_Volt_R
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.glv_volt_r = obj;
-            lv_obj_set_pos(obj, 245, 183);
+            lv_obj_set_pos(obj, 245, 205);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "10.0");
@@ -256,7 +313,7 @@ void create_screen_racing() {
             // HV_SOC_R
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.hv_soc_r = obj;
-            lv_obj_set_pos(obj, 217, 199);
+            lv_obj_set_pos(obj, 217, 221);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "100");
@@ -265,7 +322,7 @@ void create_screen_racing() {
             // GLV_SOC_R
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.glv_soc_r = obj;
-            lv_obj_set_pos(obj, 245, 199);
+            lv_obj_set_pos(obj, 245, 221);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "100");
@@ -378,146 +435,22 @@ void create_screen_racing() {
             lv_led_set_color(obj, lv_color_hex(0xff71ff00));
             lv_led_set_brightness(obj, 255);
         }
+        {
+            // DriveMode
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.drive_mode = obj;
+            lv_obj_set_pos(obj, 245, 57);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "OFF");
+        }
     }
     
     tick_screen_racing();
 }
 
 void tick_screen_racing() {
-}
-
-void create_screen_factory_switch() {
-    lv_obj_t *obj = lv_obj_create(0);
-    objects.factory_switch = obj;
-    lv_obj_set_pos(obj, 0, 0);
-    lv_obj_set_size(obj, 480, 272);
-    lv_obj_set_style_bg_image_src(obj, &img_swbg, LV_PART_MAIN | LV_STATE_DEFAULT);
-    {
-        lv_obj_t *parent_obj = obj;
-        {
-            // Text_12
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.text_12 = obj;
-            lv_obj_set_pos(obj, 181, 11);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "FACTORY SW");
-        }
-        {
-            // L_cockpit
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_cockpit = obj;
-            lv_obj_set_pos(obj, 195, 70);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_left
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_left = obj;
-            lv_obj_set_pos(obj, 195, 93);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_right
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_right = obj;
-            lv_obj_set_pos(obj, 195, 117);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_inertia
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_inertia = obj;
-            lv_obj_set_pos(obj, 195, 162);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_bots
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_bots = obj;
-            lv_obj_set_pos(obj, 195, 139);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_M1IL
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_m1il = obj;
-            lv_obj_set_pos(obj, 333, 70);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_M2IL
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_m2il = obj;
-            lv_obj_set_pos(obj, 333, 93);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_M3IL
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_m3il = obj;
-            lv_obj_set_pos(obj, 333, 116);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_M4IL
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_m4il = obj;
-            lv_obj_set_pos(obj, 333, 139);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_MCU
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_mcu = obj;
-            lv_obj_set_pos(obj, 195, 231);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_TSMS
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_tsms = obj;
-            lv_obj_set_pos(obj, 195, 185);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-        {
-            // L_MSD
-            lv_obj_t *obj = lv_led_create(parent_obj);
-            objects.l_msd = obj;
-            lv_obj_set_pos(obj, 195, 208);
-            lv_obj_set_size(obj, 20, 5);
-            lv_led_set_color(obj, lv_color_hex(0xff71ff00));
-            lv_led_set_brightness(obj, 255);
-        }
-    }
-    
-    tick_screen_factory_switch();
-}
-
-void tick_screen_factory_switch() {
 }
 
 void create_screen_factory_bat_sum() {
@@ -540,35 +473,28 @@ void create_screen_factory_bat_sum() {
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 142, 171);
+            lv_obj_set_pos(obj, 134, 122);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "Accumalator SOC:");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 105, 139);
+            lv_obj_set_pos(obj, 97, 100);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "Accumulator Voltage:");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 78, 203);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "Tractive System Voltage:");
-        }
-        {
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 118, 75);
+            lv_obj_set_pos(obj, 110, 56);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "GLV Battery Voltage:");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 153, 107);
+            lv_obj_set_pos(obj, 143, 78);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "GLV Battery SOC:");
@@ -577,14 +503,14 @@ void create_screen_factory_bat_sum() {
             // GLV_V
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.glv_v = obj;
-            lv_obj_set_pos(obj, 354, 75);
+            lv_obj_set_pos(obj, 328, 56);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "00");
+            lv_label_set_text(obj, "00.0");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 382, 75);
+            lv_obj_set_pos(obj, 389, 56);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "V");
@@ -593,14 +519,14 @@ void create_screen_factory_bat_sum() {
             // GLV_SOC
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.glv_soc = obj;
-            lv_obj_set_pos(obj, 338, 107);
+            lv_obj_set_pos(obj, 326, 78);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "000");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 379, 107);
+            lv_obj_set_pos(obj, 386, 78);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "%");
@@ -609,49 +535,102 @@ void create_screen_factory_bat_sum() {
             // Acc_volt
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.acc_volt = obj;
-            lv_obj_set_pos(obj, 341, 139);
+            lv_obj_set_pos(obj, 328, 100);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "000");
+            lv_label_set_text(obj, "000.0");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 382, 139);
+            lv_obj_set_pos(obj, 389, 100);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "V");
         }
         {
-            // Acc-SOC
+            // Acc_SOC
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.acc_soc = obj;
-            lv_obj_set_pos(obj, 338, 171);
+            lv_obj_set_pos(obj, 328, 122);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "000");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 379, 171);
+            lv_obj_set_pos(obj, 388, 122);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "%");
         }
         {
-            // TS_volt
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.ts_volt = obj;
-            lv_obj_set_pos(obj, 341, 203);
+            lv_obj_set_pos(obj, 74, 144);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "000");
+            lv_label_set_text(obj, "Maximum Temperature:");
+        }
+        {
+            // acc_max_temp
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.acc_max_temp = obj;
+            lv_obj_set_pos(obj, 328, 144);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "00.0");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 382, 203);
+            lv_obj_set_pos(obj, 389, 144);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "V");
+            lv_label_set_text(obj, "C");
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 77, 166);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "Minimum Temperature:");
+        }
+        {
+            // acc_min_temp
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.acc_min_temp = obj;
+            lv_obj_set_pos(obj, 329, 166);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "00.0");
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 389, 166);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "C");
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 72, 187);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "Difference Temperature:");
+        }
+        {
+            // acc_diff_temp
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.acc_diff_temp = obj;
+            lv_obj_set_pos(obj, 330, 188);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "00.0");
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 389, 188);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "C");
         }
     }
     
@@ -2949,9 +2928,8 @@ void tick_screen_factory_mot() {
 typedef void (*tick_screen_func_t)();
 tick_screen_func_t tick_screen_funcs[] = {
     tick_screen_welcome,
-    tick_screen_check,
+    tick_screen_speed,
     tick_screen_racing,
-    tick_screen_factory_switch,
     tick_screen_factory_bat_sum,
     tick_screen_factory_bat_p1,
     tick_screen_factory_bat_p2,
@@ -2972,9 +2950,8 @@ void create_screens() {
     lv_disp_set_theme(dispp, theme);
     
     create_screen_welcome();
-    create_screen_check();
+    create_screen_speed();
     create_screen_racing();
-    create_screen_factory_switch();
     create_screen_factory_bat_sum();
     create_screen_factory_bat_p1();
     create_screen_factory_bat_p2();
