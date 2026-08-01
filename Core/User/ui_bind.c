@@ -272,8 +272,9 @@ int32_t get_var_soc(void)
 void UIBind_ApplyDynamicStyles(void)
 {
 
-    static const lv_color_t green = LV_COLOR_MAKE(0x02, 0xff, 0x02);
-    static const lv_color_t red   = LV_COLOR_MAKE(0xff, 0x20, 0x20);
+    static const lv_color_t green  = LV_COLOR_MAKE(0x02, 0xff, 0x02);
+    static const lv_color_t yellow = LV_COLOR_MAKE(0xff, 0xd0, 0x00);
+    static const lv_color_t red    = LV_COLOR_MAKE(0xff, 0x20, 0x20);
 
     const bool ready = !VehicleData_IsStale(VD_GROUP_VCU_STATE, VD_DEFAULT_TIMEOUT_MS)
                        && g_vehicle.rtd_active;
@@ -281,4 +282,25 @@ void UIBind_ApplyDynamicStyles(void)
     lv_obj_set_style_text_color(objects.ready_label,
                                 ready ? green : red,
                                 LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    /*
+     * SOC bar: green down to 50%, yellow to 30%, red below that. A stale pack
+     * reads as 0 through get_var_soc(), so it turns red too - which is the
+     * reading we want anyway.
+     */
+    const int32_t soc = get_var_soc();
+    const int band = (soc >= 50) ? 2 : (soc >= 30) ? 1 : 0;
+
+    /*
+     * Only write on a change of band. Setting a style invalidates the object,
+     * and this runs every UI tick - repainting the bar continuously for a
+     * colour that did not move would give away frame time for nothing.
+     */
+    static int last_band = -1;
+    if (band != last_band) {
+        last_band = band;
+        lv_obj_set_style_bg_color(objects.soc_bar,
+                                  (band == 2) ? green : (band == 1) ? yellow : red,
+                                  LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    }
 }
