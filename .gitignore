@@ -7,3 +7,9 @@ Release/
 *.d
 *.elf
 *.map
+
+# EEZ Studio
+# 產生的程式碼輸出到 Core/User/ui，這裡是改輸出路徑之前的殘留，不需要版控
+dashboard_layout/src/
+# 編輯器的視窗狀態（縮放、選取、捲動位置），每個人不一樣
+*.eez-project-ui-state
