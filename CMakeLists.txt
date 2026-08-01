@@ -21,9 +21,18 @@ set(COMMON_FLAGS
 
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32H743IITX_FLASH.ld)
 
+#
+# 目錄約定(與 LP02_VCU 一致):
+#   Core/Inc, Core/Src   只放 CubeMX 產生的東西,不手改
+#   Core/User            所有手寫的應用程式碼,.c 和 .h 放在一起
+#   Core/User/ttr_can    由 DBC 產生的 CAN 編解碼,不手改
+#   Core/User/ui         由 EEZ Studio 產生的畫面,不手改
+#
 file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS
     Core/Src/*.c
     Core/User/*.c
+    Core/User/ttr_can/*.c
+    Core/User/ui/*.c
 )
 
 # HAL 用 glob 而不是像 LP02_VCU 那樣逐一列出。這個專案的 HAL 來源資料夾就是
@@ -50,7 +59,8 @@ add_executable(${PROJECT_NAME}.elf
 target_include_directories(${PROJECT_NAME}.elf PRIVATE
     Core/Inc
     Core/User
-    Core/Src/ui
+    Core/User/ttr_can
+    Core/User/ui
     Drivers                                      # lv_conf.h 放在這一層
     Drivers/lvgl
     Drivers/STM32H7xx_HAL_Driver/Inc
