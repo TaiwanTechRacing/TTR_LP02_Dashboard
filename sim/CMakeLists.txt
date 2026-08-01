@@ -80,7 +80,15 @@ target_compile_definitions(${target} PRIVATE
 target_compile_options(${target} PRIVATE
     -Wall
     -O2
+    # Match the firmware's link model. Without this the simulator trips over
+    # symbols EEZ declares but never emits data for - an image whose source is
+    # in a format its converter silently skips, for instance - while the
+    # firmware links cleanly because --gc-sections drops them.
+    -ffunction-sections
+    -fdata-sections
 )
+
+target_link_options(${target} PRIVATE -Wl,--gc-sections)
 
 target_link_libraries(${target} PRIVATE user32 gdi32)
 endforeach()

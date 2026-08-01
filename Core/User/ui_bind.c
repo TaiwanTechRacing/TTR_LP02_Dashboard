@@ -24,6 +24,7 @@
 #include "vehicle_data.h"
 #include "screens.h"
 #include "stm32h7xx_hal.h"
+#include <stddef.h>
 #include <stdio.h>
 
 /* Shown in place of a value whose signal has timed out */
@@ -172,6 +173,93 @@ const char *get_var_label_hv_value(void)
     return s_hv_buf;
 }
 
+/*
+ * Splash reveal: the car name appears one character at a time, right to left.
+ *
+ * The trick is that the revealed text is always a suffix of the full string,
+ * so no buffer is needed - the getter returns a pointer part-way into the
+ * literal. "2", then "02", "D02", and so on.
+ *
+ * Growing leftward needs the right edge pinned, which the label does not do on
+ * its own: it is content-sized, so by default it grows rightward from its x.
+ * Growing leftward is handled by splash_setup_alignment(), which pins the
+ * label to the finished string's width and right-aligns its text.
+ */
+#define SPLASH_NAME       "LEOPARD02"
+#define SPLASH_CHAR_MS    140u   /* per character; 9 chars ~ 1.3 s */
+#define SPLASH_HOLD_MS    400u   /* fully shown before the screen changes */
+
+static uint32_t s_splash_start_tick;
+static bool     s_splash_started;
+
+/** How many characters of SPLASH_NAME should be visible right now. */
+static size_t splash_visible_chars(void)
+{
+    const size_t len = sizeof(SPLASH_NAME) - 1u;
+
+    if (!s_splash_started) {
+        /* Self-arming on first use: the welcome screen is loaded by ui_init()
+         * before the main loop starts, so there is no other natural hook. */
+        s_splash_started = true;
+        s_splash_start_tick = HAL_GetTick();
+    }
+
+    const size_t shown = ((HAL_GetTick() - s_splash_start_tick) / SPLASH_CHAR_MS) + 1u;
+    return (shown > len) ? len : shown;
+}
+
+/**
+ * Car name on the splash screen, revealed progressively.
+ *
+ * Returning a pointer into the literal is safe: it is static storage and LVGL
+ * copies the text when the label is set.
+ */
+const char *get_var_leopard02(void)
+{
+    static const char name[] = SPLASH_NAME;
+    const size_t len = sizeof(name) - 1u;
+
+    return &name[len - splash_visible_chars()];
+}
+
+/*
+ * Make the splash label grow leftward.
+ *
+ * A content-sized label grows rightward from its x, which would reveal the name
+ * left to right. Instead the label is pinned to the width of the finished
+ * string once, with its text right-aligned: shorter text then sits against the
+ * right edge of that fixed box and the name appears to extend leftward.
+ *
+ * Done once rather than by moving x every frame - repositioning per frame has
+ * to race LVGL's layout pass, and getting that wrong let partial text run off
+ * the screen.
+ *
+ * The width is measured rather than hard-coded, so changing the font or the
+ * string in EEZ cannot silently break the alignment.
+ */
+static void splash_setup_alignment(void)
+{
+    static bool done;
+
+    lv_obj_t *label = objects.ready_label_1;
+
+    if (done || label == NULL) {
+        return;
+    }
+
+    const lv_font_t *font = lv_obj_get_style_text_font(label, LV_PART_MAIN);
+    const int32_t letter_space = lv_obj_get_style_text_letter_space(label, LV_PART_MAIN);
+
+    lv_point_t full;
+    lv_text_get_size(&full, SPLASH_NAME, font, letter_space, 0,
+                     LV_COORD_MAX, LV_TEXT_FLAG_NONE);
+
+    lv_obj_set_width(label, full.x);
+    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN);
+
+    done = true;
+}
+
 /**
  * Drive mode reported by the VCU.
  *
@@ -221,6 +309,8 @@ int32_t get_var_soc(void)
  */
 void UIBind_ApplyDynamicStyles(void)
 {
+    splash_setup_alignment();
+
     static const lv_color_t green = LV_COLOR_MAKE(0x02, 0xff, 0x02);
     static const lv_color_t red   = LV_COLOR_MAKE(0xff, 0x20, 0x20);
 

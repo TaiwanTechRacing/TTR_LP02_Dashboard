@@ -16,7 +16,7 @@
     "ui_font_orbitron_bold_30.c",
     "ui_font_orbitron_bold_40.c",
     "ui_font_orbitron_bold_50.c",
-    "ui_image_ttr_logo_2.c",
+    "ui_font_tc_20.c",
     "vars.h"
   ]
 }

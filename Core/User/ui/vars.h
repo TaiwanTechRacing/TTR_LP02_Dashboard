@@ -19,7 +19,8 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_SPEED = 3,
     FLOW_GLOBAL_VARIABLE_LABEL_LV_VALUE = 4,
     FLOW_GLOBAL_VARIABLE_LABEL_HV_VALUE = 5,
-    FLOW_GLOBAL_VARIABLE_MODE = 6
+    FLOW_GLOBAL_VARIABLE_MODE = 6,
+    FLOW_GLOBAL_VARIABLE_LEOPARD02 = 7
 };
 
 // Native global variables
@@ -38,6 +39,8 @@ extern const char *get_var_label_hv_value();
 extern void set_var_label_hv_value(const char *value);
 extern const char *get_var_mode();
 extern void set_var_mode(const char *value);
+extern const char *get_var_leopard02();
+extern void set_var_leopard02(const char *value);
 
 #ifdef __cplusplus
 }

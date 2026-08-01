@@ -25,6 +25,8 @@ typedef struct _objects_t {
     lv_obj_t *debug1;
     lv_obj_t *debug2;
     lv_obj_t *debug3;
+    lv_obj_t *km_label_1;
+    lv_obj_t *ready_label_1;
     lv_obj_t *obj0;
     lv_obj_t *hv_soc_label;
     lv_obj_t *hv_soc_bar;
@@ -37,6 +39,7 @@ typedef struct _objects_t {
     lv_obj_t *hv_voltage_label;
     lv_obj_t *obj3;
     lv_obj_t *mode_label;
+    lv_obj_t *gif;
 } objects_t;
 
 extern objects_t objects;
