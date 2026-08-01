@@ -46,8 +46,18 @@
 
 #define QSPI_TIMEOUT_MS         100U
 
-static uint32_t s_flash_size;
-static uint32_t s_jedec_id;
+/*
+ * Deliberately non-static so a debugger can watch them by name without a file
+ * qualifier. Nothing has ever confirmed this chip responds on real hardware -
+ * the pinout came from the vendor example and the timings are calculated - so
+ * being able to type "g_qspi_jedec_id" into a watch window is the whole point.
+ *
+ *   0xEF4017 = W25Q64  (8 MB)
+ *   0xEF4018 = W25Q128 (16 MB)
+ *   0 or 0xFFFFFF     = nothing answered
+ */
+uint32_t g_qspi_jedec_id;
+uint32_t g_qspi_flash_size;
 
 static void qspi_gpio_init(void);
 static bool  qspi_wait_not_busy(void);
@@ -57,8 +67,8 @@ static void  qspi_enable_memory_mapped(void);
 
 bool BSP_QSPI_Init(void)
 {
-    s_flash_size = 0;
-    s_jedec_id = 0;
+    g_qspi_flash_size = 0;
+    g_qspi_jedec_id = 0;
 
     qspi_gpio_init();
     __HAL_RCC_QSPI_CLK_ENABLE();
@@ -79,7 +89,7 @@ bool BSP_QSPI_Init(void)
 
     QUADSPI->CR |= QUADSPI_CR_EN;
 
-    if (!qspi_read_jedec_id(&s_jedec_id)) {
+    if (!qspi_read_jedec_id(&g_qspi_jedec_id)) {
         return false;
     }
 
@@ -87,13 +97,13 @@ bool BSP_QSPI_Init(void)
      * The third JEDEC ID byte is the capacity as a power of two:
      * W25Q64 = 0xEF4017 -> 2^23 = 8 MB, W25Q128 = 0xEF4018 -> 2^24 = 16 MB.
      */
-    const uint8_t capacity_exp = (uint8_t)(s_jedec_id & 0xFFU);
+    const uint8_t capacity_exp = (uint8_t)(g_qspi_jedec_id & 0xFFU);
     if (capacity_exp < 16U || capacity_exp > 25U) {
         /* Not a plausible capacity code - most likely no chip responded
          * (all zeros or all ones) */
         return false;
     }
-    s_flash_size = 1UL << capacity_exp;
+    g_qspi_flash_size = 1UL << capacity_exp;
 
     /* Re-set FSIZE from the real capacity */
     QUADSPI->CR &= ~QUADSPI_CR_EN;
@@ -102,7 +112,7 @@ bool BSP_QSPI_Init(void)
     QUADSPI->CR |= QUADSPI_CR_EN;
 
     if (!qspi_enable_quad_mode()) {
-        s_flash_size = 0;
+        g_qspi_flash_size = 0;
         return false;
     }
 
@@ -110,19 +120,19 @@ bool BSP_QSPI_Init(void)
 
     /* The mapped window can only be opened once the capacity is known,
      * otherwise the MPU blocks every read */
-    BSP_MPU_EnableQspiRegion(s_flash_size);
+    BSP_MPU_EnableQspiRegion(g_qspi_flash_size);
 
     return true;
 }
 
 uint32_t BSP_QSPI_GetFlashSize(void)
 {
-    return s_flash_size;
+    return g_qspi_flash_size;
 }
 
 uint32_t BSP_QSPI_GetJedecId(void)
 {
-    return s_jedec_id;
+    return g_qspi_jedec_id;
 }
 
 static bool qspi_wait_not_busy(void)

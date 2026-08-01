@@ -43,6 +43,17 @@
  */
 bool BSP_QSPI_Init(void);
 
+/*
+ * Results of the last BSP_QSPI_Init(), exposed as globals so they can be read
+ * straight from a debugger watch window - no file qualifier, no accessor call.
+ *
+ *   0xEF4017 = W25Q64  (8 MB)
+ *   0xEF4018 = W25Q128 (16 MB)
+ *   0 or 0xFFFFFF     = the chip did not answer
+ */
+extern uint32_t g_qspi_jedec_id;
+extern uint32_t g_qspi_flash_size;
+
 /**
  * Detected capacity in bytes, or 0 if not initialised or detection failed.
  * W25Q64 is 8 MB, W25Q128 is 16 MB.
