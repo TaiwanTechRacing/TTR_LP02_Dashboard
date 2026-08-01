@@ -54,6 +54,51 @@ bool BSP_QSPI_Init(void);
 extern uint32_t g_qspi_jedec_id;
 extern uint32_t g_qspi_flash_size;
 
+/* W25Q64 geometry. Erase works in 4 KB sectors; programming cannot cross a
+ * 256-byte page boundary, which BSP_QSPI_Program() handles internally. */
+#define QSPI_SECTOR_SIZE  4096u
+#define QSPI_PAGE_SIZE     256u
+
+/**
+ * Erase one 4 KB sector. @p addr may be anywhere inside it.
+ *
+ * Erasing sets bytes to 0xFF; programming can only clear bits, so a sector must
+ * be erased before it is rewritten. Typically a few tens of milliseconds, but
+ * the datasheet allows up to 400 ms.
+ */
+bool BSP_QSPI_EraseSector(uint32_t addr);
+
+/**
+ * Erase the whole chip. Can take tens of seconds - the datasheet allows 100 s
+ * for this part - so it blocks for a long time.
+ */
+bool BSP_QSPI_EraseChip(void);
+
+/**
+ * Program @p len bytes at @p addr. Splits across page boundaries as needed.
+ *
+ * The target must already be erased. This does not check, because verifying
+ * beforehand would double the time and the caller normally just erased it.
+ */
+bool BSP_QSPI_Program(uint32_t addr, const uint8_t *data, uint32_t len);
+
+/**
+ * Read @p len bytes from @p addr through the memory-mapped window.
+ */
+bool BSP_QSPI_Read(uint32_t addr, uint8_t *data, uint32_t len);
+
+/**
+ * Erase, program and read back a pattern in the last sector of the chip.
+ *
+ * The last sector is used because it is the least likely to hold anything
+ * wanted. Running this proves the whole write path - erase, program, status
+ * polling, and cache invalidation on the mapped window - before anything
+ * depends on it.
+ *
+ * @return true if every byte read back matches.
+ */
+bool BSP_QSPI_SelfTestWrite(void);
+
 /**
  * Detected capacity in bytes, or 0 if not initialised or detection failed.
  * W25Q64 is 8 MB, W25Q128 is 16 MB.

@@ -17,6 +17,23 @@
 #define CMD_WRITE_STATUS_REG2   0x31U
 #define CMD_READ_JEDEC_ID       0x9FU
 #define CMD_FAST_READ_QUAD_OUT  0x6BU
+#define CMD_READ_STATUS_REG1    0x05U
+#define CMD_PAGE_PROGRAM        0x02U
+#define CMD_SECTOR_ERASE_4K     0x20U
+#define CMD_CHIP_ERASE          0xC7U
+
+/* Status register 1, bit 0. Set while an erase or program is in progress. */
+#define SR1_BUSY                0x01U
+
+/*
+ * Erase and program are slow in a way reads are not, and the datasheet limits
+ * are far above the typical figures: a 4 KB sector erase is usually tens of
+ * milliseconds but may take 400 ms, and a chip erase may take 100 s. Timing out
+ * early would leave the chip mid-operation, so these are generous.
+ */
+#define QSPI_ERASE_SECTOR_TIMEOUT_MS   2000U
+#define QSPI_ERASE_CHIP_TIMEOUT_MS   200000U
+#define QSPI_PROGRAM_TIMEOUT_MS         100U
 
 /*
  * Reads use 0x6B (Fast Read Quad Output) rather than the faster 0xEB
@@ -308,4 +325,278 @@ static void qspi_gpio_init(void)
     gpio.Pin       = GPIO_PIN_8 | GPIO_PIN_9;
     gpio.Alternate = GPIO_AF10_QUADSPI;
     HAL_GPIO_Init(GPIOF, &gpio);
+}
+
+
+/* ------------------------------------------------------------------------- */
+/* Erase and program                                                          */
+/*                                                                            */
+/* Init leaves the peripheral in memory-mapped mode, which cannot issue        */
+/* commands. Every operation below therefore aborts back to indirect mode,     */
+/* does its work, and restores the mapping - see mmap_leave()/mmap_enter().    */
+/* ------------------------------------------------------------------------- */
+
+static void mmap_leave(void)
+{
+    /* ABORT is the documented way out of memory-mapped mode; it self-clears. */
+    QUADSPI->CR |= QUADSPI_CR_ABORT;
+    while ((QUADSPI->CR & QUADSPI_CR_ABORT) != 0U) {
+        /* wait */
+    }
+    QUADSPI->FCR = QUADSPI_FCR_CTOF | QUADSPI_FCR_CTCF | QUADSPI_FCR_CSMF | QUADSPI_FCR_CTEF;
+}
+
+static void mmap_enter(void)
+{
+    qspi_enable_memory_mapped();
+
+    /*
+     * The mapped window is cacheable, so anything just written would otherwise
+     * be read back from stale cache lines. Invalidate the whole window rather
+     * than tracking ranges - it happens once per operation and costs far less
+     * than the erase that preceded it.
+     */
+    if (g_qspi_flash_size != 0U) {
+        SCB_InvalidateDCache_by_Addr((uint32_t *)QSPI_BASE_ADDR, (int32_t)g_qspi_flash_size);
+    }
+}
+
+/** Issue a single command with no address and no data. */
+static bool qspi_simple_cmd(uint32_t instruction)
+{
+    if (!qspi_wait_not_busy()) {
+        return false;
+    }
+
+    QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)
+                 | (instruction << QUADSPI_CCR_INSTRUCTION_Pos);
+
+    return qspi_wait_transfer_complete();
+}
+
+/** Poll status register 1 until BUSY clears. */
+static bool qspi_wait_write_complete(uint32_t timeout_ms)
+{
+    const uint32_t start = HAL_GetTick();
+
+    for (;;) {
+        if (!qspi_wait_not_busy()) {
+            return false;
+        }
+
+        QUADSPI->DLR = 0U;                                   /* 1 byte */
+        QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)
+                     | (1U << QUADSPI_CCR_DMODE_Pos)
+                     | (1U << QUADSPI_CCR_FMODE_Pos)         /* indirect read */
+                     | (CMD_READ_STATUS_REG1 << QUADSPI_CCR_INSTRUCTION_Pos);
+
+        const uint32_t poll_start = HAL_GetTick();
+        while ((QUADSPI->SR & QUADSPI_SR_FTF) == 0U &&
+               (QUADSPI->SR & QUADSPI_SR_TCF) == 0U) {
+            if ((HAL_GetTick() - poll_start) > QSPI_TIMEOUT_MS) {
+                return false;
+            }
+        }
+
+        const uint8_t sr1 = *(volatile uint8_t *)&QUADSPI->DR;
+
+        if (!qspi_wait_transfer_complete()) {
+            return false;
+        }
+
+        if ((sr1 & SR1_BUSY) == 0U) {
+            return true;
+        }
+
+        if ((HAL_GetTick() - start) > timeout_ms) {
+            return false;
+        }
+    }
+}
+
+bool BSP_QSPI_EraseSector(uint32_t addr)
+{
+    if (g_qspi_flash_size == 0U || addr >= g_qspi_flash_size) {
+        return false;
+    }
+
+    mmap_leave();
+
+    bool ok = qspi_simple_cmd(CMD_WRITE_ENABLE);
+
+    if (ok) {
+        ok = qspi_wait_not_busy();
+    }
+
+    if (ok) {
+        QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)
+                     | (1U << QUADSPI_CCR_ADMODE_Pos)
+                     | (2U << QUADSPI_CCR_ADSIZE_Pos)        /* 24-bit address */
+                     | (CMD_SECTOR_ERASE_4K << QUADSPI_CCR_INSTRUCTION_Pos);
+        QUADSPI->AR = addr & ~(QSPI_SECTOR_SIZE - 1U);
+        ok = qspi_wait_transfer_complete();
+    }
+
+    if (ok) {
+        ok = qspi_wait_write_complete(QSPI_ERASE_SECTOR_TIMEOUT_MS);
+    }
+
+    mmap_enter();
+    return ok;
+}
+
+bool BSP_QSPI_EraseChip(void)
+{
+    if (g_qspi_flash_size == 0U) {
+        return false;
+    }
+
+    mmap_leave();
+
+    bool ok = qspi_simple_cmd(CMD_WRITE_ENABLE);
+
+    if (ok) {
+        ok = qspi_simple_cmd(CMD_CHIP_ERASE);
+    }
+
+    if (ok) {
+        ok = qspi_wait_write_complete(QSPI_ERASE_CHIP_TIMEOUT_MS);
+    }
+
+    mmap_enter();
+    return ok;
+}
+
+/** Program at most one page, without crossing its boundary. */
+static bool qspi_program_page(uint32_t addr, const uint8_t *data, uint32_t len)
+{
+    if (!qspi_simple_cmd(CMD_WRITE_ENABLE)) {
+        return false;
+    }
+
+    if (!qspi_wait_not_busy()) {
+        return false;
+    }
+
+    QUADSPI->DLR = len - 1U;
+    QUADSPI->CCR = (1U << QUADSPI_CCR_IMODE_Pos)
+                 | (1U << QUADSPI_CCR_ADMODE_Pos)
+                 | (2U << QUADSPI_CCR_ADSIZE_Pos)
+                 | (1U << QUADSPI_CCR_DMODE_Pos)
+                 | (0U << QUADSPI_CCR_FMODE_Pos)             /* indirect write */
+                 | (CMD_PAGE_PROGRAM << QUADSPI_CCR_INSTRUCTION_Pos);
+    QUADSPI->AR = addr;
+
+    for (uint32_t i = 0U; i < len; i++) {
+        const uint32_t start = HAL_GetTick();
+        while ((QUADSPI->SR & QUADSPI_SR_FTF) == 0U) {
+            if ((HAL_GetTick() - start) > QSPI_TIMEOUT_MS) {
+                return false;
+            }
+        }
+        *(volatile uint8_t *)&QUADSPI->DR = data[i];
+    }
+
+    if (!qspi_wait_transfer_complete()) {
+        return false;
+    }
+
+    return qspi_wait_write_complete(QSPI_PROGRAM_TIMEOUT_MS);
+}
+
+bool BSP_QSPI_Program(uint32_t addr, const uint8_t *data, uint32_t len)
+{
+    if (g_qspi_flash_size == 0U || data == NULL) {
+        return false;
+    }
+
+    if ((addr + len) > g_qspi_flash_size) {
+        return false;
+    }
+
+    mmap_leave();
+
+    bool ok = true;
+    uint32_t done = 0U;
+
+    while (ok && done < len) {
+        /* A page program wraps within its page instead of continuing into the
+         * next one, so the first chunk is only as long as the remainder of the
+         * current page. */
+        const uint32_t page_left = QSPI_PAGE_SIZE - ((addr + done) % QSPI_PAGE_SIZE);
+        uint32_t chunk = len - done;
+        if (chunk > page_left) {
+            chunk = page_left;
+        }
+
+        ok = qspi_program_page(addr + done, &data[done], chunk);
+        done += chunk;
+    }
+
+    mmap_enter();
+    return ok;
+}
+
+bool BSP_QSPI_Read(uint32_t addr, uint8_t *data, uint32_t len)
+{
+    if (g_qspi_flash_size == 0U || data == NULL) {
+        return false;
+    }
+
+    if ((addr + len) > g_qspi_flash_size) {
+        return false;
+    }
+
+    const uint8_t *mapped = (const uint8_t *)(QSPI_BASE_ADDR + addr);
+    for (uint32_t i = 0U; i < len; i++) {
+        data[i] = mapped[i];
+    }
+
+    return true;
+}
+
+bool BSP_QSPI_SelfTestWrite(void)
+{
+    if (g_qspi_flash_size < QSPI_SECTOR_SIZE) {
+        return false;
+    }
+
+    /* Last sector: least likely to hold anything wanted. */
+    const uint32_t addr = g_qspi_flash_size - QSPI_SECTOR_SIZE;
+
+    static uint8_t pattern[QSPI_PAGE_SIZE];
+    static uint8_t readback[QSPI_PAGE_SIZE];
+
+    for (uint32_t i = 0U; i < QSPI_PAGE_SIZE; i++) {
+        pattern[i] = (uint8_t)(i ^ 0xA5U);
+    }
+
+    if (!BSP_QSPI_EraseSector(addr)) {
+        return false;
+    }
+
+    /* Erased flash reads 0xFF; if it does not, the erase silently failed. */
+    if (!BSP_QSPI_Read(addr, readback, QSPI_PAGE_SIZE)) {
+        return false;
+    }
+    for (uint32_t i = 0U; i < QSPI_PAGE_SIZE; i++) {
+        if (readback[i] != 0xFFU) {
+            return false;
+        }
+    }
+
+    if (!BSP_QSPI_Program(addr, pattern, QSPI_PAGE_SIZE)) {
+        return false;
+    }
+
+    if (!BSP_QSPI_Read(addr, readback, QSPI_PAGE_SIZE)) {
+        return false;
+    }
+    for (uint32_t i = 0U; i < QSPI_PAGE_SIZE; i++) {
+        if (readback[i] != pattern[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }

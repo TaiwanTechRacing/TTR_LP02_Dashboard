@@ -115,6 +115,20 @@ uint8_t RX[TTR_CAN_MAX_DLC] = {0};
 /* Index of the page on screen; ScanButtons() moves it */
 uint8_t screen_ID_now = 0;
 
+/*
+ * QSPI write-path check, triggered from a debugger.
+ *
+ * Set g_qspi_run_write_test to 1 in a watch window and the main loop runs
+ * BSP_QSPI_SelfTestWrite() once, leaving the outcome in
+ * g_qspi_write_test_result: 1 for pass, 0 for fail, -1 for not yet run.
+ *
+ * Triggered rather than run at boot for two reasons: it erases a sector, so
+ * doing it every startup wears the part for no reason, and a chip erase or a
+ * failed erase blocking for seconds during boot would look like a hang.
+ */
+volatile uint8_t g_qspi_run_write_test = 0;
+volatile int8_t  g_qspi_write_test_result = -1;
+
 /* CAN IDs the hardware filter admits. Order does not matter; the trailing 0
  * terminates the list. Adding one here also needs a matching case in
  * can_decode.c, otherwise the frame arrives and is silently dropped. */
@@ -296,6 +310,12 @@ int main(void)
   while (1)
   {
     const uint32_t now = HAL_GetTick();
+
+    if (g_qspi_run_write_test != 0u)
+    {
+      g_qspi_run_write_test = 0u;
+      g_qspi_write_test_result = BSP_QSPI_SelfTestWrite() ? 1 : 0;
+    }
 
     /* Decode CAN before LVGL renders, so this pass draws the newest values. */
     CAN_Poll();
