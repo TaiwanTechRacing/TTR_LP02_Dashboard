@@ -58,7 +58,7 @@
 #define HOLD 70
 
 #define MIN_SCR_ID 1
-#define MAX_SCR_ID 2
+#define MAX_SCR_ID 4
 
 #define GLV_LOW_VOLT 19
 #define MAX_MOTOR_SPEED 45535
@@ -151,6 +151,8 @@ enum ScreensEnum screens[] = {
     SCREEN_ID_WELCOME,   /* 0  splash, boot only */
     SCREEN_ID_MAIN,      /* 1 */
     SCREEN_ID_DEBUG1,    /* 2 */
+    SCREEN_ID_DEBUG2,    /* 3 */
+    SCREEN_ID_DEBUG3,    /* 4 */
 };
 
 

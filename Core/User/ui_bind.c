@@ -155,6 +155,29 @@ const char *get_var_label_hv_value(void)
 }
 
 /**
+ * Drive mode reported by the VCU.
+ *
+ * Uses vd_drive_mode_t rather than bare numbers. The code this replaced had two
+ * copies of this mapping that disagreed: one listed all four modes, the other
+ * collapsed anything above 1 into "DYC", so the racing page showed the wrong
+ * mode whenever RATIO was selected.
+ */
+const char *get_var_mode(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_VCU_STATE, VD_DEFAULT_TIMEOUT_MS)) {
+        return STALE_TEXT;
+    }
+
+    switch (g_vehicle.drive_mode) {
+    case VD_DRIVE_MODE_OFF:   return "OFF";
+    case VD_DRIVE_MODE_EDIFF: return "E-DIFF";
+    case VD_DRIVE_MODE_RATIO: return "RATIO";
+    case VD_DRIVE_MODE_DYC:   return "DYC";
+    default:                  return "?";
+    }
+}
+
+/**
  * Value driving the SOC bar, 0..100 percent.
  *
  * On timeout this returns 0 so the bar empties, which reads as abnormal far
@@ -169,15 +192,6 @@ int32_t get_var_soc(void)
     return (int32_t)(g_vehicle.pack_soc + 0.5f);
 }
 
-/**
- * Kept only so the tree still builds against the previous EEZ export, which
- * bound the bar to a variable called "lv". Delete once everyone has pulled a
- * build generated after the bar was rebound to "soc".
- */
-int32_t get_var_lv(void)
-{
-    return get_var_soc();
-}
 
 /*
  * Colour cannot travel through a get_var_* getter - those return text only.

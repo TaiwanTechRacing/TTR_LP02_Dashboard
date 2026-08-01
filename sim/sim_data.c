@@ -58,6 +58,7 @@ void SimData_Feed(uint32_t now)
      * with a stretch of N-RDY to check the red styling and the shorter text. */
     g_vehicle.rtd_active     = (phase > 0.2f);
     g_vehicle.cooling_active = (phase > 0.5f);
-    g_vehicle.drive_mode     = VD_DRIVE_MODE_DYC;
+    /* Cycle the drive mode so the label is exercised, not just one value. */
+    g_vehicle.drive_mode     = (uint8_t)((now / 3000u) % 4u);
     VehicleData_MarkFresh(VD_GROUP_VCU_STATE);
 }
