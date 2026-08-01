@@ -16,6 +16,9 @@
 #define SIM_DROPOUT_PERIOD_MS  SIM_SCENE_PERIOD_MS
 #define SIM_DROPOUT_LENGTH_MS  3000u
 
+/* No traffic at all for this long after start-up. */
+#define SIM_BUS_SILENT_MS      4000u
+
 /*
  * Synthetic vehicle data.
  *
@@ -25,6 +28,12 @@
  */
 void SimData_Feed(uint32_t now)
 {
+    /* The bus takes a moment to come up after power-on. Modelling that is what
+     * makes the "armed, waiting for CAN" state visible in the simulator. */
+    if (now < SIM_BUS_SILENT_MS) {
+        return;
+    }
+
     const uint32_t cycle = now % SIM_DROPOUT_PERIOD_MS;
     const bool dropout = cycle >= (SIM_DROPOUT_PERIOD_MS - SIM_DROPOUT_LENGTH_MS);
 

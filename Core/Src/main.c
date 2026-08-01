@@ -318,7 +318,7 @@ int main(void)
       welcome_done = true;
       screen_ID_now = 1;
       loadScreen(screens[screen_ID_now]);
-      UIBind_StartStartupSweep();
+      UIBind_ArmStartupSweep();
     }
 
     /*

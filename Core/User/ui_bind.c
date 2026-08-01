@@ -30,13 +30,15 @@
 #define STALE_TEXT "---"
 
 /*
- * Startup sweep: the speed readout runs 0 -> 150 -> 0 once, when the main
- * screen first appears.
+ * Startup sweep: the speed readout runs 0 -> 150 -> 0 once, as a gauge
+ * self-test in the same spirit as a car's needle sweep at ignition. It proves
+ * the display path works end to end before the driver trusts it.
  *
- * It is a gauge self-test in the same spirit as a car's needle sweep at
- * ignition: it proves the display path works end to end before the driver
- * trusts it. It also covers the moment right after boot when no CAN frame has
- * arrived yet and the readout would otherwise sit at "---".
+ * It is armed when the main screen appears but only starts once a speed frame
+ * has actually arrived. Running it earlier looked like a fault: the numbers
+ * would animate, finish, and then drop to "---" because the bus was not up
+ * yet. Waiting means the sweep says "data is flowing" rather than contradicting
+ * itself a second later.
  *
  * Driven from get_var_speed() rather than by animating the widget, so it stays
  * inside the binding layer and survives any layout change.
@@ -44,8 +46,17 @@
 #define SWEEP_PEAK_KPH    150u
 #define SWEEP_DURATION_MS 1400u
 
-static uint32_t s_sweep_start_tick;
-static bool     s_sweep_active;
+typedef enum {
+    SWEEP_IDLE = 0,   /* before the main screen is shown */
+    SWEEP_ARMED,      /* main screen up, waiting for the first speed frame */
+    SWEEP_RUNNING,
+    SWEEP_DONE        /* terminal - the sweep is a boot ceremony, not a
+                       * reconnect animation, so a later dropout does not
+                       * replay it */
+} sweep_state_t;
+
+static sweep_state_t s_sweep_state;
+static uint32_t      s_sweep_start_tick;
 
 /*
  * One buffer per getter.
@@ -65,28 +76,36 @@ static char s_hv_buf[16];
  */
 const char *get_var_speed(void)
 {
-    unsigned value;
+    const bool speed_fresh = !VehicleData_IsStale(VD_GROUP_VCU_SENSOR2,
+                                                  VD_DEFAULT_TIMEOUT_MS);
 
-    if (s_sweep_active) {
+    if (s_sweep_state == SWEEP_ARMED) {
+        if (!speed_fresh) {
+            return STALE_TEXT;      /* bus not up yet - say so honestly */
+        }
+        s_sweep_state = SWEEP_RUNNING;
+        s_sweep_start_tick = HAL_GetTick();
+    }
+
+    if (s_sweep_state == SWEEP_RUNNING) {
         const uint32_t elapsed = HAL_GetTick() - s_sweep_start_tick;
 
         if (elapsed >= SWEEP_DURATION_MS) {
-            s_sweep_active = false;
-            value = 0u;
+            s_sweep_state = SWEEP_DONE;
         }
         else {
             /* Triangle ramp: up over the first half, back down over the second.
              * Integer maths throughout - no float, and the peak is hit exactly. */
             const uint32_t half = SWEEP_DURATION_MS / 2u;
-            const uint32_t phase = (elapsed < half) ? elapsed : (SWEEP_DURATION_MS - elapsed);
-            value = (unsigned)((phase * SWEEP_PEAK_KPH) / half);
+            const uint32_t phase = (elapsed < half) ? elapsed
+                                                    : (SWEEP_DURATION_MS - elapsed);
+            snprintf(s_speed_buf, sizeof(s_speed_buf), "%u",
+                     (unsigned)((phase * SWEEP_PEAK_KPH) / half));
+            return s_speed_buf;
         }
-
-        snprintf(s_speed_buf, sizeof(s_speed_buf), "%u", value);
-        return s_speed_buf;
     }
 
-    if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)) {
+    if (!speed_fresh) {
         return STALE_TEXT;
     }
 
@@ -95,12 +114,11 @@ const char *get_var_speed(void)
 }
 
 /**
- * Begin the startup sweep. Called once, when the main screen is first shown.
+ * Arm the startup sweep. It begins on the first speed frame, not immediately.
  */
-void UIBind_StartStartupSweep(void)
+void UIBind_ArmStartupSweep(void)
 {
-    s_sweep_start_tick = HAL_GetTick();
-    s_sweep_active = true;
+    s_sweep_state = SWEEP_ARMED;
 }
 
 /**

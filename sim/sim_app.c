@@ -32,7 +32,7 @@ void SimApp_Step(uint32_t now)
     if (!s_welcome_done && (now >= SIM_WELCOME_HOLD_MS)) {
         s_welcome_done = true;
         loadScreen(SCREEN_ID_MAIN);
-        UIBind_StartStartupSweep();
+        UIBind_ArmStartupSweep();
     }
 
     if ((now - s_last_ui_update) >= SIM_UI_PERIOD_MS) {

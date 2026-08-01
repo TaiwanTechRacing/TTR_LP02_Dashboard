@@ -15,9 +15,13 @@
 void UIBind_ApplyDynamicStyles(void);
 
 /**
- * Start the one-shot 0 -> 150 -> 0 sweep of the speed readout.
- * Call when the main screen is first shown.
+ * Arm the one-shot 0 -> 150 -> 0 sweep of the speed readout.
+ *
+ * Call when the main screen is first shown. The sweep does not start until a
+ * speed frame has actually arrived - starting it on a silent bus made the
+ * readout animate and then drop to "---", which reads as a fault rather than
+ * a self-test.
  */
-void UIBind_StartStartupSweep(void);
+void UIBind_ArmStartupSweep(void);
 
 #endif /* UI_BIND_H */
