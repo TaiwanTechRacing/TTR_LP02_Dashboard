@@ -11,7 +11,6 @@
 
 void init_style_bar_INDICATOR_DEFAULT(lv_style_t *style) {
     lv_style_set_bg_color(style, lv_color_hex(0x02ff02));
-    lv_style_set_line_width(style, 10);
     lv_style_set_radius(style, 0);
     lv_style_set_bg_opa(style, 255);
 };
@@ -28,9 +27,7 @@ lv_style_t *get_style_bar_INDICATOR_DEFAULT() {
 
 void init_style_bar_MAIN_DEFAULT(lv_style_t *style) {
     lv_style_set_bg_color(style, lv_color_hex(0x000000));
-    lv_style_set_text_color(style, lv_color_hex(0x2196f3));
     lv_style_set_bg_opa(style, 255);
-    lv_style_set_translate_y(style, 0);
     lv_style_set_radius(style, 10);
 };
 
