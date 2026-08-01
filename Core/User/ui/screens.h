@@ -40,6 +40,8 @@ typedef struct _objects_t {
     lv_obj_t *obj3;
     lv_obj_t *mode_label;
     lv_obj_t *gif;
+    lv_obj_t *gif_1;
+    lv_obj_t *gif_2;
 } objects_t;
 
 extern objects_t objects;

@@ -34,7 +34,7 @@ void create_screen_welcome() {
             // kmLabel_1
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.km_label_1 = obj;
-            lv_obj_set_pos(obj, 48, 94);
+            lv_obj_set_pos(obj, 48, 103);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -44,13 +44,13 @@ void create_screen_welcome() {
             // readyLabel_1
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.ready_label_1 = obj;
-            lv_obj_set_pos(obj, 9, 26);
+            lv_obj_set_pos(obj, 0, 26);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_label_set_recolor(obj, true);
             add_style_text(obj);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xef3a5d), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_50, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_40, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
     }
@@ -343,7 +343,7 @@ void create_screen_debug1() {
             // GIF
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.gif = obj;
-            lv_obj_set_pos(obj, 90, 55);
+            lv_obj_set_pos(obj, 90, 59);
             lv_obj_set_size(obj, 300, 200);
             lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -377,6 +377,20 @@ void create_screen_debug2() {
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "DEBUG2");
         }
+        {
+            // GIF_1
+            lv_obj_t *obj = lv_obj_create(parent_obj);
+            objects.gif_1 = obj;
+            lv_obj_set_pos(obj, 90, 59);
+            lv_obj_set_size(obj, 300, 200);
+            lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_pad_right(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_pad_bottom(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_radius(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
     }
     
     tick_screen_debug2();
@@ -400,6 +414,20 @@ void create_screen_debug3() {
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "DEBUG3");
+        }
+        {
+            // GIF_2
+            lv_obj_t *obj = lv_obj_create(parent_obj);
+            objects.gif_2 = obj;
+            lv_obj_set_pos(obj, 90, 59);
+            lv_obj_set_size(obj, 300, 200);
+            lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_pad_right(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_pad_bottom(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_radius(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
     }
     
@@ -436,7 +464,6 @@ ext_font_desc_t fonts[] = {
     { "orbitron_bold_40", &ui_font_orbitron_bold_40 },
     { "orbitron_bold_50", &ui_font_orbitron_bold_50 },
     { "ORBITER_BOLD_180", &ui_font_orbiter_bold_180 },
-    { "TC_20", &ui_font_tc_20 },
 #if LV_FONT_MONTSERRAT_8
     { "MONTSERRAT_8", &lv_font_montserrat_8 },
 #endif
