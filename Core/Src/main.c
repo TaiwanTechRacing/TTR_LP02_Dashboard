@@ -32,6 +32,7 @@
 #include "bsp_sdram.h"
 #include "bsp_display.h"
 #include "can_rx.h"
+#include "debug_overlay.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,6 +70,7 @@
 #define UI_UPDATE_PERIOD_MS      25U   /* 把車輛資料寫進 widget 的頻率(40 Hz) */
 #define BUTTON_SCAN_PERIOD_MS     5U   /* 按鍵取樣週期 */
 #define BUTTON_DEBOUNCE_SCANS     5U   /* 連續 5 次讀到按下才算數 = 25 ms 去彈跳 */
+#define DEBUG_TOGGLE_SCANS      200U   /* 兩鍵同時按住 200 x 5ms = 1 秒,切換 debug 疊層 */
 
 #define NUM_OF_CELLS 112 //電芯數量
 #define DATA_PER_PACK 4 //每個封包有4個電芯的電壓讀值
@@ -250,6 +252,7 @@ int main(void)
   HAL_GPIO_WritePin(BL_ENABLE_GPIO_Port, BL_ENABLE_Pin, 1);
   BSP_Display_Init();
   ui_init();
+  DebugOverlay_Init();
 
   TxHeader.Identifier = 0x580;
   TxHeader.IdType = FDCAN_STANDARD_ID;
@@ -720,6 +723,29 @@ static void ScanButtons(void)
     { BUTTON_1_GPIO_Port, BUTTON_1_Pin, -1, 0 },
     { BUTTON_2_GPIO_Port, BUTTON_2_Pin, +1, 0 },
   };
+
+  /*
+   * 先處理「兩顆一起按住」的手勢,而且按住期間直接 return 不翻頁。
+   * 如果兩顆是在同一個取樣週期內按下的(25ms 去彈跳生效之前),就完全
+   * 不會翻頁;稍微錯開的話會先翻一頁,這是可以接受的取捨。
+   */
+  static uint16_t both_counter = 0;
+
+  if (HAL_GPIO_ReadPin(BUTTON_1_GPIO_Port, BUTTON_1_Pin) == 0 &&
+      HAL_GPIO_ReadPin(BUTTON_2_GPIO_Port, BUTTON_2_Pin) == 0)
+  {
+    if (both_counter < DEBUG_TOGGLE_SCANS)
+    {
+      both_counter++;
+      if (both_counter == DEBUG_TOGGLE_SCANS)
+      {
+        DebugOverlay_Toggle();   /* 只在跨過門檻的那一次觸發 */
+      }
+    }
+    return;
+  }
+
+  both_counter = 0;
 
   for (uint8_t i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
   {
