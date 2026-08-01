@@ -29,15 +29,27 @@ file(GLOB UI_SOURCES CONFIGURE_DEPENDS
     ${REPO_ROOT}/Core/User/ui/*.c
 )
 
-add_executable(${PROJECT_NAME}
-    sim_main.c
+# Everything except the entry point, shared by both executables.
+set(SHARED_SOURCES
+    sim_data.c
+    sim_app.c
     ${UI_SOURCES}
     ${LVGL_SOURCES}
     ${REPO_ROOT}/Core/User/ui_bind.c
     ${REPO_ROOT}/Core/User/vehicle_data.c
+    ${REPO_ROOT}/Core/User/debug_overlay.c
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+# Windowed simulator.
+add_executable(${PROJECT_NAME} sim_main.c ${SHARED_SOURCES})
+
+# Headless screenshot tool. Renders into a plain buffer and writes a BMP, so
+# the layout can be reviewed over a remote session or checked in CI without
+# anyone looking at a screen.
+add_executable(dashboard_shot sim_shot.c ${SHARED_SOURCES})
+
+foreach(target ${PROJECT_NAME} dashboard_shot)
+target_include_directories(${target} PRIVATE
     # shim first: it supplies the stand-in stm32h7xx_hal.h so the shared
     # firmware sources compile unmodified
     ${CMAKE_CURRENT_SOURCE_DIR}/shim
@@ -49,7 +61,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 # LV_SIMULATOR switches the few target-specific settings in lv_conf.h: the LVGL
 # heap moves off the SDRAM address, and the Win32 display backend is enabled.
-target_compile_definitions(${PROJECT_NAME} PRIVATE
+target_compile_definitions(${target} PRIVATE
     LV_CONF_INCLUDE_SIMPLE
     LV_LVGL_H_INCLUDE_SIMPLE
     LV_SIMULATOR
@@ -65,9 +77,10 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     WM_DPICHANGED=0x02E0
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE
+target_compile_options(${target} PRIVATE
     -Wall
     -O2
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE user32 gdi32)
+target_link_libraries(${target} PRIVATE user32 gdi32)
+endforeach()
