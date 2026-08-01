@@ -1,5 +1,6 @@
 build/
 sim/build/
+tools/qspi_loader/build/
 .vscode/.cmake/
 Debug/
 Release/
