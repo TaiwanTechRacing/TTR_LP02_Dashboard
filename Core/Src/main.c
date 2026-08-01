@@ -33,6 +33,7 @@
 #include "bsp_display.h"
 #include "can_rx.h"
 #include "debug_overlay.h"
+#include "bsp_qspi.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -240,6 +241,15 @@ int main(void)
   {
     Error_Handler();
   }
+
+  /*
+   * 板上的 QSPI Flash。目前還沒有東西放在裡面,先接起來是為了驗證驅動
+   * 能不能正確認到晶片(用 BSP_QSPI_GetJedecId() / GetFlashSize() 看)。
+   *
+   * 刻意不檢查回傳值:這顆是給 UI 改版之後放圖片用的備援空間,沒有它
+   * 儀表照樣能跑,不值得為它讓整個畫面黑掉。
+   */
+  (void)BSP_QSPI_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
