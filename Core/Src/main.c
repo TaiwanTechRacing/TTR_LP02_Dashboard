@@ -28,6 +28,10 @@
 #include <string.h>
 #include <stdio.h>
 #include "ttr_can.h"
+#include "bsp_mpu.h"
+#include "bsp_sdram.h"
+#include "bsp_display.h"
+#include "can_rx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,9 +41,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define LCD_WIDTH 480
-#define LCD_HEIGHT 272
-#define BYTES_PER_PIXEL 2
+/* LCD_WIDTH / LCD_HEIGHT 現在定義在 bsp_display.h */
 
 #define COLOR_RED 0xF800
 #define COLOR_ORANGE 0xFD20
@@ -58,8 +60,15 @@
 #define MAX_MOTOR_SPEED 45535
 #define HV_LOW_VOLT 350
 
-#define HOLD_BUTTON 3
-#define WELCOMEDELAY 150
+/*
+ * 下面這幾個週期以前是用「主迴圈跑幾圈」來計算的,但迴圈速度會隨著畫面複雜度
+ * 變動,同一個數字在不同頁面代表的時間不一樣。現在一律用 HAL_GetTick() 的
+ * 毫秒數,行為才可預測。
+ */
+#define WELCOME_HOLD_MS        3000U   /* 開機歡迎頁停留時間 */
+#define UI_UPDATE_PERIOD_MS      25U   /* 把車輛資料寫進 widget 的頻率(40 Hz) */
+#define BUTTON_SCAN_PERIOD_MS     5U   /* 按鍵取樣週期 */
+#define BUTTON_DEBOUNCE_SCANS     5U   /* 連續 5 次讀到按下才算數 = 25 ms 去彈跳 */
 
 #define NUM_OF_CELLS 112 //電芯數量
 #define DATA_PER_PACK 4 //每個封包有4個電芯的電壓讀值
@@ -82,8 +91,13 @@ FDCAN_HandleTypeDef hfdcan2;
 LTDC_HandleTypeDef hltdc;
 
 /* USER CODE BEGIN PV */
-uint16_t FRAMEBUFFER[272][480];
-static uint8_t buf1[LCD_WIDTH * LCD_HEIGHT / 10 * BYTES_PER_PIXEL];
+/*
+ * framebuffer 搬到 SDRAM 了(以前是內部 RAM_D1 的一個 261 KB 陣列,吃掉半塊
+ * 內部記憶體)。這個巨集只是給 CubeMX 產生的 MX_LTDC_Init() 取初始顯示位址用,
+ * 之後的換頁由 bsp_display.c 負責。
+ */
+#define FRAMEBUFFER ((uint16_t (*)[LCD_WIDTH])SDRAM_FB0_ADDR)
+
 FDCAN_FilterTypeDef sFilterConfig;
 FDCAN_TxHeaderTypeDef TxHeader;
 FDCAN_RxHeaderTypeDef RxHeader;
@@ -91,14 +105,10 @@ FDCAN_RxHeaderTypeDef RxHeader;
 extern objects_t objects;
 bool glv_low_volt = 0;
 bool hv_low_volt = 0;
-bool b1f = 0;
-bool b2f = 0;
 
 uint8_t TX[8]={0,1,2,3,4,5,6,7};
 uint8_t RX[48]={0};
 uint8_t screen_ID_now=0;
-uint8_t button1counter=0;
-uint8_t button2counter=0;
 uint8_t RX_COPY[8] = {0};
 
 
@@ -129,7 +139,6 @@ volatile static bool CELL_OVER_TEMP = 0;
 volatile static bool TEBPPC = 0;
 volatile static bool AMS_RDY = 0;
 volatile static bool sdc_read_test = 0;
-uint32_t level;
 
 /*
 static uint16_t STD_ID_LIST_CAN[35] = {
@@ -163,8 +172,8 @@ static void MX_DMA2D_Init(void);
 static void MX_FDCAN2_Init(void);
 static void MX_FDCAN1_Init(void);
 /* USER CODE BEGIN PFP */
-void lvgl_init_pack(void);
-void my_flush_cb(lv_display_t *, const lv_area_t *, uint8_t*);
+static void ScanButtons(void);
+static void CAN_Poll(void);
 enum ScreensEnum screens[]={SCREEN_ID_WELCOME,SCREEN_ID_SPEED,SCREEN_ID_RACING,SCREEN_ID_FACTORY_BAT_SUM,SCREEN_ID_FACTORY_BAT_P1,SCREEN_ID_FACTORY_BAT_P2,SCREEN_ID_FACTORY_BAT_P3,SCREEN_ID_FACTORY_BAT_P4,SCREEN_ID_FACTORY_MOT};
 void updatescreen(void);
 void writeCellsValue(uint8_t cells);
@@ -191,10 +200,9 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  //卡歡迎頁面的counter與flag
-
-  uint8_t welcome_counter = 0;
-  bool welcome_stop = 0;
+  bool welcome_done = false;
+  uint32_t last_ui_update = 0;
+  uint32_t last_button_scan = 0;
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
@@ -206,7 +214,14 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  /*
+   * 重設 MPU 並開啟 I-cache / D-cache。
+   *
+   * 上面那行 MPU_Config() 是 CubeMX 產生的,它把 0x60000000~0xDFFFFFFF 設成
+   * no-access,SDRAM(0xC0000000)正好落在裡面 —— 這是之前板子上那顆 32 MB
+   * SDRAM 完全用不了的原因。下面這個函式會整個覆蓋掉它。
+   */
+  BSP_MPU_ConfigAndEnableCache();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -216,7 +231,13 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  /* SDRAM 必須在 MX_LTDC_Init() 之前備妥 —— LTDC 一啟動就會開始從
+   * framebuffer 位址讀資料。 */
+  BSP_SDRAM_Init();
+  if (!BSP_SDRAM_SelfTest())
+  {
+    Error_Handler();
+  }
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -227,7 +248,7 @@ int main(void)
   MX_FDCAN1_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(BL_ENABLE_GPIO_Port, BL_ENABLE_Pin, 1);
-  lvgl_init_pack();
+  BSP_Display_Init();
   ui_init();
 
   TxHeader.Identifier = 0x580;
@@ -302,78 +323,41 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    const uint32_t now = HAL_GetTick();
 
-	  level = HAL_FDCAN_GetRxFifoFillLevel(
-	              &hfdcan2,
-	              FDCAN_RX_FIFO0);
+    /* 先把 CAN 資料解完,再讓 LVGL 畫 —— 這樣這一圈畫出來的就是最新的值。 */
+    CAN_Poll();
 
-	  //歡迎介面的counter
-	  if(welcome_counter < WELCOMEDELAY){
-		  welcome_counter++;
-	  }
-	  else{
-		  if(welcome_stop == 0){
-			  loadScreen(screens[1]);
-			  screen_ID_now = 1;
-		  }
-		  welcome_stop = 1;
-	  }
+    /*
+     * LVGL 的 timer 與繪圖。
+     *
+     * 以前這裡是 lv_timer_handler() 之後接一個 HAL_Delay(time_till_next),
+     * 整個主迴圈會睡滿一整個刷新週期(最多 33 ms)。後果是按鍵和資料更新都
+     * 被拖著一起等,而且 updatescreen() 改完 widget 還得再等下一輪才畫得出來
+     * —— CAN 資料到畫面的延遲是兩個刷新週期。現在迴圈不睡了,節流改由下面
+     * 各自的時間判斷負責。
+     */
+    lv_timer_handler();
+    BSP_Display_Service();
 
-	  //LVGL的timer
-	  uint32_t time_till_next = lv_timer_handler();
-	  if(time_till_next == LV_NO_TIMER_READY) time_till_next = LV_DEF_REFR_PERIOD; /*handle LV_NO_TIMER_READY. Another option is to `sleep` for longer*/
-	  HAL_Delay(time_till_next);
+    if (!welcome_done && (now >= WELCOME_HOLD_MS))
+    {
+      welcome_done = true;
+      screen_ID_now = 1;
+      loadScreen(screens[screen_ID_now]);
+    }
 
+    if ((now - last_ui_update) >= UI_UPDATE_PERIOD_MS)
+    {
+      last_ui_update = now;
+      updatescreen();
+    }
 
-	  //刷新螢幕物件
-	  updatescreen();
-
-
-
-	  //讀取螢幕按鍵狀態
-
-	  if (HAL_GPIO_ReadPin(BUTTON_1_GPIO_Port, BUTTON_1_Pin) == 0 ){
-		  button1counter++;
-
-		  if(button1counter >= HOLD_BUTTON && b1f == 0 ){
-			  b1f=1;
-			  if(screen_ID_now > MIN_SCR_ID){
-				  screen_ID_now--;
-			  }
-			  else{
-				  screen_ID_now=MAX_SCR_ID;
-			  }
-			  loadScreen(screens[screen_ID_now]);
-			  button1counter=0;
-		  }
-
-
-	  }
-	  else{
-		  button1counter = 0;
-		  b1f=0;
-	  }
-
-	  if (HAL_GPIO_ReadPin(BUTTON_2_GPIO_Port, BUTTON_2_Pin) == 0 ){
-		button2counter++;
-		if(button2counter >= HOLD_BUTTON && b2f == 0){
-			b2f=1;
-		  	if(screen_ID_now < MAX_SCR_ID){
-		  		screen_ID_now++;
-		  	}
-		  	else{
-		  		screen_ID_now=MIN_SCR_ID;
-		  	}
-		  	loadScreen(screens[screen_ID_now]);
-		  	button2counter = 0;
-		}
-
-
-	  }
-	  else{
-		  button2counter = 0;
-		  b2f=0;
-	  }
+    if ((now - last_button_scan) >= BUTTON_SCAN_PERIOD_MS)
+    {
+      last_button_scan = now;
+      ScanButtons();
+    }
 
     /* USER CODE END WHILE */
 
@@ -718,96 +702,60 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-void lvgl_init_pack(void){
-	lv_init();
-	lv_tick_set_cb(HAL_GetTick);
-	lv_display_t * display1 = lv_display_create(LCD_WIDTH, LCD_HEIGHT);
-	lv_display_set_buffers(display1, buf1, NULL, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
-	lv_display_set_flush_cb(display1, my_flush_cb);
-}
-
-
-void my_flush_cb(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
+/*
+ * 讀取兩顆換頁按鍵。
+ *
+ * 原本是兩段幾乎一模一樣的程式碼,各自帶一個 counter 和一個 flag。這裡改成
+ * 表格驅動:counter 加到門檻時觸發一次,之後就停在門檻不動,直到按鍵放開才
+ * 歸零 —— 這樣本身就有「只觸發一次」的效果,不需要額外的 b1f / b2f 旗標。
+ */
+static void ScanButtons(void)
 {
-    // 計算區域參數
-    int32_t x1 = area->x1;
-    int32_t y1 = area->y1;
-    int32_t x2 = area->x2;
-    int32_t y2 = area->y2;
+  static struct {
+    GPIO_TypeDef *port;
+    uint16_t      pin;
+    int8_t        step;
+    uint8_t       counter;
+  } buttons[] = {
+    { BUTTON_1_GPIO_Port, BUTTON_1_Pin, -1, 0 },
+    { BUTTON_2_GPIO_Port, BUTTON_2_Pin, +1, 0 },
+  };
 
-    int32_t width = x2 - x1 + 1;
-    int32_t height = y2 - y1 + 1;
-
-    // 取得 Framebuffer 基底地址
-    uint16_t *fb = (uint16_t *)FRAMEBUFFER;  // 使用您定義的 FRAMEBUFFER
-
-    // 計算目標位置
-    uint16_t *dest = fb + (y1 * LCD_WIDTH + x1);
-    uint16_t *src = (uint16_t *)px_map;
-
-    // 使用 DMA2D 進行記憶體到記憶體傳輸
-    DMA2D->CR &= ~DMA2D_CR_START;              // 停止 DMA2D
-    DMA2D->CR = DMA2D_M2M;                     // Memory to Memory 模式
-
-    // 設定來源地址 (LVGL buffer)
-    DMA2D->FGMAR = (uint32_t)src;
-
-    // 設定目標地址 (Framebuffer)
-    DMA2D->OMAR = (uint32_t)dest;
-
-    // 設定前景層偏移 (連續資料，無偏移)
-    DMA2D->FGOR = 0;
-
-    // 設定輸出偏移 (每行結束後需跳過的像素數)
-    DMA2D->OOR = LCD_WIDTH - width;
-
-    // 設定像素格式為 RGB565
-    DMA2D->FGPFCCR = DMA2D_INPUT_RGB565;
-    DMA2D->OPFCCR = DMA2D_OUTPUT_RGB565;
-
-    // 設定傳輸的行數和每行像素數
-    DMA2D->NLR = (uint32_t)(width << DMA2D_NLR_PL_Pos) |
-                 (uint32_t)(height << DMA2D_NLR_NL_Pos);
-
-    // 啟動 DMA2D 傳輸
-    DMA2D->CR |= DMA2D_CR_START;
-
-    // 等待 DMA2D 完成 (輪詢方式)
-    uint32_t timeout = 0;
-    while (DMA2D->CR & DMA2D_CR_START) {
-        timeout++;
-        if (timeout > 0x1FFFFF) {
-            // 超時處理
-            break;
-        }
+  for (uint8_t i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
+  {
+    if (HAL_GPIO_ReadPin(buttons[i].port, buttons[i].pin) != 0)
+    {
+      buttons[i].counter = 0;   /* 放開了 */
+      continue;
     }
 
-    // 清除傳輸完成標誌
-    DMA2D->IFCR = DMA2D_IFCR_CTCIF;
+    if (buttons[i].counter >= BUTTON_DEBOUNCE_SCANS)
+    {
+      continue;                 /* 這次按壓已經翻過頁了,等放開 */
+    }
 
-    // 通知 LVGL 刷新完成 (LVGL v9.x API)
-    lv_display_flush_ready(display);
+    if (++buttons[i].counter < BUTTON_DEBOUNCE_SCANS)
+    {
+      continue;                 /* 還在去彈跳 */
+    }
+
+    int8_t next = (int8_t)screen_ID_now + buttons[i].step;
+    if (next < MIN_SCR_ID) next = MAX_SCR_ID;
+    if (next > MAX_SCR_ID) next = MIN_SCR_ID;
+
+    screen_ID_now = (uint8_t)next;
+    loadScreen(screens[screen_ID_now]);
+  }
 }
 
 
-void CAN_ProcessMsg(){
+/* 解包單一 frame。現在由主迴圈呼叫,不再在中斷裡跑。 */
+static void CAN_ProcessMsg(const ttr_can_frame_t *frame){
 
-    // 1. 將硬體的 CAN Frame 格式，轉換成 ttr_can_frame_t 格式
-    ttr_can_frame_t frame;
-    frame.id = RxHeader.Identifier;
-    frame.dlc = RxHeader.DataLength; // 或者是你的硬體驅動定義的長度變數（如 RxHeader.DataLength）
-
-
-    // 假設標準 CAN 最大 8 byte，如果是 CAN FD 可以依硬體實際長度複製
-    for(int i = 0; i < TTR_CAN_MAX_DLC; i++) {
-        frame.data[i] = RX[i];
-    }
-
-    // 2. 依據 ID 進行 Switch 判斷與解包
-    switch(frame.id){
+    switch(frame->id){
 		case TTR_CAN_ID_VCU_VCU_STATE: {
 			ttr_vcu_vcu_state_t vcu_st;
-			ttr_vcu_vcu_state_unpack(&vcu_st, &frame);
+			ttr_vcu_vcu_state_unpack(&vcu_st, frame);
 			RTD_SIGNAL = vcu_st.RDY_TO_DRIVE_ACTIVE;
 			COOL_SIGNAL = vcu_st.COOLING_SYSTEM_ACTIVE;
 			drive_mode = vcu_st.SYS_DRIVE_MODE;
@@ -817,7 +765,7 @@ void CAN_ProcessMsg(){
 		}
 		case TTR_CAN_ID_VCU_VCU_SDC: { // 替換原本的 VCU_STATUS_CMD_SYSTEM1_ID
 			ttr_vcu_vcu_sdc_t sdc;
-			ttr_vcu_vcu_sdc_unpack(&sdc, &frame);
+			ttr_vcu_vcu_sdc_unpack(&sdc, frame);
 			sdc_read_test = sdc.CSB_STATUS;
 				// 直接取得實體數值，不再需要手動用 & 遮罩和移位
 			sdcStatus = (sdcStatus & ~(1U << 4)) | ((sdc.CSB_STATUS & 1U) << 4);
@@ -837,7 +785,7 @@ void CAN_ProcessMsg(){
 
 		case TTR_CAN_ID_VCU_VCU_SENSOR1: { // 替換原本的 VCU_STATUS_CMD_SENSOR1_ID
 			ttr_vcu_vcu_sensor1_t sensor1;
-			ttr_vcu_vcu_sensor1_unpack(&sensor1, &frame);
+			ttr_vcu_vcu_sensor1_unpack(&sensor1, frame);
 			bseRearPUTransmit = sensor1.BSE_REAR_PU;
 
 			break;
@@ -845,7 +793,7 @@ void CAN_ProcessMsg(){
 
 		case TTR_CAN_ID_VCU_VCU_SENSOR2: { // 替換原本的 VCU_STATUS_CMD_SENSOR2_ID
 			ttr_vcu_vcu_sensor2_t sensor2;
-			ttr_vcu_vcu_sensor2_unpack(&sensor2, &frame);
+			ttr_vcu_vcu_sensor2_unpack(&sensor2, frame);
 			steeringTransmit = (100- (sensor2.STEERING_ANGLE+180.0f) / 360.0f * 100);
 			apps1Transmit    = sensor2.APPS1_PU;
 			carSpeedTransmit = sensor2.CAR_SPEED;
@@ -854,7 +802,7 @@ void CAN_ProcessMsg(){
 
 		case TTR_CAN_ID_VCU_VCU_SENSOR3: { // 替換原本的 VCU_STATUS_CMD_SENSOR3_ID
 			ttr_vcu_vcu_sensor3_t sensor3;
-			ttr_vcu_vcu_sensor3_unpack(&sensor3, &frame);
+			ttr_vcu_vcu_sensor3_unpack(&sensor3, frame);
 			 // 解包函式會自動幫你除以 2185.0f，你直接拿來用就好！
 			glvVoltTransmit = sensor3.GLV_VOLTAGE; // 欄位名稱請對照 ttr_can.h 內的定義
 			break;
@@ -862,14 +810,14 @@ void CAN_ProcessMsg(){
 
 		case TTR_CAN_ID_VCU_VCU_ERROR:{
 			ttr_vcu_vcu_error_t vcu_err;
-			ttr_vcu_vcu_error_unpack(&vcu_err, &frame);
+			ttr_vcu_vcu_error_unpack(&vcu_err, frame);
 			vcu_err_type = (vcu_err.MCU1_ERR) | (vcu_err.MCU2_ERR<<1) | (vcu_err.MCU3_ERR<<2) | (vcu_err.MCU4_ERR<<3) | (vcu_err.AMS_ERR<<4);
 			break;
 		}
 
 		case TTR_CAN_ID_AMS_AMS_STATUS0: { // 替換原本的 AMS_STATUS_CMD0_ID
 			ttr_ams_ams_status0_t ams_status0;
-			ttr_ams_ams_status0_unpack(&ams_status0, &frame);
+			ttr_ams_ams_status0_unpack(&ams_status0, frame);
 			busVoltage = ams_status0.PACK_VOLTAGE;
 			busSoc = ams_status0.PACK_SOC;
 			AccMaxTemp = ams_status0.TEMPERATURE_MAX;
@@ -881,7 +829,7 @@ void CAN_ProcessMsg(){
 
 		case TTR_CAN_ID_VCU_VCU_GPS:{
 			ttr_vcu_vcu_gps_t vcu_gps;
-			ttr_vcu_vcu_gps_unpack(&vcu_gps, &frame);
+			ttr_vcu_vcu_gps_unpack(&vcu_gps, frame);
 			lng = vcu_gps.LONGTITUDE;
 			lat = vcu_gps.LATITUDE;
 			break;
@@ -889,7 +837,7 @@ void CAN_ProcessMsg(){
 
     case TTR_CAN_ID_AMS_AMS_MODULE_1:{
     	ttr_ams_ams_module_1_t m1;
-    	ttr_ams_ams_module_1_unpack(&m1, &frame);
+    	ttr_ams_ams_module_1_unpack(&m1, frame);
 
     	CellsVolt[0*14+0]=m1.C0;
     	CellsVolt[0*14+1]=m1.C1;
@@ -917,7 +865,7 @@ void CAN_ProcessMsg(){
     }
     case TTR_CAN_ID_AMS_AMS_MODULE_2:{
     	ttr_ams_ams_module_2_t m2;
-    	ttr_ams_ams_module_2_unpack(&m2, &frame);
+    	ttr_ams_ams_module_2_unpack(&m2, frame);
     	CellsVolt[1*14+0]=m2.C0;
     	CellsVolt[1*14+1]=m2.C1;
     	CellsVolt[1*14+2]=m2.C2;
@@ -944,7 +892,7 @@ void CAN_ProcessMsg(){
     }
     case TTR_CAN_ID_AMS_AMS_MODULE_3:{
     	ttr_ams_ams_module_3_t m3;
-    	ttr_ams_ams_module_3_unpack(&m3, &frame);
+    	ttr_ams_ams_module_3_unpack(&m3, frame);
     	CellsVolt[2*14+0]=m3.C0;
     	CellsVolt[2*14+1]=m3.C1;
     	CellsVolt[2*14+2]=m3.C2;
@@ -971,7 +919,7 @@ void CAN_ProcessMsg(){
     }
     case TTR_CAN_ID_AMS_AMS_MODULE_4:{
     	ttr_ams_ams_module_4_t m4;
-    	ttr_ams_ams_module_4_unpack(&m4, &frame);
+    	ttr_ams_ams_module_4_unpack(&m4, frame);
     	CellsVolt[3*14+0]=m4.C0;
     	CellsVolt[3*14+1]=m4.C1;
     	CellsVolt[3*14+2]=m4.C2;
@@ -999,7 +947,7 @@ void CAN_ProcessMsg(){
     }
     case TTR_CAN_ID_AMS_AMS_MODULE_5:{
     	ttr_ams_ams_module_5_t m5;
-    	ttr_ams_ams_module_5_unpack(&m5, &frame);
+    	ttr_ams_ams_module_5_unpack(&m5, frame);
     	CellsVolt[4*14+0]=m5.C0;
     	CellsVolt[4*14+1]=m5.C1;
     	CellsVolt[4*14+2]=m5.C2;
@@ -1026,7 +974,7 @@ void CAN_ProcessMsg(){
     }
     case TTR_CAN_ID_AMS_AMS_MODULE_6:{
     	ttr_ams_ams_module_6_t m6;
-    	ttr_ams_ams_module_6_unpack(&m6, &frame);
+    	ttr_ams_ams_module_6_unpack(&m6, frame);
     	CellsVolt[5*14+0]=m6.C0;
     	CellsVolt[5*14+1]=m6.C1;
     	CellsVolt[5*14+2]=m6.C2;
@@ -1053,7 +1001,7 @@ void CAN_ProcessMsg(){
     }
     case TTR_CAN_ID_AMS_AMS_MODULE_7:{
     	ttr_ams_ams_module_7_t m7;
-    	ttr_ams_ams_module_7_unpack(&m7, &frame);
+    	ttr_ams_ams_module_7_unpack(&m7, frame);
     	CellsVolt[6*14+0]=m7.C0;
     	CellsVolt[6*14+1]=m7.C1;
     	CellsVolt[6*14+2]=m7.C2;
@@ -1080,7 +1028,7 @@ void CAN_ProcessMsg(){
     }
     case TTR_CAN_ID_AMS_AMS_MODULE_8:{
     	ttr_ams_ams_module_8_t m8;
-    	ttr_ams_ams_module_8_unpack(&m8, &frame);
+    	ttr_ams_ams_module_8_unpack(&m8, frame);
     	CellsVolt[7*14+0]=m8.C0;
     	CellsVolt[7*14+1]=m8.C1;
     	CellsVolt[7*14+2]=m8.C2;
@@ -1115,6 +1063,21 @@ void CAN_ProcessMsg(){
     }
 }
 
+/*
+ * 把中斷收進來的 CAN 訊息全部解包。主迴圈每圈呼叫一次。
+ *
+ * 一次清空佇列而不是每圈只處理一包,這樣即使某一圈因為重繪整頁而變慢,
+ * 也不會讓佇列越積越多。
+ */
+static void CAN_Poll(void)
+{
+	ttr_can_frame_t frame;
+
+	while (CAN_RX_Dequeue(&frame)) {
+		CAN_ProcessMsg(&frame);
+	}
+}
+
 void Little_Eendian_Merge(uint8_t StartIndex,volatile float* target){
 	*target = ((uint16_t)RX[StartIndex] | ((uint16_t)RX[StartIndex+1]<<8));
 }
@@ -1126,16 +1089,25 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
   {
     if(hfdcan->Instance == FDCAN2)
     {
-      /* Retrieve Rx messages from RX FIFO0 */
-  	  if(HAL_FDCAN_GetRxFifoFillLevel(&hfdcan2, FDCAN_RX_FIFO0) > 0 ){
-  		if(HAL_FDCAN_GetRxMessage(&hfdcan2, FDCAN_RX_FIFO0, &RxHeader, RX) == HAL_OK ){
-  	    	CAN_ProcessMsg();
-  	    }
-  	    else{
-  	      Error_Handler();
+      /*
+       * 中斷裡只做一件事:把硬體 FIFO 裡的 frame 搬進軟體佇列,然後馬上結束。
+       * 解包留給主迴圈的 CAN_Poll()。
+       *
+       * 用 while 一次把 FIFO 清空 —— 收到通知時裡面可能不只一包,
+       * 只讀一包的話剩下的要等下一次中斷才處理。
+       */
+      while(HAL_FDCAN_GetRxFifoFillLevel(&hfdcan2, FDCAN_RX_FIFO0) > 0){
+        if(HAL_FDCAN_GetRxMessage(&hfdcan2, FDCAN_RX_FIFO0, &RxHeader, RX) != HAL_OK){
+          break;
+        }
 
-  	    }
-  	  }
+        ttr_can_frame_t frame;
+        frame.id  = RxHeader.Identifier;
+        frame.dlc = RxHeader.DataLength;
+        memcpy(frame.data, RX, TTR_CAN_MAX_DLC);
+
+        CAN_RX_Enqueue(&frame);
+      }
     }
   }
 }
@@ -1387,90 +1359,140 @@ void PushValueAsInt(lv_obj_t* target, uint8_t value){
 	lv_label_set_text(target, buffer);
 }
 
+/*
+ * 把某一段(14 顆電芯 + 10 個溫度點)的數值寫進對應的 label。
+ *
+ * 這裡原本有一個會踩記憶體的 bug:電壓和溫度共用同一個迴圈,次數是
+ * NUM_OF_CELLS/TOTAL_SEG = 14,但溫度陣列只有 10 個元素。第 10~13 圈會讀到
+ * 陣列外面的堆疊內容,再把那些垃圾值當成 lv_obj_t* 傳進 LVGL。-O0 剛好讓它
+ * 沒當場爆掉,開 -O2 之後編譯器直接把這段標成 undefined behavior。
+ * 現在電壓和溫度各自用自己的長度跑。
+ */
+#define CELLS_PER_SEG     (NUM_OF_CELLS / TOTAL_SEG)      /* 14 */
+#define TSENSORS_PER_SEG  (NUM_OF_TSENSOR / TOTAL_SEG)    /* 10 */
+
+static void PushSegment(lv_obj_t *volts[], lv_obj_t *temps[], uint8_t seg)
+{
+	for (uint8_t i = 0; i < CELLS_PER_SEG; i++) {
+		PushValueAsFloat(volts[i], CellsVolt[seg * CELLS_PER_SEG + i]);
+	}
+	for (uint8_t i = 0; i < TSENSORS_PER_SEG; i++) {
+		PushValueAsFloat(temps[i], CellsTemp[seg * TSENSORS_PER_SEG + i]);
+	}
+}
+
 void writeCellsValue(uint8_t cells){
 
 	switch(cells){
-	case 1:
-		//Cell 1
-		lv_obj_t* cell1_volts[]={objects.c1v1,objects.c1v2,objects.c1v3,objects.c1v4,objects.c1v5,objects.c1v6,objects.c1v7,objects.c1v8,objects.c1v9,objects.c1v10,objects.c1v11,objects.c1v12,objects.c1v13,objects.c1v14};
-		lv_obj_t* cell1_temps[]={objects.c1t1,objects.c1t2,objects.c1t3,objects.c1t4,objects.c1t5,objects.c1t6,objects.c1tu,objects.c1tl,objects.c1td,objects.c1ta};
-		for(uint8_t i=0 ; i<NUM_OF_CELLS/TOTAL_SEG ; i++ ){
-			PushValueAsFloat(cell1_volts[i], CellsVolt[i]);
-			PushValueAsFloat(cell1_temps[i], CellsTemp[i]);
-		}
-
+	case 1: {
+		lv_obj_t *volts[] = {
+			objects.c1v1,objects.c1v2,objects.c1v3,objects.c1v4,objects.c1v5,objects.c1v6,objects.c1v7,
+			objects.c1v8,objects.c1v9,objects.c1v10,objects.c1v11,objects.c1v12,objects.c1v13,objects.c1v14
+		};
+		lv_obj_t *temps[] = {
+			objects.c1t1,objects.c1t2,objects.c1t3,objects.c1t4,objects.c1t5,objects.c1t6,objects.c1tu,
+			objects.c1tl,objects.c1td,objects.c1ta
+		};
+		PushSegment(volts, temps, 0);
 		break;
+	}
 
-	case 2:
-		//Cell 2
-		lv_obj_t* cell2_volts[]={objects.c2v1,objects.c2v2,objects.c2v3,objects.c2v4,objects.c2v5,objects.c2v6,objects.c2v7,objects.c2v8,objects.c2v9,objects.c2v10,objects.c2v11,objects.c2v12,objects.c2v13,objects.c2v14};
-		lv_obj_t* cell2_temps[]={objects.c2t1,objects.c2t2,objects.c2t3,objects.c2t4,objects.c2t5,objects.c2t6,objects.c2tu,objects.c2tl,objects.c2td,objects.c2ta};
-		for(uint8_t i=0 ; i<NUM_OF_CELLS/TOTAL_SEG ; i++ ){
-			PushValueAsFloat(cell2_volts[i], CellsVolt[i + (NUM_OF_CELLS/TOTAL_SEG) ]);
-			PushValueAsFloat(cell2_temps[i], CellsTemp[i + (NUM_OF_TSENSOR/TOTAL_SEG)]);
-		}
+	case 2: {
+		lv_obj_t *volts[] = {
+			objects.c2v1,objects.c2v2,objects.c2v3,objects.c2v4,objects.c2v5,objects.c2v6,objects.c2v7,
+			objects.c2v8,objects.c2v9,objects.c2v10,objects.c2v11,objects.c2v12,objects.c2v13,objects.c2v14
+		};
+		lv_obj_t *temps[] = {
+			objects.c2t1,objects.c2t2,objects.c2t3,objects.c2t4,objects.c2t5,objects.c2t6,objects.c2tu,
+			objects.c2tl,objects.c2td,objects.c2ta
+		};
+		PushSegment(volts, temps, 1);
 		break;
+	}
 
-	case 3:
-		//Cell 3
-
-		lv_obj_t* cell3_volts[]={objects.c1v1_1,objects.c1v2_1,objects.c1v3_1,objects.c1v4_1,objects.c1v5_1,objects.c1v6_1,objects.c1v7_1,objects.c1v8_1,objects.c1v9_1,objects.c1v10_1,objects.c1v11_1,objects.c1v12_1,objects.c1v13_1,objects.c1v14_1};
-		lv_obj_t* cell3_temps[]={objects.c1t1_1,objects.c1t2_1,objects.c1t3_1,objects.c1t4_1,objects.c1t5_1,objects.c1t6_1,objects.c1tu_1,objects.c1tl_1,objects.c1td_1,objects.c1ta_1};
-		for(uint8_t i=0 ; i<NUM_OF_CELLS/TOTAL_SEG ; i++ ){
-			PushValueAsFloat(cell3_volts[i], CellsVolt[i + 2*(NUM_OF_CELLS/TOTAL_SEG) ]);
-			PushValueAsFloat(cell3_temps[i], CellsTemp[i + 2*(NUM_OF_TSENSOR/TOTAL_SEG)]);
-		}
+	case 3: {
+		lv_obj_t *volts[] = {
+			objects.c1v1_1,objects.c1v2_1,objects.c1v3_1,objects.c1v4_1,objects.c1v5_1,objects.c1v6_1,
+			objects.c1v7_1,objects.c1v8_1,objects.c1v9_1,objects.c1v10_1,objects.c1v11_1,objects.c1v12_1,
+			objects.c1v13_1,objects.c1v14_1
+		};
+		lv_obj_t *temps[] = {
+			objects.c1t1_1,objects.c1t2_1,objects.c1t3_1,objects.c1t4_1,objects.c1t5_1,objects.c1t6_1,
+			objects.c1tu_1,objects.c1tl_1,objects.c1td_1,objects.c1ta_1
+		};
+		PushSegment(volts, temps, 2);
 		break;
+	}
 
-	case 4:
-		//Cell 4
-		lv_obj_t* cell4_volts[]={objects.c2v1_1,objects.c2v2_1,objects.c2v3_1,objects.c2v4_1,objects.c2v5_1,objects.c2v6_1,objects.c2v7_1,objects.c2v8_1,objects.c2v9_1,objects.c2v10_1,objects.c2v11_1,objects.c2v12_1,objects.c2v13_1,objects.c2v14_1};
-		lv_obj_t* cell4_temps[]={objects.c2t1_1,objects.c2t2_1,objects.c2t3_1,objects.c2t4_1,objects.c2t5_1,objects.c2t6_1,objects.c2tu_1,objects.c2tl_1,objects.c2td_1,objects.c2ta_1};
-		for(uint8_t i=0 ; i<NUM_OF_CELLS/TOTAL_SEG ; i++ ){
-			PushValueAsFloat(cell4_volts[i], CellsVolt[i + 3*(NUM_OF_CELLS/TOTAL_SEG) ]);
-			PushValueAsFloat(cell4_temps[i], CellsTemp[i + 3*(NUM_OF_TSENSOR/TOTAL_SEG)]);
-		}
+	case 4: {
+		lv_obj_t *volts[] = {
+			objects.c2v1_1,objects.c2v2_1,objects.c2v3_1,objects.c2v4_1,objects.c2v5_1,objects.c2v6_1,
+			objects.c2v7_1,objects.c2v8_1,objects.c2v9_1,objects.c2v10_1,objects.c2v11_1,objects.c2v12_1,
+			objects.c2v13_1,objects.c2v14_1
+		};
+		lv_obj_t *temps[] = {
+			objects.c2t1_1,objects.c2t2_1,objects.c2t3_1,objects.c2t4_1,objects.c2t5_1,objects.c2t6_1,
+			objects.c2tu_1,objects.c2tl_1,objects.c2td_1,objects.c2ta_1
+		};
+		PushSegment(volts, temps, 3);
 		break;
+	}
 
-	case 5:
-		//Cell 5
-		lv_obj_t* cell5_volts[]={objects.c1v1_2,objects.c1v2_2,objects.c1v3_2,objects.c1v4_2,objects.c1v5_2,objects.c1v6_2,objects.c1v7_2,objects.c1v8_2,objects.c1v9_2,objects.c1v10_2,objects.c1v11_2,objects.c1v12_2,objects.c1v13_2,objects.c1v14_2};
-		lv_obj_t* cell5_temps[]={objects.c1t1_2,objects.c1t2_2,objects.c1t3_2,objects.c1t4_2,objects.c1t5_2,objects.c1t6_2,objects.c1tu_2,objects.c1tl_2,objects.c1td_2,objects.c1ta_2};
-		for(uint8_t i=0 ; i<NUM_OF_CELLS/TOTAL_SEG ; i++ ){
-			PushValueAsFloat(cell5_volts[i], CellsVolt[i+ 4*(NUM_OF_CELLS/TOTAL_SEG) ]);
-			PushValueAsFloat(cell5_temps[i], CellsTemp[i + 4*(NUM_OF_TSENSOR/TOTAL_SEG)]);
-		}
+	case 5: {
+		lv_obj_t *volts[] = {
+			objects.c1v1_2,objects.c1v2_2,objects.c1v3_2,objects.c1v4_2,objects.c1v5_2,objects.c1v6_2,
+			objects.c1v7_2,objects.c1v8_2,objects.c1v9_2,objects.c1v10_2,objects.c1v11_2,objects.c1v12_2,
+			objects.c1v13_2,objects.c1v14_2
+		};
+		lv_obj_t *temps[] = {
+			objects.c1t1_2,objects.c1t2_2,objects.c1t3_2,objects.c1t4_2,objects.c1t5_2,objects.c1t6_2,
+			objects.c1tu_2,objects.c1tl_2,objects.c1td_2,objects.c1ta_2
+		};
+		PushSegment(volts, temps, 4);
 		break;
+	}
 
-	case 6:
-		//Cell	6
-		lv_obj_t* cell6_volts[]={objects.c2v1_2,objects.c2v2_2,objects.c2v3_2,objects.c2v4_2,objects.c2v5_2,objects.c2v6_2,objects.c2v7_2,objects.c2v8_2,objects.c2v9_2,objects.c2v10_2,objects.c2v11_2,objects.c2v12_2,objects.c2v13_2,objects.c2v14_2};
-		lv_obj_t* cell6_temps[]={objects.c2t1_2,objects.c2t2_2,objects.c2t3_2,objects.c2t4_2,objects.c2t5_2,objects.c2t6_2,objects.c2tu_2,objects.c2tl_2,objects.c2td_2,objects.c2ta_2};
-		for(uint8_t i=0 ; i<NUM_OF_CELLS/TOTAL_SEG ; i++ ){
-			PushValueAsFloat(cell6_volts[i], CellsVolt[i+ 5*(NUM_OF_CELLS/TOTAL_SEG) ]);
-			PushValueAsFloat(cell6_temps[i], CellsTemp[i + 5*(NUM_OF_TSENSOR/TOTAL_SEG)]);
-		}
+	case 6: {
+		lv_obj_t *volts[] = {
+			objects.c2v1_2,objects.c2v2_2,objects.c2v3_2,objects.c2v4_2,objects.c2v5_2,objects.c2v6_2,
+			objects.c2v7_2,objects.c2v8_2,objects.c2v9_2,objects.c2v10_2,objects.c2v11_2,objects.c2v12_2,
+			objects.c2v13_2,objects.c2v14_2
+		};
+		lv_obj_t *temps[] = {
+			objects.c2t1_2,objects.c2t2_2,objects.c2t3_2,objects.c2t4_2,objects.c2t5_2,objects.c2t6_2,
+			objects.c2tu_2,objects.c2tl_2,objects.c2td_2,objects.c2ta_2
+		};
+		PushSegment(volts, temps, 5);
 		break;
+	}
 
-	case 7:
-		//Cell 7
-		lv_obj_t* cell7_volts[]={objects.c1v1_3,objects.c1v2_3,objects.c1v3_3,objects.c1v4_3,objects.c1v5_3,objects.c1v6_3,objects.c1v7_3,objects.c1v8_3,objects.c1v9_3,objects.c1v10_3,objects.c1v11_3,objects.c1v12_3,objects.c1v13_3,objects.c1v14_3};
-		lv_obj_t* cell7_temps[]={objects.c1t1_3,objects.c1t2_3,objects.c1t3_3,objects.c1t4_3,objects.c1t5_3,objects.c1t6_3,objects.c1tu_3,objects.c1tl_3,objects.c1td_3,objects.c1ta_3};
-		for(uint8_t i=0 ; i<NUM_OF_CELLS/TOTAL_SEG ; i++ ){
-			PushValueAsFloat(cell7_volts[i], CellsVolt[i+ 6*(NUM_OF_CELLS/TOTAL_SEG) ]);
-			PushValueAsFloat(cell7_temps[i], CellsTemp[i + 6*(NUM_OF_TSENSOR/TOTAL_SEG)]);
-		}
+	case 7: {
+		lv_obj_t *volts[] = {
+			objects.c1v1_3,objects.c1v2_3,objects.c1v3_3,objects.c1v4_3,objects.c1v5_3,objects.c1v6_3,
+			objects.c1v7_3,objects.c1v8_3,objects.c1v9_3,objects.c1v10_3,objects.c1v11_3,objects.c1v12_3,
+			objects.c1v13_3,objects.c1v14_3
+		};
+		lv_obj_t *temps[] = {
+			objects.c1t1_3,objects.c1t2_3,objects.c1t3_3,objects.c1t4_3,objects.c1t5_3,objects.c1t6_3,
+			objects.c1tu_3,objects.c1tl_3,objects.c1td_3,objects.c1ta_3
+		};
+		PushSegment(volts, temps, 6);
 		break;
+	}
 
-	case 8:
-		//Cell 8
-		lv_obj_t* cell8_volts[]={objects.c2v1_3,objects.c2v2_3,objects.c2v3_3,objects.c2v4_3,objects.c2v5_3,objects.c2v6_3,objects.c2v7_3,objects.c2v8_3,objects.c2v9_3,objects.c2v10_3,objects.c2v11_3,objects.c2v12_3,objects.c2v13_3,objects.c2v14_3};
-		lv_obj_t* cell8_temps[]={objects.c2t1_3,objects.c2t2_3,objects.c2t3_3,objects.c2t4_3,objects.c2t5_3,objects.c2t6_3,objects.c2tu_3,objects.c2tl_3,objects.c2td_3,objects.c2ta_3};
-		for(uint8_t i=0 ; i<NUM_OF_CELLS/TOTAL_SEG ; i++ ){
-			PushValueAsFloat(cell8_volts[i], CellsVolt[i+ 7*(NUM_OF_CELLS/TOTAL_SEG) ]);
-			PushValueAsFloat(cell8_temps[i], CellsTemp[i + 7*(NUM_OF_TSENSOR/TOTAL_SEG)]);
-		}
+	case 8: {
+		lv_obj_t *volts[] = {
+			objects.c2v1_3,objects.c2v2_3,objects.c2v3_3,objects.c2v4_3,objects.c2v5_3,objects.c2v6_3,
+			objects.c2v7_3,objects.c2v8_3,objects.c2v9_3,objects.c2v10_3,objects.c2v11_3,objects.c2v12_3,
+			objects.c2v13_3,objects.c2v14_3
+		};
+		lv_obj_t *temps[] = {
+			objects.c2t1_3,objects.c2t2_3,objects.c2t3_3,objects.c2t4_3,objects.c2t5_3,objects.c2t6_3,
+			objects.c2tu_3,objects.c2tl_3,objects.c2td_3,objects.c2ta_3
+		};
+		PushSegment(volts, temps, 7);
 		break;
+	}
 
 	default:
 		break;

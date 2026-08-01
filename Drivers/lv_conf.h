@@ -69,13 +69,16 @@
 
 #if LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN
     /** Size of memory available for `lv_malloc()` in bytes (>= 2kB) */
-    #define LV_MEM_SIZE (128 * 1024U)          /**< [bytes] */
+    #define LV_MEM_SIZE (2 * 1024 * 1024U)     /**< [bytes] */
 
     /** Size of the memory expand for `lv_malloc()` in bytes */
     #define LV_MEM_POOL_EXPAND_SIZE 0
 
     /** Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too. */
-    #define LV_MEM_ADR 0     /**< 0: unused*/
+    /* LVGL 的 heap 放到板上的 32 MB SDRAM,不再佔用內部 RAM_D1。
+     * 位址與大小要和 Core/User/bsp_sdram.h 的 SDRAM_LVGL_HEAP_ADDR /
+     * SDRAM_LVGL_HEAP_SIZE 保持一致(這裡不能 include,LVGL 太早用到)。 */
+    #define LV_MEM_ADR 0xC0100000
     /* Instead of an address give a memory allocator that will be called to get a memory pool for LVGL. E.g. my_malloc */
     #if LV_MEM_ADR == 0
         #undef LV_MEM_POOL_INCLUDE
@@ -88,7 +91,9 @@
  *====================*/
 
 /** Default display refresh, input device read and animation step period. */
-#define LV_DEF_REFR_PERIOD  33      /**< [ms] */
+/* 33 ms 等於把上限鎖在 30 fps。開了 cache、換成雙緩衝、主迴圈也不再 HAL_Delay
+ * 之後,16 ms(60 fps)才跟得上面板的更新率。 */
+#define LV_DEF_REFR_PERIOD  16      /**< [ms] */
 
 /** Default Dots Per Inch. Used to initialize default sizes such as widgets sized, style paddings.
  * (Not so important, you can adjust it to modify default sizes and spaces.) */
@@ -129,7 +134,9 @@
 #define LV_DRAW_BUF_STRIDE_ALIGN                1
 
 /** Align start address of draw_buf addresses to this bytes*/
-#define LV_DRAW_BUF_ALIGN                       4
+/* 開了 D-cache 之後對齊到 cache line(32 byte),避免 buffer 邊界和別的資料
+ * 共用同一條 cache line。 */
+#define LV_DRAW_BUF_ALIGN                       32
 
 /** Using matrix for transformations.
  * Requirements:
