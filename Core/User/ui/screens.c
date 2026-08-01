@@ -112,23 +112,6 @@ void create_screen_main() {
                     lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text_static(obj, "SOC");
                 }
-                {
-                    // hvSocBar
-                    lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.hv_soc_bar = obj;
-                    lv_obj_set_pos(obj, 7, 26);
-                    lv_obj_set_size(obj, 42, 143);
-                    add_style_bar(obj);
-                    lv_obj_set_style_bg_color(obj, lv_color_hex(0x02ff02), LV_PART_INDICATOR | LV_STATE_DEFAULT);
-                    lv_obj_set_style_bg_opa(obj, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-                    lv_obj_set_style_border_color(obj, lv_color_hex(0x02ff02), LV_PART_INDICATOR | LV_STATE_DEFAULT);
-                    lv_obj_set_style_border_opa(obj, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-                    lv_obj_set_style_bg_opa(obj, 52, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_bg_color(obj, lv_color_hex(0x02ff3f), LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_border_color(obj, lv_color_hex(0x02ff3f), LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_border_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_border_width(obj, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
-                }
             }
         }
         {
@@ -252,6 +235,16 @@ void create_screen_main() {
                 }
             }
         }
+        {
+            lv_obj_t *obj = lv_bar_create(parent_obj);
+            objects.obj4 = obj;
+            lv_obj_set_pos(obj, 407, 41);
+            lv_obj_set_size(obj, 50, 138);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0x2df321), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+            lv_obj_set_style_radius(obj, 7, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0x2df321), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_radius(obj, 7, LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
     }
     
     tick_screen_main();
@@ -264,15 +257,6 @@ void tick_screen_main() {
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.hv_soc_label;
             lv_label_set_text(objects.hv_soc_label, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.hv_soc_bar);
-        if (new_val != cur_val) {
-            tick_value_change_obj = objects.hv_soc_bar;
-            lv_bar_set_value(objects.hv_soc_bar, new_val, LV_ANIM_ON);
             tick_value_change_obj = NULL;
         }
     }
@@ -321,6 +305,87 @@ void tick_screen_main() {
             tick_value_change_obj = NULL;
         }
     }
+    {
+        int32_t new_val = get_var_soc();
+        int32_t cur_val = lv_bar_get_value(objects.obj4);
+        if (new_val != cur_val) {
+            tick_value_change_obj = objects.obj4;
+            lv_bar_set_value(objects.obj4, new_val, LV_ANIM_ON);
+            tick_value_change_obj = NULL;
+        }
+    }
+}
+
+void create_screen_system() {
+    lv_obj_t *obj = lv_obj_create(0);
+    objects.system = obj;
+    lv_obj_set_pos(obj, 0, 0);
+    lv_obj_set_size(obj, 480, 272);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    {
+        lv_obj_t *parent_obj = obj;
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 8, 12);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "BATTERY");
+        }
+    }
+    
+    tick_screen_system();
+}
+
+void tick_screen_system() {
+}
+
+void create_screen_battery() {
+    lv_obj_t *obj = lv_obj_create(0);
+    objects.battery = obj;
+    lv_obj_set_pos(obj, 0, 0);
+    lv_obj_set_size(obj, 480, 272);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    {
+        lv_obj_t *parent_obj = obj;
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 8, 12);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "SYSTEM");
+        }
+    }
+    
+    tick_screen_battery();
+}
+
+void tick_screen_battery() {
+}
+
+void create_screen_inverter() {
+    lv_obj_t *obj = lv_obj_create(0);
+    objects.inverter = obj;
+    lv_obj_set_pos(obj, 0, 0);
+    lv_obj_set_size(obj, 480, 272);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    {
+        lv_obj_t *parent_obj = obj;
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 8, 12);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "INVERTER");
+        }
+    }
+    
+    tick_screen_inverter();
+}
+
+void tick_screen_inverter() {
 }
 
 void create_screen_debug1() {
@@ -441,12 +506,15 @@ typedef void (*tick_screen_func_t)();
 tick_screen_func_t tick_screen_funcs[] = {
     tick_screen_welcome,
     tick_screen_main,
+    tick_screen_system,
+    tick_screen_battery,
+    tick_screen_inverter,
     tick_screen_debug1,
     tick_screen_debug2,
     tick_screen_debug3,
 };
 void tick_screen(int screen_index) {
-    if (screen_index >= 0 && screen_index < 5) {
+    if (screen_index >= 0 && screen_index < 8) {
         tick_screen_funcs[screen_index]();
     }
 }
@@ -550,6 +618,9 @@ void create_screens() {
     // Create screens
     create_screen_welcome();
     create_screen_main();
+    create_screen_system();
+    create_screen_battery();
+    create_screen_inverter();
     create_screen_debug1();
     create_screen_debug2();
     create_screen_debug3();
