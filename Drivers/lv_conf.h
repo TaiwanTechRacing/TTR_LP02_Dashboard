@@ -648,7 +648,16 @@
 /** Enable handling large font and/or fonts with a lot of characters.
  *  The limit depends on the font size, font face and bpp.
  *  A compiler error will be triggered if a font needs it. */
-#define LV_FONT_FMT_TXT_LARGE 0
+/*
+ * 開啟的原因:UI_FONT_ORBITER_BOLD_180 目前是 8bpp、字元範圍 32-127,點陣資料
+ * 超過 1 MB,而字形描述子的 bitmap_index 只有 20 bit(上限 1,048,575),偏移量
+ * 會溢位 —— 產生的字型檔自己帶了 #error 擋下來。
+ *
+ * 這是繞過症狀,不是解法。真正該做的是把大字級改成 bpp=4、字元範圍只留
+ * 45-57(數字加 - . /):那個字型會從 618 KB 掉到約 40 KB,溢位問題自然消失,
+ * 也不需要這個選項(它會讓所有字型的描述子變寬,多吃一點空間)。
+ */
+#define LV_FONT_FMT_TXT_LARGE 1
 
 /** Enables/disables support for compressed fonts. */
 #define LV_USE_FONT_COMPRESSED 0

@@ -8,12 +8,13 @@
 
 #if defined(LV_LVGL_H_INCLUDE_SIMPLE)
 #include "lvgl.h"
+#elif defined(LV_LVGL_H_INCLUDE_SYSTEM)
+#include <lvgl.h>
 #elif defined(LV_BUILD_TEST)
 #include "../lvgl.h"
 #else
 #include "lvgl/lvgl.h"
 #endif
-
 
 #ifndef LV_ATTRIBUTE_MEM_ALIGN
 #define LV_ATTRIBUTE_MEM_ALIGN
@@ -91,13 +92,16 @@ uint8_t img_ttr_logo_2_map[] = {
 };
 
 const lv_image_dsc_t img_ttr_logo_2 = {
-  .header.magic = LV_IMAGE_HEADER_MAGIC,
-  .header.cf = LV_COLOR_FORMAT_RGB565,
-  .header.flags = 0,
-  .header.w = 224,
-  .header.h = 60,
-  .header.stride = 448,
+  .header = {
+    .magic = LV_IMAGE_HEADER_MAGIC,
+    .cf = LV_COLOR_FORMAT_RGB565,
+    .flags = 0,
+    .w = 224,
+    .h = 60,
+    .stride = 448,
+    .reserved_2 = 0,
+  },
   .data_size = sizeof(img_ttr_logo_2_map),
   .data = img_ttr_logo_2_map,
+  .reserved = NULL,
 };
-

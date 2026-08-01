@@ -57,7 +57,7 @@
 #define HOLD 70
 
 #define MIN_SCR_ID 1
-#define MAX_SCR_ID 8
+#define MAX_SCR_ID 2
 
 #define GLV_LOW_VOLT 19
 #define MAX_MOTOR_SPEED 45535
@@ -139,7 +139,15 @@ static void MX_FDCAN2_Init(void);
 static void MX_FDCAN1_Init(void);
 /* USER CODE BEGIN PFP */
 static void ScanButtons(void);
-enum ScreensEnum screens[]={SCREEN_ID_WELCOME,SCREEN_ID_SPEED,SCREEN_ID_RACING,SCREEN_ID_FACTORY_BAT_SUM,SCREEN_ID_FACTORY_BAT_P1,SCREEN_ID_FACTORY_BAT_P2,SCREEN_ID_FACTORY_BAT_P3,SCREEN_ID_FACTORY_BAT_P4,SCREEN_ID_FACTORY_MOT};
+/*
+ * 換頁順序。index 0 是開機的歡迎頁,不列入按鍵循環;
+ * MIN/MAX_SCR_ID 界定按鍵能循環的範圍。
+ */
+enum ScreensEnum screens[] = {
+    SCREEN_ID_WELCOME,   /* 0  開機畫面,只在啟動時顯示 */
+    SCREEN_ID_MAIN,      /* 1 */
+    SCREEN_ID_DEBUG1,    /* 2 */
+};
 
 
 
@@ -159,6 +167,7 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
   bool welcome_done = false;
+  uint32_t last_ui_update = 0;
   uint32_t last_button_scan = 0;
   /* USER CODE END 1 */
 
@@ -299,6 +308,17 @@ int main(void)
       welcome_done = true;
       screen_ID_now = 1;
       loadScreen(screens[screen_ID_now]);
+    }
+
+    /*
+     * 讓 EEZ 產生的畫面去讀一次 get_var_xxx()(實作在 ui_bind.c)。
+     * 舊版是由 updatescreen() 直接寫 widget,新版改成 EEZ 自己輪詢繫結的變數,
+     * 所以這一行不能少 —— 少了畫面會停在預設值,而且不會有任何錯誤訊息。
+     */
+    if ((now - last_ui_update) >= UI_UPDATE_PERIOD_MS)
+    {
+      last_ui_update = now;
+      ui_tick();
     }
 
     if ((now - last_button_scan) >= BUTTON_SCAN_PERIOD_MS)

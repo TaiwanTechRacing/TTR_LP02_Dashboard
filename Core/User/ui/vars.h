@@ -10,17 +10,31 @@ extern "C" {
 
 // enum declarations
 
-
-
 // Flow global variables
 
 enum FlowGlobalVariables {
-    FLOW_GLOBAL_VARIABLE_NONE
+    FLOW_GLOBAL_VARIABLE_LV = 0,
+    FLOW_GLOBAL_VARIABLE_READY = 1,
+    FLOW_GLOBAL_VARIABLE_LABEL_SOC_VALUE = 2,
+    FLOW_GLOBAL_VARIABLE_SPEED = 3,
+    FLOW_GLOBAL_VARIABLE_LABEL_LV_VALUE = 4,
+    FLOW_GLOBAL_VARIABLE_LABEL_HV_VALUE = 5
 };
 
 // Native global variables
 
-
+extern int32_t get_var_lv();
+extern void set_var_lv(int32_t value);
+extern const char *get_var_ready();
+extern void set_var_ready(const char *value);
+extern const char *get_var_label_soc_value();
+extern void set_var_label_soc_value(const char *value);
+extern const char *get_var_speed();
+extern void set_var_speed(const char *value);
+extern const char *get_var_label_lv_value();
+extern void set_var_label_lv_value(const char *value);
+extern const char *get_var_label_hv_value();
+extern void set_var_label_hv_value(const char *value);
 
 #ifdef __cplusplus
 }
