@@ -71,6 +71,23 @@ typedef enum {
 #define VD_ERR_MCU3  (1u << 2)
 #define VD_ERR_MCU4  (1u << 3)
 #define VD_ERR_AMS   (1u << 4)
+#define VD_ERR_IMU   (1u << 5)
+
+/*
+ * Bits of online_flags, from VCU_ONLINE.
+ *
+ * The VCU reports which nodes it can currently hear. This is not the same as
+ * the dashboard hearing them: the dashboard's CAN filter admits only a handful
+ * of IDs, so it has no way to observe an MCU directly and has to take the VCU's
+ * word for it.
+ */
+#define VD_ONLINE_MCU1 (1u << 0)
+#define VD_ONLINE_MCU2 (1u << 1)
+#define VD_ONLINE_MCU3 (1u << 2)
+#define VD_ONLINE_MCU4 (1u << 3)
+#define VD_ONLINE_AMS  (1u << 4)
+#define VD_ONLINE_IMU  (1u << 5)
+#define VD_ONLINE_GPS  (1u << 6)
 
 /* Bits of the value returned by VehicleData_WarnFlags() */
 #define VD_WARN_TEBPPC        (1u << 0)
@@ -93,6 +110,7 @@ typedef enum {
     VD_GROUP_VCU_SENSOR2,
     VD_GROUP_VCU_SYSTEM,
     VD_GROUP_VCU_ERROR,
+    VD_GROUP_VCU_ONLINE,
     VD_GROUP_VCU_GPS,
     VD_GROUP_AMS_STATUS,
     VD_GROUP_AMS_CELLS,
@@ -127,6 +145,9 @@ typedef struct {
 
     /* --- VCU_ERROR --- */
     uint8_t  error_flags;         /* VD_ERR_* */
+
+    /* --- VCU_ONLINE --- */
+    uint8_t  online_flags;        /* VD_ONLINE_* */
 
     /* --- VCU_GPS --- */
     uint8_t  latitude;

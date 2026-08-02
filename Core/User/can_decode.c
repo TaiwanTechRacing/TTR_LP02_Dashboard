@@ -136,8 +136,24 @@ static void decode_one(const ttr_can_frame_t *frame)
             | (s.MCU2_ERR ? VD_ERR_MCU2 : 0)
             | (s.MCU3_ERR ? VD_ERR_MCU3 : 0)
             | (s.MCU4_ERR ? VD_ERR_MCU4 : 0)
-            | (s.AMS_ERR  ? VD_ERR_AMS  : 0));
+            | (s.AMS_ERR  ? VD_ERR_AMS  : 0)
+            | (s.IMU_ERR  ? VD_ERR_IMU  : 0));
         VehicleData_MarkFresh(VD_GROUP_VCU_ERROR);
+        break;
+    }
+
+    case TTR_CAN_ID_VCU_VCU_ONLINE: {
+        ttr_vcu_vcu_online_t s;
+        ttr_vcu_vcu_online_unpack(&s, frame);
+        g_vehicle.online_flags = (uint8_t)(
+              (s.MCU1_ONLINE ? VD_ONLINE_MCU1 : 0)
+            | (s.MCU2_ONLINE ? VD_ONLINE_MCU2 : 0)
+            | (s.MCU3_ONLINE ? VD_ONLINE_MCU3 : 0)
+            | (s.MCU4_ONLINE ? VD_ONLINE_MCU4 : 0)
+            | (s.AMS_ONLINE  ? VD_ONLINE_AMS  : 0)
+            | (s.IMU_ONLINE  ? VD_ONLINE_IMU  : 0)
+            | (s.GPS_ONLINE  ? VD_ONLINE_GPS  : 0));
+        VehicleData_MarkFresh(VD_GROUP_VCU_ONLINE);
         break;
     }
 

@@ -86,4 +86,48 @@ void SimData_Feed(uint32_t now)
     g_vehicle.sdc_status = (uint16_t)~0u;
     g_vehicle.sdc_status &= (uint16_t)~(1u << open_node);
     VehicleData_MarkFresh(VD_GROUP_VCU_SDC);
+
+    /*
+     * ECU health, walked the same way and for the same reason - a bar on the
+     * wrong node shows its gap out of step with its label.
+     *
+     * Two failure modes alternate rather than one, because the page collapses
+     * them into a single indicator: on even passes a node drops offline, on odd
+     * passes it stays online but raises a fault. Both must empty the bar, and
+     * only exercising one of them would leave half the logic unproven.
+     */
+    static const uint8_t ecu_online_bits[7] = {
+        VD_ONLINE_MCU1, VD_ONLINE_MCU2, VD_ONLINE_MCU3, VD_ONLINE_MCU4,
+        VD_ONLINE_AMS,  VD_ONLINE_IMU,  VD_ONLINE_GPS,
+    };
+    /* GPS has no fault signal in the DBC, hence the 0. */
+    static const uint8_t ecu_error_bits[7] = {
+        VD_ERR_MCU1, VD_ERR_MCU2, VD_ERR_MCU3, VD_ERR_MCU4,
+        VD_ERR_AMS,  VD_ERR_IMU,  0,
+    };
+
+    const uint8_t ecu_step = (uint8_t)((now / 900u) % 14u);
+    const uint8_t bad_ecu = (uint8_t)(ecu_step % 7u);
+    const bool    fault_mode = (ecu_step >= 7u);
+
+    uint8_t online = 0;
+    uint8_t errors = 0;
+    for (uint8_t i = 0; i < 7u; i++) {
+        online |= ecu_online_bits[i];
+    }
+
+    if (fault_mode) {
+        /* On the GPS turn there is no fault bit to raise, so the bar correctly
+         * stays green - the page cannot show a bad GPS, only a missing one. */
+        errors = ecu_error_bits[bad_ecu];
+    }
+    else {
+        online &= (uint8_t)~ecu_online_bits[bad_ecu];
+    }
+
+    g_vehicle.online_flags = online;
+    g_vehicle.error_flags = errors;
+
+    VehicleData_MarkFresh(VD_GROUP_VCU_ONLINE);
+    VehicleData_MarkFresh(VD_GROUP_VCU_ERROR);
 }

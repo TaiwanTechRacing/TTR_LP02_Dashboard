@@ -309,6 +309,50 @@ SDC_GETTER(m3_il,  VD_SDC_M3_IL)
 SDC_GETTER(m4_il,  VD_SDC_M4_IL)
 SDC_GETTER(msd,    VD_SDC_MSD)
 
+/*
+ * ECU health on the SYSTEM-ECU page: the node is online and reporting no fault.
+ *
+ * Two messages have to agree, so both have to be fresh. A stale VCU_ONLINE
+ * means we do not know who is on the bus; a stale VCU_ERROR means we do not
+ * know whether they are healthy. Either way the honest answer is not "good",
+ * and the bar empties - same direction as the SDC page, and for the same
+ * reason.
+ *
+ * The dashboard cannot see these nodes itself. Its CAN filter admits about
+ * sixteen IDs and none of the per-MCU status messages are among them, so this
+ * is the VCU's view of the bus, not the dashboard's.
+ */
+static int32_t ecu_ok(uint8_t online_bit, uint8_t error_bit)
+{
+    if (VehicleData_IsStale(VD_GROUP_VCU_ONLINE, VD_DEFAULT_TIMEOUT_MS) ||
+        VehicleData_IsStale(VD_GROUP_VCU_ERROR, VD_DEFAULT_TIMEOUT_MS)) {
+        return 0;
+    }
+
+    const bool online = (g_vehicle.online_flags & online_bit) != 0u;
+    const bool faulted = (error_bit != 0u) &&
+                         ((g_vehicle.error_flags & error_bit) != 0u);
+
+    return (online && !faulted) ? 1 : 0;
+}
+
+#define ECU_GETTER(suffix, online_bit, error_bit) \
+    int32_t get_var_ecu_##suffix(void) { return ecu_ok(online_bit, error_bit); }
+
+ECU_GETTER(mcu1, VD_ONLINE_MCU1, VD_ERR_MCU1)
+ECU_GETTER(mcu2, VD_ONLINE_MCU2, VD_ERR_MCU2)
+ECU_GETTER(mcu3, VD_ONLINE_MCU3, VD_ERR_MCU3)
+ECU_GETTER(mcu4, VD_ONLINE_MCU4, VD_ERR_MCU4)
+ECU_GETTER(ams,  VD_ONLINE_AMS,  VD_ERR_AMS)
+ECU_GETTER(imu,  VD_ONLINE_IMU,  VD_ERR_IMU)
+
+/*
+ * GPS has an online bit but no fault signal anywhere in the DBC, so this bar
+ * means "online" only. It looks identical to the other six, which is worth
+ * knowing: a GPS that is present but producing nonsense would still show green.
+ */
+ECU_GETTER(gps,  VD_ONLINE_GPS,  0)
+
 /**
  * Value driving the SOC bar, 0..100 percent.
  *

@@ -36,7 +36,14 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_SDC_M2_IL = 20,
     FLOW_GLOBAL_VARIABLE_SDC_M3_IL = 21,
     FLOW_GLOBAL_VARIABLE_SDC_M4_IL = 22,
-    FLOW_GLOBAL_VARIABLE_SDC_MSD = 23
+    FLOW_GLOBAL_VARIABLE_SDC_MSD = 23,
+    FLOW_GLOBAL_VARIABLE_ECU_MCU1 = 24,
+    FLOW_GLOBAL_VARIABLE_ECU_MCU2 = 25,
+    FLOW_GLOBAL_VARIABLE_ECU_MCU3 = 26,
+    FLOW_GLOBAL_VARIABLE_ECU_MCU4 = 27,
+    FLOW_GLOBAL_VARIABLE_ECU_AMS = 28,
+    FLOW_GLOBAL_VARIABLE_ECU_IMU = 29,
+    FLOW_GLOBAL_VARIABLE_ECU_GPS = 30
 };
 
 // Native global variables
@@ -89,6 +96,20 @@ extern int32_t get_var_sdc_m4_il();
 extern void set_var_sdc_m4_il(int32_t value);
 extern int32_t get_var_sdc_msd();
 extern void set_var_sdc_msd(int32_t value);
+extern int32_t get_var_ecu_mcu1();
+extern void set_var_ecu_mcu1(int32_t value);
+extern int32_t get_var_ecu_mcu2();
+extern void set_var_ecu_mcu2(int32_t value);
+extern int32_t get_var_ecu_mcu3();
+extern void set_var_ecu_mcu3(int32_t value);
+extern int32_t get_var_ecu_mcu4();
+extern void set_var_ecu_mcu4(int32_t value);
+extern int32_t get_var_ecu_ams();
+extern void set_var_ecu_ams(int32_t value);
+extern int32_t get_var_ecu_imu();
+extern void set_var_ecu_imu(int32_t value);
+extern int32_t get_var_ecu_gps();
+extern void set_var_ecu_gps(int32_t value);
 
 #ifdef __cplusplus
 }
