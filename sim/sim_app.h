@@ -13,6 +13,7 @@
 #ifndef SIM_APP_H
 #define SIM_APP_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /* Mirrors WELCOME_HOLD_MS in Core/Src/main.c */
@@ -28,12 +29,21 @@ void SimApp_Reset(void);
 void SimApp_Step(uint32_t now);
 
 /**
- * Choose which page the welcome screen hands over to, indexed the same as
- * screens[] in Core/Src/main.c. Defaults to 1 (main), matching the firmware.
+ * Choose which page the welcome screen hands over to, indexed the same as the
+ * page list in Core/User/nav.c. Defaults to 1 (main), matching the firmware.
  *
- * There are no buttons here, so this stands in for pressing them - mainly to
- * reach the debug pages, where the animations live.
+ * A shortcut for the headless screenshot tool, which has nowhere to press a
+ * button. Interactively, use SimApp_SetButtons() instead.
  */
 void SimApp_ShowPage(uint8_t index);
+
+/**
+ * Current state of the two dashboard buttons, true while held.
+ *
+ * Fed to the same Nav_Scan() the firmware calls, so debounce, the wrap at both
+ * ends of the page list and the both-held overlay gesture behave exactly as
+ * they do in the car - including needing a real hold to trigger.
+ */
+void SimApp_SetButtons(bool button1_pressed, bool button2_pressed);
 
 #endif /* SIM_APP_H */

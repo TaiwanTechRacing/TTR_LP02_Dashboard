@@ -24,12 +24,58 @@ The same code as the car:
 | screens, styles, fonts | `Core/User/ui/` (EEZ output, verbatim) |
 | value formatting, stale handling, colours | `Core/User/ui_bind.c` (verbatim) |
 | data model | `Core/User/vehicle_data.c` (verbatim) |
+| page order, buttons, debounce | `Core/User/nav.c` (verbatim) |
+| animations from QSPI | `Core/User/gif_pages.c` (verbatim) |
 
-Only three things are swapped:
+Only four things are swapped:
 
 - **Display** - a Win32 window instead of LTDC
-- **Data** - a synthetic generator in `sim_main.c` instead of CAN
+- **Data** - a synthetic generator in `sim_data.c` instead of CAN
+- **Buttons** - arrow keys instead of GPIO
+- **QSPI flash** - a `.bin` read into memory by `sim_qspi.c` instead of the
+  memory-mapped window
 - **`HAL_GetTick()`** - backed by `GetTickCount()`, declared in `shim/stm32h7xx_hal.h`
+
+## Buttons
+
+| key | dashboard button |
+|---|---|
+| left arrow | button 1, page back |
+| right arrow | button 2, page forward |
+| both held 1 s | toggle the FPS overlay |
+
+The keys are read as held-or-not, not as key events, and fed to the same
+`Nav_Scan()` the firmware calls at the same 5 ms period. Debounce, the wrap at
+both ends of the page list and the one-second hold therefore behave exactly as
+they do in the car - a tap shorter than 25 ms is ignored here too.
+
+## Animations
+
+The GIFs live on the QSPI flash, so the simulator needs the same image the
+board is programmed with:
+
+```powershell
+python tools\make_qspi_image.py dashboard_layout\gif\optimized -o qspi.bin
+$env:TTR_QSPI_IMAGE = "qspi.bin"
+sim\build\dashboard_sim.exe
+```
+
+Without it the simulator behaves like an unprogrammed part, which is also worth
+checking - the firmware is required to boot that way.
+
+`gif_pages.c` reaches the flash through `BSP_QSPI_GetMappedBase()`, which
+`sim_qspi.c` answers with the loaded file. That indirection is the only change
+the feature needed to become testable on a desktop.
+
+## Screenshots
+
+```powershell
+sim\build\dashboard_shot.exe out.bmp 6000 5
+```
+
+Renders headless at a given moment (ms) on a given page, indexed the same as
+the page list in `nav.c` - 5, 6 and 7 are the debug pages. Useful over a remote
+session and for catching layout regressions without anyone looking at a screen.
 
 The shim directory is placed first on the include path so `ui_bind.c` and
 `vehicle_data.c` compile for the host without a single `#ifdef`. If the

@@ -4,46 +4,35 @@
 
 #include "sim_app.h"
 #include "sim_data.h"
+#include "sim_qspi.h"
 
 #include "ui.h"
-#include "screens.h"
 #include "ui_bind.h"
 #include "debug_overlay.h"
 #include "gif_pages.h"
-#include "sim_qspi.h"
+#include "nav.h"
 
 #include <stdbool.h>
 
-/*
- * Mirrors screens[] in Core/Src/main.c. gif_pages.c maps animations to
- * positions in this list, so the order has to match or the wrong animation
- * runs - which is exactly the kind of mistake the simulator is here to catch.
- */
-static const enum ScreensEnum s_screens[] = {
-    SCREEN_ID_WELCOME,
-    SCREEN_ID_MAIN,
-    SCREEN_ID_SYSTEM,
-    SCREEN_ID_BATTERY,
-    SCREEN_ID_INVERTER,
-    SCREEN_ID_DEBUG1,
-    SCREEN_ID_DEBUG2,
-    SCREEN_ID_DEBUG3,
-};
-
-#define SIM_PAGE_COUNT ((uint8_t)(sizeof(s_screens) / sizeof(s_screens[0])))
-
 static bool     s_welcome_done;
 static uint32_t s_last_ui_update;
-static uint8_t  s_page = 1u;        /* where the welcome hand-off lands */
+static uint32_t s_last_button_scan;
+static uint8_t  s_start_page = 1u;   /* where the welcome hand-off lands */
+static bool     s_button1;
+static bool     s_button2;
 
 void SimApp_Reset(void)
 {
     s_welcome_done = false;
     s_last_ui_update = 0;
+    s_last_button_scan = 0;
+    s_button1 = false;
+    s_button2 = false;
 
     /* LVGL shows the performance label as soon as a display exists; the
      * firmware hides it at boot and so does this. */
     DebugOverlay_Init();
+    Nav_Init();
 
     /* Same order as main.c: the image has to be readable before the GIF
      * widgets are built, because gif_pages.c points them straight at it. */
@@ -53,18 +42,19 @@ void SimApp_Reset(void)
 
 void SimApp_ShowPage(uint8_t index)
 {
-    if (index >= SIM_PAGE_COUNT) {
-        return;
-    }
+    s_start_page = index;
 
-    s_page = index;
-
-    /* Before the hand-off the welcome screen is still up; SimApp_Step() will
-     * load this page when it fires. Afterwards, switch immediately. */
+    /* Before the hand-off the welcome screen is still up and SimApp_Step()
+     * will load this page when it fires. Afterwards, switch immediately. */
     if (s_welcome_done) {
-        loadScreen(s_screens[s_page]);
-        GifPages_SetVisiblePage(s_page);
+        Nav_ShowPage(index);
     }
+}
+
+void SimApp_SetButtons(bool button1_pressed, bool button2_pressed)
+{
+    s_button1 = button1_pressed;
+    s_button2 = button2_pressed;
 }
 
 void SimApp_Step(uint32_t now)
@@ -73,8 +63,7 @@ void SimApp_Step(uint32_t now)
 
     if (!s_welcome_done && (now >= SIM_WELCOME_HOLD_MS)) {
         s_welcome_done = true;
-        loadScreen(s_screens[s_page]);
-        GifPages_SetVisiblePage(s_page);
+        Nav_ShowPage(s_start_page);
         UIBind_ArmStartupSweep();
     }
 
@@ -82,6 +71,22 @@ void SimApp_Step(uint32_t now)
         s_last_ui_update = now;
         ui_tick();
         UIBind_ApplyDynamicStyles();
+    }
+
+    /*
+     * Same period as the firmware, because nav.c counts samples rather than
+     * milliseconds - scanning at a different rate here would change the
+     * debounce and the one-second both-held gesture, and the simulator would
+     * stop being evidence about either.
+     *
+     * The buttons do nothing until the splash screen hands over, matching the
+     * car: nav.c's page cycle excludes index 0.
+     */
+    if ((now - s_last_button_scan) >= NAV_SCAN_PERIOD_MS) {
+        s_last_button_scan = now;
+        if (s_welcome_done) {
+            Nav_Scan(s_button1, s_button2);
+        }
     }
 
     lv_timer_handler();

@@ -1,0 +1,53 @@
+/*
+ * nav.h
+ *
+ *  Page navigation and the two dashboard buttons.
+ *
+ *  Split out of main.c so the PC simulator runs the same code rather than an
+ *  imitation of it. Debounce timing, the wrap-around at both ends of the page
+ *  list and the both-held gesture are exactly what the car does, which is what
+ *  makes trying a page order on the desktop worth anything.
+ *
+ *  Nav_Scan() takes the two button states as plain booleans instead of reading
+ *  GPIO itself. That is the whole seam: main.c passes HAL_GPIO_ReadPin()
+ *  results, the simulator passes key states.
+ */
+
+#ifndef NAV_H
+#define NAV_H
+
+#include <stdbool.h>
+#include <stdint.h>
+
+/** Button sampling period. Nav_Scan() assumes it is called this often. */
+#define NAV_SCAN_PERIOD_MS 5U
+
+/**
+ * Set up the page list and show the splash screen. Call after ui_init().
+ */
+void Nav_Init(void);
+
+/**
+ * Show a page by its index in the cycle.
+ *
+ * 0 is the splash screen, shown at boot and excluded from the button cycle.
+ * 1 is main, which is where the splash hands over. Out-of-range values are
+ * ignored.
+ */
+void Nav_ShowPage(uint8_t index);
+
+/** Index of the page currently on screen. */
+uint8_t Nav_CurrentPage(void);
+
+/**
+ * Sample the buttons and act on them. Call every NAV_SCAN_PERIOD_MS.
+ *
+ * @param button1_pressed  page back
+ * @param button2_pressed  page forward
+ *
+ * Both held for a second toggles the debug overlay, and no page change happens
+ * while they are held.
+ */
+void Nav_Scan(bool button1_pressed, bool button2_pressed);
+
+#endif /* NAV_H */

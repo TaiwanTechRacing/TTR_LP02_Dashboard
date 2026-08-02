@@ -37,6 +37,7 @@
 #include "can_decode.h"
 #include "ui_bind.h"
 #include "gif_pages.h"
+#include "nav.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,9 +59,6 @@
 
 #define HOLD 70
 
-#define MIN_SCR_ID 1
-#define MAX_SCR_ID 7
-
 #define GLV_LOW_VOLT 19
 #define MAX_MOTOR_SPEED 45535
 #define HV_LOW_VOLT 350
@@ -73,9 +71,8 @@
  */
 #define WELCOME_HOLD_MS        3000U   /* how long the splash screen stays up */
 #define UI_UPDATE_PERIOD_MS      25U   /* rate at which the UI re-reads vehicle data (40 Hz) */
-#define BUTTON_SCAN_PERIOD_MS     5U   /* button sampling period */
-#define BUTTON_DEBOUNCE_SCANS     5U   /* 5 consecutive samples to accept a press = 25 ms debounce */
-#define DEBUG_TOGGLE_SCANS      200U   /* both buttons held 200 x 5 ms = 1 s toggles the debug overlay */
+/* Button sampling period and debounce now live in Core/User/nav.h, which the
+ * simulator shares. */
 
 #define NUM_OF_CELLS 112 //電芯數量
 #define DATA_PER_PACK 4 //每個封包有4個電芯的電壓讀值
@@ -112,9 +109,6 @@ FDCAN_RxHeaderTypeDef RxHeader;
 
 /* Scratch buffer the FDCAN ISR receives into. TTR_CAN_MAX_DLC is 48. */
 uint8_t RX[TTR_CAN_MAX_DLC] = {0};
-
-/* Index of the page on screen; ScanButtons() moves it */
-uint8_t screen_ID_now = 0;
 
 /*
  * QSPI write-path check, triggered from a debugger.
@@ -158,20 +152,6 @@ static void MX_FDCAN2_Init(void);
 static void MX_FDCAN1_Init(void);
 /* USER CODE BEGIN PFP */
 static void ScanButtons(void);
-/*
- * Page order. Index 0 is the splash screen shown at boot and is excluded from
- * the button cycle; MIN/MAX_SCR_ID bound what the buttons can reach.
- */
-enum ScreensEnum screens[] = {
-    SCREEN_ID_WELCOME,   /* 0  splash, boot only */
-    SCREEN_ID_MAIN,      /* 1 */
-    SCREEN_ID_SYSTEM,    /* 2 */
-    SCREEN_ID_BATTERY,   /* 3 */
-    SCREEN_ID_INVERTER,  /* 4 */
-    SCREEN_ID_DEBUG1,    /* 5 */
-    SCREEN_ID_DEBUG2,    /* 6 */
-    SCREEN_ID_DEBUG3,    /* 7 */
-};
 
 
 
@@ -255,6 +235,7 @@ int main(void)
   BSP_Display_Init();
   ui_init();
   DebugOverlay_Init();
+  Nav_Init();
 
   /* Animations come from QSPI. Does nothing if the part is blank, so a
    * board that has never been programmed still boots normally. */
@@ -344,9 +325,7 @@ int main(void)
     if (!welcome_done && (now >= WELCOME_HOLD_MS))
     {
       welcome_done = true;
-      screen_ID_now = 1;
-      loadScreen(screens[screen_ID_now]);
-      GifPages_SetVisiblePage(screen_ID_now);
+      Nav_ShowPage(1);
       UIBind_ArmStartupSweep();
     }
 
@@ -364,7 +343,7 @@ int main(void)
       UIBind_ApplyDynamicStyles();
     }
 
-    if ((now - last_button_scan) >= BUTTON_SCAN_PERIOD_MS)
+    if ((now - last_button_scan) >= NAV_SCAN_PERIOD_MS)
     {
       last_button_scan = now;
       ScanButtons();
@@ -714,75 +693,18 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /*
- * Read the two page-change buttons.
+ * Read the two page-change buttons and hand the result to nav.c.
  *
- * This was two nearly identical blocks, each with its own counter and flag.
- * It is now table-driven: the counter fires once on reaching the threshold and
- * then saturates there until the button is released, which gives the
- * fire-once behaviour for free - no separate b1f / b2f flags needed.
+ * Everything with behaviour - debounce, the wrap at both ends of the page
+ * list, the both-held gesture - lives there so the simulator runs it too. All
+ * that is left here is the part that genuinely needs hardware.
+ *
+ * The buttons are active low.
  */
 static void ScanButtons(void)
 {
-  static struct {
-    GPIO_TypeDef *port;
-    uint16_t      pin;
-    int8_t        step;
-    uint8_t       counter;
-  } buttons[] = {
-    { BUTTON_1_GPIO_Port, BUTTON_1_Pin, -1, 0 },
-    { BUTTON_2_GPIO_Port, BUTTON_2_Pin, +1, 0 },
-  };
-
-  /*
-   * Handle the both-buttons gesture first and return while it is held, so no
-   * page change happens. Pressed within the same sampling window (before the
-   * 25 ms debounce elapses) nothing flips at all; slightly staggered presses
-   * cost one page change first, which is an acceptable trade.
-   */
-  static uint16_t both_counter = 0;
-
-  if (HAL_GPIO_ReadPin(BUTTON_1_GPIO_Port, BUTTON_1_Pin) == 0 &&
-      HAL_GPIO_ReadPin(BUTTON_2_GPIO_Port, BUTTON_2_Pin) == 0)
-  {
-    if (both_counter < DEBUG_TOGGLE_SCANS)
-    {
-      both_counter++;
-      if (both_counter == DEBUG_TOGGLE_SCANS)
-      {
-        DebugOverlay_Toggle();   /* fire only on the sample that crosses the threshold */
-      }
-    }
-    return;
-  }
-
-  both_counter = 0;
-
-  for (uint8_t i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
-  {
-    if (HAL_GPIO_ReadPin(buttons[i].port, buttons[i].pin) != 0)
-    {
-      buttons[i].counter = 0;   /* released */
-      continue;
-    }
-
-    if (buttons[i].counter >= BUTTON_DEBOUNCE_SCANS)
-    {
-      continue;                 /* already flipped for this press; wait for release */
-    }
-
-    if (++buttons[i].counter < BUTTON_DEBOUNCE_SCANS)
-    {
-      continue;                 /* still debouncing */
-    }
-
-    int8_t next = (int8_t)screen_ID_now + buttons[i].step;
-    if (next < MIN_SCR_ID) next = MAX_SCR_ID;
-    if (next > MAX_SCR_ID) next = MIN_SCR_ID;
-
-    screen_ID_now = (uint8_t)next;
-    loadScreen(screens[screen_ID_now]);
-    GifPages_SetVisiblePage(screen_ID_now);
-  }
+  Nav_Scan(HAL_GPIO_ReadPin(BUTTON_1_GPIO_Port, BUTTON_1_Pin) == 0,
+           HAL_GPIO_ReadPin(BUTTON_2_GPIO_Port, BUTTON_2_Pin) == 0);
 }
 
 

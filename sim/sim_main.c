@@ -23,6 +23,7 @@
 #include "sim_app.h"
 
 #include <windows.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #define SIM_WIDTH   480
@@ -58,15 +59,28 @@ int main(void)
         return 1;
     }
 
-    /* The two dashboard buttons have no equivalent here; a mouse pointer is
-     * still useful for poking at widgets while checking hit areas. */
+    /* A mouse pointer is useful for poking at widgets while checking hit
+     * areas. The dashboard buttons are on the keyboard, read below. */
     lv_windows_acquire_pointer_indev(display);
 
     VehicleData_Init();
     ui_init();
     SimApp_Reset();
 
+    puts("left / right arrow  = the two dashboard buttons");
+    puts("both held for 1 s   = toggle the FPS overlay");
+
     for (;;) {
+        /*
+         * Read the keys as held-or-not rather than as key events, because that
+         * is what the real buttons are: nav.c samples them every 5 ms and
+         * counts consecutive samples to debounce. Feeding it events instead
+         * would bypass the debounce and the one-second hold gesture, and the
+         * simulator would stop telling us anything about either.
+         */
+        SimApp_SetButtons((GetAsyncKeyState(VK_LEFT)  & 0x8000) != 0,
+                          (GetAsyncKeyState(VK_RIGHT) & 0x8000) != 0);
+
         SimApp_Step(HAL_GetTick());
         Sleep(1);
     }

@@ -25,6 +25,7 @@
 #include "vehicle_data.h"
 #include "sim_data.h"
 #include "sim_app.h"
+#include "nav.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -136,8 +137,12 @@ int main(int argc, char **argv)
      * step. Stepping rather than jumping matters: loadScreen() uses a fade
      * animation and the startup sweep is time based, so a single jump would
      * land on a half-finished transition.
+     *
+     * The step matches the button scan period so nav.c sees the same number of
+     * samples per press that it would in the car. A coarser step silently
+     * doubles the debounce and the hold gesture.
      */
-    for (uint32_t t = 0; t <= scene_ms; t += 10u) {
+    for (uint32_t t = 0; t <= scene_ms; t += NAV_SCAN_PERIOD_MS) {
         s_virtual_tick = t;
         SimApp_Step(t);
     }

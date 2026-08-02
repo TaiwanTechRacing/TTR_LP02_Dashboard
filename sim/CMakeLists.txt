@@ -40,6 +40,10 @@ set(SHARED_SOURCES
     ${REPO_ROOT}/Core/User/vehicle_data.c
     ${REPO_ROOT}/Core/User/debug_overlay.c
 
+    # Page order and button behaviour, shared with main.c so the simulator
+    # runs the real thing rather than an imitation of it.
+    ${REPO_ROOT}/Core/User/nav.c
+
     # Compiles unmodified. It reaches the flash through
     # BSP_QSPI_GetMappedBase(), which sim_qspi.c answers with a file loaded
     # into ordinary memory instead of the register-level driver.
