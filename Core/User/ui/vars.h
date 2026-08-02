@@ -21,7 +21,22 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_LABEL_HV_VALUE = 5,
     FLOW_GLOBAL_VARIABLE_MODE = 6,
     FLOW_GLOBAL_VARIABLE_LEOPARD02 = 7,
-    FLOW_GLOBAL_VARIABLE_LV = 8
+    FLOW_GLOBAL_VARIABLE_LV = 8,
+    FLOW_GLOBAL_VARIABLE_SDC_IMD = 9,
+    FLOW_GLOBAL_VARIABLE_SDC_AMS = 10,
+    FLOW_GLOBAL_VARIABLE_SDC_BSPD = 11,
+    FLOW_GLOBAL_VARIABLE_SDC_PDOC = 12,
+    FLOW_GLOBAL_VARIABLE_SDC_CSB = 13,
+    FLOW_GLOBAL_VARIABLE_SDC_LSB = 14,
+    FLOW_GLOBAL_VARIABLE_SDC_RSB = 15,
+    FLOW_GLOBAL_VARIABLE_SDC_INRT = 16,
+    FLOW_GLOBAL_VARIABLE_SDC_BOTS = 17,
+    FLOW_GLOBAL_VARIABLE_SDC_MCU_IL = 18,
+    FLOW_GLOBAL_VARIABLE_SDC_M1_IL = 19,
+    FLOW_GLOBAL_VARIABLE_SDC_M2_IL = 20,
+    FLOW_GLOBAL_VARIABLE_SDC_M3_IL = 21,
+    FLOW_GLOBAL_VARIABLE_SDC_M4_IL = 22,
+    FLOW_GLOBAL_VARIABLE_SDC_MSD = 23
 };
 
 // Native global variables
@@ -44,6 +59,36 @@ extern const char *get_var_leopard02();
 extern void set_var_leopard02(const char *value);
 extern float get_var_lv();
 extern void set_var_lv(float value);
+extern int32_t get_var_sdc_imd();
+extern void set_var_sdc_imd(int32_t value);
+extern int32_t get_var_sdc_ams();
+extern void set_var_sdc_ams(int32_t value);
+extern int32_t get_var_sdc_bspd();
+extern void set_var_sdc_bspd(int32_t value);
+extern int32_t get_var_sdc_pdoc();
+extern void set_var_sdc_pdoc(int32_t value);
+extern int32_t get_var_sdc_csb();
+extern void set_var_sdc_csb(int32_t value);
+extern int32_t get_var_sdc_lsb();
+extern void set_var_sdc_lsb(int32_t value);
+extern int32_t get_var_sdc_rsb();
+extern void set_var_sdc_rsb(int32_t value);
+extern int32_t get_var_sdc_inrt();
+extern void set_var_sdc_inrt(int32_t value);
+extern int32_t get_var_sdc_bots();
+extern void set_var_sdc_bots(int32_t value);
+extern int32_t get_var_sdc_mcu_il();
+extern void set_var_sdc_mcu_il(int32_t value);
+extern int32_t get_var_sdc_m1_il();
+extern void set_var_sdc_m1_il(int32_t value);
+extern int32_t get_var_sdc_m2_il();
+extern void set_var_sdc_m2_il(int32_t value);
+extern int32_t get_var_sdc_m3_il();
+extern void set_var_sdc_m3_il(int32_t value);
+extern int32_t get_var_sdc_m4_il();
+extern void set_var_sdc_m4_il(int32_t value);
+extern int32_t get_var_sdc_msd();
+extern void set_var_sdc_msd(int32_t value);
 
 #ifdef __cplusplus
 }

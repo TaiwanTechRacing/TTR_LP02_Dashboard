@@ -70,4 +70,20 @@ void SimData_Feed(uint32_t now)
     /* Cycle the drive mode so the label is exercised, not just one value. */
     g_vehicle.drive_mode     = (uint8_t)((now / 3000u) % 4u);
     VehicleData_MarkFresh(VD_GROUP_VCU_STATE);
+
+    /*
+     * Shutdown circuit: everything closed except one node, which walks the list
+     * a step at a time.
+     *
+     * Walking rather than randomising is the point. Each node is open for one
+     * known interval, so a bar wired to the wrong node shows its gap out of
+     * step with its label - a mis-binding becomes something you can see rather
+     * than something you have to reason about. Fifteen bars all quietly
+     * tracking the same variable is exactly the bug this page shipped with.
+     */
+    const uint8_t open_node = (uint8_t)((now / 800u) % (uint8_t)VD_SDC_COUNT);
+
+    g_vehicle.sdc_status = (uint16_t)~0u;
+    g_vehicle.sdc_status &= (uint16_t)~(1u << open_node);
+    VehicleData_MarkFresh(VD_GROUP_VCU_SDC);
 }

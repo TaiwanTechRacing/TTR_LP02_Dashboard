@@ -429,9 +429,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_3
+                    // rsbBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_3 = obj;
+                    objects.rsb_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -467,9 +467,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_4
+                    // m1IlBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_4 = obj;
+                    objects.m1_il_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -505,9 +505,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_5
+                    // m4IlBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_5 = obj;
+                    objects.m4_il_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -581,9 +581,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_7
+                    // csbBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_7 = obj;
+                    objects.csb_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -619,9 +619,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_8
+                    // inrtBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_8 = obj;
+                    objects.inrt_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -657,9 +657,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_9
+                    // m2IlBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_9 = obj;
+                    objects.m2_il_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -695,9 +695,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_10
+                    // mcuIlBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_10 = obj;
+                    objects.mcu_il_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -771,9 +771,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_12
+                    // lsbBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_12 = obj;
+                    objects.lsb_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -809,9 +809,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_13
+                    // botsBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_13 = obj;
+                    objects.bots_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -847,9 +847,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_14
+                    // m3IlBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_14 = obj;
+                    objects.m3_il_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -885,9 +885,9 @@ void create_screen_system_sdc() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // socBar_15
+                    // msdBar
                     lv_obj_t *obj = lv_bar_create(parent_obj);
-                    objects.soc_bar_15 = obj;
+                    objects.msd_bar = obj;
                     lv_obj_set_pos(obj, 7, 6);
                     lv_obj_set_size(obj, 31, 21);
                     lv_bar_set_range(obj, 0, 1);
@@ -913,7 +913,7 @@ void create_screen_system_sdc() {
 
 void tick_screen_system_sdc() {
     {
-        int32_t new_val = get_var_soc();
+        int32_t new_val = get_var_sdc_imd();
         int32_t cur_val = lv_bar_get_value(objects.imd_bar);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.imd_bar;
@@ -922,7 +922,7 @@ void tick_screen_system_sdc() {
         }
     }
     {
-        int32_t new_val = get_var_soc();
+        int32_t new_val = get_var_sdc_pdoc();
         int32_t cur_val = lv_bar_get_value(objects.pdoc_bar);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.pdoc_bar;
@@ -931,34 +931,34 @@ void tick_screen_system_sdc() {
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_3);
+        int32_t new_val = get_var_sdc_rsb();
+        int32_t cur_val = lv_bar_get_value(objects.rsb_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_3;
-            lv_bar_set_value(objects.soc_bar_3, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.rsb_bar;
+            lv_bar_set_value(objects.rsb_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_4);
+        int32_t new_val = get_var_sdc_m1_il();
+        int32_t cur_val = lv_bar_get_value(objects.m1_il_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_4;
-            lv_bar_set_value(objects.soc_bar_4, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.m1_il_bar;
+            lv_bar_set_value(objects.m1_il_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_5);
+        int32_t new_val = get_var_sdc_m4_il();
+        int32_t cur_val = lv_bar_get_value(objects.m4_il_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_5;
-            lv_bar_set_value(objects.soc_bar_5, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.m4_il_bar;
+            lv_bar_set_value(objects.m4_il_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
+        int32_t new_val = get_var_sdc_ams();
         int32_t cur_val = lv_bar_get_value(objects.ams_bar);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.ams_bar;
@@ -967,43 +967,43 @@ void tick_screen_system_sdc() {
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_7);
+        int32_t new_val = get_var_sdc_csb();
+        int32_t cur_val = lv_bar_get_value(objects.csb_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_7;
-            lv_bar_set_value(objects.soc_bar_7, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.csb_bar;
+            lv_bar_set_value(objects.csb_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_8);
+        int32_t new_val = get_var_sdc_inrt();
+        int32_t cur_val = lv_bar_get_value(objects.inrt_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_8;
-            lv_bar_set_value(objects.soc_bar_8, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.inrt_bar;
+            lv_bar_set_value(objects.inrt_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_9);
+        int32_t new_val = get_var_sdc_m2_il();
+        int32_t cur_val = lv_bar_get_value(objects.m2_il_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_9;
-            lv_bar_set_value(objects.soc_bar_9, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.m2_il_bar;
+            lv_bar_set_value(objects.m2_il_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_10);
+        int32_t new_val = get_var_sdc_mcu_il();
+        int32_t cur_val = lv_bar_get_value(objects.mcu_il_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_10;
-            lv_bar_set_value(objects.soc_bar_10, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.mcu_il_bar;
+            lv_bar_set_value(objects.mcu_il_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
+        int32_t new_val = get_var_sdc_bspd();
         int32_t cur_val = lv_bar_get_value(objects.bspd_bar);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.bspd_bar;
@@ -1012,38 +1012,38 @@ void tick_screen_system_sdc() {
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_12);
+        int32_t new_val = get_var_sdc_lsb();
+        int32_t cur_val = lv_bar_get_value(objects.lsb_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_12;
-            lv_bar_set_value(objects.soc_bar_12, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.lsb_bar;
+            lv_bar_set_value(objects.lsb_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_13);
+        int32_t new_val = get_var_sdc_bots();
+        int32_t cur_val = lv_bar_get_value(objects.bots_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_13;
-            lv_bar_set_value(objects.soc_bar_13, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.bots_bar;
+            lv_bar_set_value(objects.bots_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_14);
+        int32_t new_val = get_var_sdc_m3_il();
+        int32_t cur_val = lv_bar_get_value(objects.m3_il_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_14;
-            lv_bar_set_value(objects.soc_bar_14, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.m3_il_bar;
+            lv_bar_set_value(objects.m3_il_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
     {
-        int32_t new_val = get_var_soc();
-        int32_t cur_val = lv_bar_get_value(objects.soc_bar_15);
+        int32_t new_val = get_var_sdc_msd();
+        int32_t cur_val = lv_bar_get_value(objects.msd_bar);
         if (new_val != cur_val) {
-            tick_value_change_obj = objects.soc_bar_15;
-            lv_bar_set_value(objects.soc_bar_15, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = objects.msd_bar;
+            lv_bar_set_value(objects.msd_bar, new_val, LV_ANIM_OFF);
             tick_value_change_obj = NULL;
         }
     }
