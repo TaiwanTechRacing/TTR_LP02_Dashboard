@@ -55,7 +55,9 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_BSE_REAR_TEXT = 39,
     FLOW_GLOBAL_VARIABLE_STEERING_DEG = 40,
     FLOW_GLOBAL_VARIABLE_STEERING_TEXT = 41,
-    FLOW_GLOBAL_VARIABLE_GAME_MODE_TEXT = 42
+    FLOW_GLOBAL_VARIABLE_GAME_MODE_TEXT = 42,
+    FLOW_GLOBAL_VARIABLE_BSE_FRONT_PRESS = 43,
+    FLOW_GLOBAL_VARIABLE_BSE_REAR_PRESS = 44
 };
 
 // Native global variables
@@ -146,6 +148,10 @@ extern const char *get_var_steering_text();
 extern void set_var_steering_text(const char *value);
 extern const char *get_var_game_mode_text();
 extern void set_var_game_mode_text(const char *value);
+extern const char *get_var_bse_front_press();
+extern void set_var_bse_front_press(const char *value);
+extern const char *get_var_bse_rear_press();
+extern void set_var_bse_rear_press(const char *value);
 
 #ifdef __cplusplus
 }

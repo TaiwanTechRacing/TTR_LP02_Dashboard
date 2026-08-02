@@ -1692,9 +1692,9 @@ void create_screen_system_sensor() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // apps2Label_2
+                    // bprLabel
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.apps2_label_2 = obj;
+                    objects.bpr_label = obj;
                     lv_obj_set_pos(obj, 64, 35);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_text(obj);
@@ -1702,9 +1702,9 @@ void create_screen_system_sensor() {
                     lv_label_set_text(obj, "");
                 }
                 {
-                    // apps2Label_1
+                    // bpfLabel
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.apps2_label_1 = obj;
+                    objects.bpf_label = obj;
                     lv_obj_set_pos(obj, 64, 8);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_text(obj);
@@ -1827,20 +1827,20 @@ void tick_screen_system_sensor() {
         }
     }
     {
-        const char *new_val = get_var_apps2_text();
-        const char *cur_val = lv_label_get_text(objects.apps2_label_2);
+        const char *new_val = get_var_bse_rear_press();
+        const char *cur_val = lv_label_get_text(objects.bpr_label);
         if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.apps2_label_2;
-            lv_label_set_text(objects.apps2_label_2, new_val);
+            tick_value_change_obj = objects.bpr_label;
+            lv_label_set_text(objects.bpr_label, new_val);
             tick_value_change_obj = NULL;
         }
     }
     {
-        const char *new_val = get_var_apps2_text();
-        const char *cur_val = lv_label_get_text(objects.apps2_label_1);
+        const char *new_val = get_var_bse_front_press();
+        const char *cur_val = lv_label_get_text(objects.bpf_label);
         if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.apps2_label_1;
-            lv_label_set_text(objects.apps2_label_1, new_val);
+            tick_value_change_obj = objects.bpf_label;
+            lv_label_set_text(objects.bpf_label, new_val);
             tick_value_change_obj = NULL;
         }
     }

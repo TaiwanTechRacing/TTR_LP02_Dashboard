@@ -112,8 +112,8 @@ typedef struct _objects_t {
     lv_obj_t *km_label_4;
     lv_obj_t *steering_arc;
     lv_obj_t *obj31;
-    lv_obj_t *apps2_label_2;
-    lv_obj_t *apps2_label_1;
+    lv_obj_t *bpr_label;
+    lv_obj_t *bpf_label;
     lv_obj_t *gif;
     lv_obj_t *gif_1;
     lv_obj_t *gif_2;
