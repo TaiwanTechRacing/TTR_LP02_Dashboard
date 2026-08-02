@@ -81,7 +81,7 @@ void create_screen_main() {
         {
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.obj0 = obj;
-            lv_obj_set_pos(obj, 404, 10);
+            lv_obj_set_pos(obj, 408, 9);
             lv_obj_set_size(obj, 56, 200);
             lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -132,7 +132,7 @@ void create_screen_main() {
             // kmLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.km_label = obj;
-            lv_obj_set_pos(obj, 231, 152);
+            lv_obj_set_pos(obj, 235, 151);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_50, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -142,9 +142,9 @@ void create_screen_main() {
             // speedLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.speed_label = obj;
-            lv_obj_set_pos(obj, -36, -55);
+            lv_obj_set_pos(obj, -34, -55);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_set_style_text_font(obj, &ui_font_orbiter_bold_180, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &ui_font_orbiter_bold_160, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -154,7 +154,7 @@ void create_screen_main() {
         {
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.obj1 = obj;
-            lv_obj_set_pos(obj, 213, 219);
+            lv_obj_set_pos(obj, 217, 218);
             lv_obj_set_size(obj, 246, 46);
             lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -190,7 +190,7 @@ void create_screen_main() {
         {
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.obj2 = obj;
-            lv_obj_set_pos(obj, 14, 219);
+            lv_obj_set_pos(obj, 18, 218);
             lv_obj_set_size(obj, 190, 46);
             lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -221,7 +221,7 @@ void create_screen_main() {
         {
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.obj3 = obj;
-            lv_obj_set_pos(obj, 14, 164);
+            lv_obj_set_pos(obj, 18, 163);
             lv_obj_set_size(obj, 190, 46);
             lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -535,7 +535,7 @@ ext_font_desc_t fonts[] = {
     { "orbitron_bold_30", &ui_font_orbitron_bold_30 },
     { "orbitron_bold_40", &ui_font_orbitron_bold_40 },
     { "orbitron_bold_50", &ui_font_orbitron_bold_50 },
-    { "ORBITER_BOLD_180", &ui_font_orbiter_bold_180 },
+    { "ORBITER_BOLD_160", &ui_font_orbiter_bold_160 },
 #if LV_FONT_MONTSERRAT_8
     { "MONTSERRAT_8", &lv_font_montserrat_8 },
 #endif

@@ -388,8 +388,8 @@
             {
               "objID": "91e5c941-0c65-4056-ca49-d207e2e3d527",
               "type": "LVGLContainerWidget",
-              "left": 404,
-              "top": 10,
+              "left": 408,
+              "top": 9,
               "width": 56,
               "height": 200,
               "customInputs": [],
@@ -545,7 +545,7 @@
                       "mode": "NORMAL",
                       "value": "soc",
                       "valueType": "expression",
-                      "previewValue": "25",
+                      "previewValue": "90",
                       "valueStart": 0,
                       "valueStartType": "literal",
                       "previewValueStart": "0",
@@ -609,8 +609,8 @@
             {
               "objID": "4317349c-ea53-4b07-e938-1e9acd4015f1",
               "type": "LVGLLabelWidget",
-              "left": 231,
-              "top": 152,
+              "left": 235,
+              "top": 151,
               "width": 148,
               "height": 53,
               "customInputs": [],
@@ -662,10 +662,10 @@
             {
               "objID": "2634f508-231b-45ac-f78b-5164e56fdfe3",
               "type": "LVGLLabelWidget",
-              "left": -36,
+              "left": -34,
               "top": -55,
-              "width": 369,
-              "height": 131,
+              "width": 399,
+              "height": 116,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -695,7 +695,7 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "ORBITER_BOLD_180",
+                      "text_font": "ORBITER_BOLD_160",
                       "text_align": "CENTER",
                       "bg_color": "#ffffff",
                       "text_color": "#ffffff",
@@ -709,13 +709,13 @@
               "textType": "expression",
               "longMode": "WRAP",
               "recolor": false,
-              "previewValue": "150"
+              "previewValue": "250"
             },
             {
               "objID": "2cc6582e-f2d1-4821-9638-c3e28488b937",
               "type": "LVGLContainerWidget",
-              "left": 213,
-              "top": 219,
+              "left": 217,
+              "top": 218,
               "width": 246,
               "height": 46,
               "customInputs": [],
@@ -856,8 +856,8 @@
             {
               "objID": "a6f6255e-cf31-42c8-fc69-7950fdfb42bd",
               "type": "LVGLContainerWidget",
-              "left": 14,
-              "top": 219,
+              "left": 18,
+              "top": 218,
               "width": 190,
               "height": 46,
               "customInputs": [],
@@ -960,8 +960,8 @@
             {
               "objID": "dc1f4594-4ce9-47d8-8206-c51abe2fe3db",
               "type": "LVGLContainerWidget",
-              "left": 14,
-              "top": 164,
+              "left": 18,
+              "top": 163,
               "width": 190,
               "height": 46,
               "customInputs": [],
@@ -2072,18 +2072,18 @@
       "embeddedFontFileIndex": 0
     },
     {
-      "objID": "4b079406-8431-49c8-db22-a1835a52da41",
-      "name": "ORBITER_BOLD_180",
+      "objID": "c4263b77-8d96-496c-8fc7-fb5113ab82d6",
+      "name": "ORBITER_BOLD_160",
       "renderingEngine": "LVGL",
       "source": {
-        "objID": "b8598d25-749e-4ebc-9c57-ea3f0371d9d1",
+        "objID": "c6f98f28-3b22-46c0-9137-b906f1d932d1",
         "filePath": "fonts\\Orbitron\\static\\Orbitron-Bold.ttf",
-        "size": 180
+        "size": 160
       },
-      "bpp": 4,
+      "bpp": 8,
       "threshold": 128,
-      "height": 131,
-      "ascent": 130,
+      "height": 116,
+      "ascent": 115,
       "descent": 1,
       "glyphs": [],
       "lvglRanges": "45-57",
