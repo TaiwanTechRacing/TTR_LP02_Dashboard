@@ -6,6 +6,20 @@ stale-signal behaviour can be iterated on without a flash cycle.
 ## Build and run
 
 ```powershell
+sim\build.bat
+```
+
+Builds both executables and launches the windowed simulator - the thing to run
+after every edit. `sim\build.bat build` stops after building.
+
+It closes a running simulator first, on purpose. The linker cannot replace
+`dashboard_sim.exe` while it is running, make stops at that failure, and
+`dashboard_shot.exe` therefore never gets rebuilt - so the headless tool keeps
+quietly running the previous code while its source says otherwise.
+
+By hand, if you prefer:
+
+```powershell
 cmake -S sim -B sim/build -G "MinGW Makefiles"
 cmake --build sim/build
 sim\build\dashboard_sim.exe
