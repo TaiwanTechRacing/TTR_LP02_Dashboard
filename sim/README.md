@@ -66,7 +66,7 @@ they do in the car - a tap shorter than 25 ms is ignored here too.
 ## Racer tuning
 
 ```powershell
-simuild.bat racer
+sim\build.bat racer
 ```
 
 Opens straight to the racer on GAME2, with nothing else on screen. The arrow
