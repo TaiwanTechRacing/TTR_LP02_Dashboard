@@ -53,6 +53,9 @@ racer_tuning_t *Racer_Tuning(void);
 /** Put the tuning back to the values compiled in. */
 void Racer_Defaults(void);
 
+/** How many cones have been clipped since the run started. */
+uint32_t Racer_ConesHit(void);
+
 /** Restart the run without changing the tuning. */
 void Racer_Restart(void);
 

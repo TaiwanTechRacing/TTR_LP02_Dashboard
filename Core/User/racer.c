@@ -10,6 +10,7 @@
 
 #include "lvgl.h"
 
+#include <math.h>
 #include <string.h>
 
 /* --- screen --------------------------------------------------------------- */
@@ -47,6 +48,9 @@ static racer_tuning_t s_tune;
 typedef struct {
     float curve;      /* how hard this segment turns */
     float height;     /* world height at its far edge */
+    bool  cone;       /* an orange cone sits on the course here */
+    bool  cone_hit;   /* already knocked over this lap */
+    float cone_x;     /* where, in road half-widths from the centre */
 } segment_t;
 
 static segment_t s_road[SEGMENT_COUNT];
@@ -61,6 +65,74 @@ static segment_t s_road[SEGMENT_COUNT];
 #define RUMBLE_A   0xF800u   /* red and white kerbs */
 #define RUMBLE_B   0xFFFFu
 #define LANE       0xFFFFu
+
+/* --- cones ---------------------------------------------------------------- */
+
+/*
+ * One cone, three colours.
+ *
+ * Laid out as text so it can be edited by looking at it. '.' is transparent,
+ * 'x' takes whichever colour the caller wants - which is what lets the same
+ * shape be a blue boundary cone, a yellow one, or an orange marker on the
+ * course. 'w' is the band, 'k' the base.
+ *
+ * Drawn rather than imported: RacerJS ships a spritesheet, but its art is
+ * CC-BY-SA and importing it means an asset pipeline and a flash budget for
+ * shapes a dozen pixels tall. A cone is a triangle.
+ */
+#define CONE_W    16
+#define CONE_ROWS 14
+
+static const char CONE_ART[] =
+    ".......xx......."
+    ".......xx......."
+    "......xxxx......"
+    "......xxxx......"
+    ".....xxxxxx....."
+    ".....wwwwww....."
+    "....xxxxxxxx...."
+    "....xxxxxxxx...."
+    "...xxxxxxxxxx..."
+    "...wwwwwwwwww..."
+    "..xxxxxxxxxxxx.."
+    "..xxxxxxxxxxxx.."
+    ".xxxxxxxxxxxxxx."
+    "kkkkkkkkkkkkkkkk";
+
+/* Formula Student marks the course this way: blue on the left of the
+ * direction of travel, yellow on the right, orange for anything you are
+ * meant to notice. */
+#define CONE_BLUE   0x03BFu
+#define CONE_YELLOW 0xFEE0u
+#define CONE_ORANGE 0xFC00u
+#define CONE_BAND   0xFFFFu
+#define CONE_BASE   0x2124u
+
+/* How far out the boundary cones sit, in road half-widths, and how often. */
+#define BOUNDARY_X       1.15f
+#define BOUNDARY_EVERY   3
+
+/*
+ * Cone height in world units, the same units as road_width.
+ *
+ * Scaled for legibility rather than realism. To scale against a 3.5 m course
+ * a cone would be about 170 here, and at 480x272 that leaves it a few pixels
+ * tall until it is almost under the wheels - too late to steer around. Twice
+ * life size reads as a cone from far enough away to react to.
+ *
+ * Sizing them from the road's projected pixel width instead, as a first
+ * attempt did, made them taller than the car at the near edge: that number is
+ * a width in pixels, not a height in the world.
+ */
+#define CONE_WORLD_H     330.0f
+#define CONE_WORLD_H_BIG 460.0f
+
+/* Clipping a cone costs speed. Hitting one in autocross costs two seconds, so
+ * losing a chunk of the straight afterwards is about the right feeling. */
+#define CONE_PENALTY     0.45f
+#define CONE_HIT_WIDTH   0.30f
+
+static uint32_t s_cones_hit;
 
 /* --- state ---------------------------------------------------------------- */
 
@@ -124,6 +196,41 @@ static void add_stretch(int *at, int count, float curve, float hill)
     }
 }
 
+/*
+ * A repeatable shuffle. The course has to be the same every run so a corner can
+ * be learned, which rules out seeding from the clock.
+ */
+static uint32_t track_rng(uint32_t *state)
+{
+    *state ^= *state << 13;
+    *state ^= *state >> 17;
+    *state ^= *state << 5;
+    return *state;
+}
+
+static void place_cones(void)
+{
+    uint32_t rng = 0xC0FFEEu;
+
+    for (int i = 0; i < SEGMENT_COUNT; i++) {
+        const uint32_t r = track_rng(&rng);
+
+        s_road[i].cone = false;
+        s_road[i].cone_hit = false;
+
+        /* Roughly one stretch in fourteen has something to miss. Denser and it
+         * stops being a course and becomes a slalom. */
+        if ((r % 14u) != 0u) {
+            continue;
+        }
+
+        s_road[i].cone = true;
+        /* Never dead centre and never on the boundary line - always a choice
+         * of which side to pass. */
+        s_road[i].cone_x = -0.62f + ((float)((r >> 8) % 125u) / 100.0f);
+    }
+}
+
 static void build_track(void)
 {
     int at = 0;
@@ -142,6 +249,8 @@ static void build_track(void)
     add_stretch(&at, 120,  0.0f,    0.0f);
 
     /* Whatever is left stays a flat straight, so the loop joins cleanly. */
+
+    place_cones();
 }
 
 /* --- drawing -------------------------------------------------------------- */
@@ -215,6 +324,75 @@ static void trapezoid(int ytop, float xtop, float wtop,
     }
 }
 
+/**
+ * One cone, scaled and standing on the road.
+ *
+ * @param base_y  the row the road surface is at, where it stands
+ * @param cx      screen column of its centre
+ * @param height  how tall to draw it
+ * @param clip_y  nothing above this row: the crest of a hill hides what is
+ *                behind it, and without this cones float over the skyline
+ *
+ * Nearest-neighbour scaling, and transparency by looking for '.' rather than a
+ * colour key - so nothing in the palette is reserved and the artwork can use
+ * any colour it likes.
+ */
+static void draw_cone(int base_y, int cx, int height, int clip_y, uint16_t body)
+{
+    if (height < 2) {
+        return;     /* far enough away to be a smudge; not worth the rows */
+    }
+
+    const int width = (height * CONE_W) / CONE_ROWS;
+    const int x0 = cx - (width / 2);
+    const int top = base_y - height;
+
+    for (int row = 0; row < height; row++) {
+        const int y = top + row;
+        /* clip_y is the top edge of the nearer road, so anything below it is
+         * behind that road and must not be drawn. */
+        if (y < 0 || y >= H || y > clip_y) {
+            continue;
+        }
+
+        const int sr = (row * CONE_ROWS) / height;
+        const char *art_row = &CONE_ART[sr * CONE_W];
+        uint16_t *dst = s_buf + ((size_t)y * W);
+
+        for (int col = 0; col < width; col++) {
+            const int x = x0 + col;
+            if (x < 0 || x >= W) {
+                continue;
+            }
+
+            const char c = art_row[(col * CONE_W) / width];
+            if (c == '.') {
+                continue;
+            }
+
+            dst[x] = (c == 'x') ? body
+                   : (c == 'w') ? CONE_BAND
+                                : CONE_BASE;
+        }
+    }
+}
+
+/* What the road looked like at each drawn segment, so the cones can be put on
+ * top of it afterwards, farthest first. */
+typedef struct {
+    int   y;        /* screen row of the road surface */
+    float x;        /* screen column of the road centre */
+    float w;        /* half width of the road, in pixels */
+    float scale;    /* the projection factor, for sizing anything standing here */
+    int   clip;     /* nothing below this row is visible here */
+    int   index;    /* which segment this was */
+    bool  drawn;
+} projected_t;
+
+#define PROJECTED_MAX 220
+static projected_t s_proj[PROJECTED_MAX];
+static int         s_proj_count;
+
 static void render(void)
 {
     const int base = (int)(s_position / s_tune.segment_length);
@@ -230,6 +408,7 @@ static void render(void)
      * skipping it is what hides the road that a crest cuts off.
      */
     int maxy = H;
+    s_proj_count = 0;
 
     float x = 0.0f;      /* accumulated sideways shift from the curves */
     float dx = 0.0f;
@@ -266,6 +445,17 @@ static void render(void)
         x += dx;
         dx += seg->curve;
 
+        if (s_proj_count < PROJECTED_MAX) {
+            s_proj[s_proj_count].y = sy;
+            s_proj[s_proj_count].x = sx;
+            s_proj[s_proj_count].w = sw;
+            s_proj[s_proj_count].scale = scale;
+            s_proj[s_proj_count].clip = maxy;
+            s_proj[s_proj_count].index = index;
+            s_proj[s_proj_count].drawn = (have_prev && sy < maxy && sy < py);
+            s_proj_count++;
+        }
+
         if (have_prev && sy < maxy && sy < py) {
             /* Which shade this segment gets. Two segments per stripe is what
              * makes the speed readable at a glance. */
@@ -292,6 +482,33 @@ static void render(void)
         px = sx;
         pw = sw;
         have_prev = true;
+    }
+
+    /*
+     * Cones last, walking back towards the camera so a near one covers a far
+     * one. Doing it in the same pass as the road would put the road of the
+     * next segment over the cone of this one.
+     */
+    for (int i = s_proj_count - 1; i >= 0; i--) {
+        const projected_t *p = &s_proj[i];
+        if (!p->drawn) {
+            continue;
+        }
+
+        const segment_t *seg = &s_road[p->index];
+
+        /* Boundary cones: blue on the left, yellow on the right, the way a
+         * Formula Student course is marked. */
+        if ((p->index % BOUNDARY_EVERY) == 0) {
+            const int h = (int)(p->scale * CONE_WORLD_H * (float)H * 0.5f);
+            draw_cone(p->y, (int)(p->x - (p->w * BOUNDARY_X)), h, p->clip, CONE_BLUE);
+            draw_cone(p->y, (int)(p->x + (p->w * BOUNDARY_X)), h, p->clip, CONE_YELLOW);
+        }
+
+        if (seg->cone && !seg->cone_hit) {
+            const int h = (int)(p->scale * CONE_WORLD_H_BIG * (float)H * 0.5f);
+            draw_cone(p->y, (int)(p->x + (p->w * seg->cone_x)), h, p->clip, CONE_ORANGE);
+        }
     }
 }
 
@@ -385,11 +602,40 @@ static void advance(float dt)
         s_player_x = 2.0f;
     }
 
+    /*
+     * Clipping a cone. Checked over the ground actually covered this step, not
+     * just where the car ended up - at speed a segment goes by in a couple of
+     * frames and a point test would drive straight through them.
+     */
+    const float travelled = s_speed * dt;
+    if (travelled > 0.0f) {
+        const int from = (int)(s_position / s_tune.segment_length);
+        const int to = (int)((s_position + travelled) / s_tune.segment_length);
+
+        for (int i = from; i <= to; i++) {
+            segment_t *seg = &s_road[i % SEGMENT_COUNT];
+            if (!seg->cone || seg->cone_hit) {
+                continue;
+            }
+
+            if (fabsf(s_player_x - seg->cone_x) < CONE_HIT_WIDTH) {
+                seg->cone_hit = true;
+                s_cones_hit++;
+                s_speed *= (1.0f - CONE_PENALTY);
+            }
+        }
+    }
+
     s_position += s_speed * dt;
 
     const float track_length = (float)SEGMENT_COUNT * s_tune.segment_length;
     while (s_position >= track_length) {
         s_position -= track_length;
+
+        /* Stand the cones back up for the next lap. */
+        for (int i = 0; i < SEGMENT_COUNT; i++) {
+            s_road[i].cone_hit = false;
+        }
     }
 }
 
@@ -412,8 +658,19 @@ void Racer_Init(void)
     lv_obj_invalidate(objects.racer_canvas);
 }
 
+uint32_t Racer_ConesHit(void)
+{
+    return s_cones_hit;
+}
+
 void Racer_Restart(void)
 {
+    s_cones_hit = 0;
+
+    for (int i = 0; i < SEGMENT_COUNT; i++) {
+        s_road[i].cone_hit = false;
+    }
+
     s_position = 0.0f;
     s_player_x = 0.0f;
     s_speed = 0.0f;

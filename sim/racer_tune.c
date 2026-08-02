@@ -237,8 +237,8 @@ static void update_readout(uint32_t fps)
              (double)*s_fields[s_field].value);
 
     snprintf(buf, sizeof(buf),
-             "%lu fps\n%s\n%s %s\nsteer %.0f  thr %.0f  brk %.0f",
-             (unsigned long)fps,
+             "%lu fps   cones %lu\n%s\n%s %s\nsteer %.0f  thr %.0f  brk %.0f",
+             (unsigned long)fps, (unsigned long)Racer_ConesHit(),
              "tab pick  +/- adjust  p save",
              s_fields[s_field].name, value,
              (double)g_vehicle.steering_deg,
