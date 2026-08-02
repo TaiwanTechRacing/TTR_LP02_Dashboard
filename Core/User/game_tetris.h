@@ -14,6 +14,15 @@
  *      hold left / right    rotate that way, repeating while held
  *      both, held 2 s       leave the page
  *
+ *  Or with the car's own controls, if the throttle is past half when the page
+ *  opens - "STEER" then shows in the corner:
+ *
+ *      steer past 15 deg            move that way
+ *      brake and steer past 15 deg  rotate that way
+ *      throttle                     drop faster
+ *
+ *  The buttons keep working either way, including the one that leaves.
+ *
  *  Telling a tap from a hold is what gets four actions out of two buttons. The
  *  cost is that a move lands on release rather than on press.
  */
@@ -58,5 +67,14 @@ void GameTetris_Service(uint32_t now_ms);
 
 /** Score as text, for the label on the game page. */
 const char *GameTetris_ScoreText(void);
+
+/**
+ * Whether the wheel and pedals are driving the game.
+ *
+ * Decided once, when the page opens, from whether the throttle is held past
+ * half. Sampling it continuously would mean the mode changed under the player
+ * every time they used the throttle to drop a piece.
+ */
+bool GameTetris_SteerMode(void);
 
 #endif /* GAME_TETRIS_H */

@@ -2017,6 +2017,19 @@ void create_screen_game1() {
             lv_obj_set_pos(obj, 11, 149);
             lv_obj_set_size(obj, 136, 102);
         }
+        {
+            // modeLabel_1
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.mode_label_1 = obj;
+            lv_obj_set_pos(obj, 168, 94);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_recolor(obj, true);
+            add_style_text(obj);
+            lv_obj_set_style_text_color(obj, lv_color_hex(0xd0ff00), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
     }
     
     tick_screen_game1();
@@ -2029,6 +2042,15 @@ void tick_screen_game1() {
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.hv_soc_label_1;
             lv_label_set_text(objects.hv_soc_label_1, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_mode();
+        const char *cur_val = lv_label_get_text(objects.mode_label_1);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.mode_label_1;
+            lv_label_set_text(objects.mode_label_1, new_val);
             tick_value_change_obj = NULL;
         }
     }

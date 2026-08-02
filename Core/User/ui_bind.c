@@ -545,6 +545,17 @@ const char *get_var_steering_text(void)
     return s_sensor_text[4];
 }
 
+/**
+ * The corner indicator on the game page.
+ *
+ * Empty unless the wheel and pedals are driving the game, in which case the
+ * player needs telling - the two input schemes look identical otherwise.
+ */
+const char *get_var_game_mode_text(void)
+{
+    return GameTetris_SteerMode() ? "STEER" : "";
+}
+
 /** Score on the game page. */
 const char *get_var_tetris_score(void)
 {

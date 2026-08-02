@@ -5,6 +5,7 @@
 #include "game_tetris.h"
 
 #include "screens.h"
+#include "vehicle_data.h"
 #include "stm32h7xx_hal.h"
 
 #include "lvgl.h"
@@ -119,6 +120,25 @@ static const uint16_t COLOURS[8] = {
 #define FLASH_STEP_MS 70u
 #define FLASH_STEPS    6u
 
+/*
+ * Playing with the wheel and pedals.
+ *
+ * The entry gesture is holding the throttle past half as the page opens. It has
+ * to be something the driver would never do by accident while reaching the
+ * page, and it cannot be the wheel, because the wheel is rarely at dead centre.
+ *
+ * 15 degrees of steering is well outside the slop around centre but nowhere
+ * near lock, so a column at a time is a small deliberate movement. The wheel
+ * repeats while held over, because returning to centre between every column
+ * would make crossing the board tedious.
+ */
+#define STEER_ENTRY_THROTTLE  50    /* % held as the page opens */
+#define STEER_DEADZONE_DEG    15
+#define STEER_BRAKE_PCT       20    /* brake counts as held past this */
+#define STEER_DROP_THROTTLE   30    /* throttle past this drops fast */
+#define STEER_REPEAT_MS      180u
+#define STEER_DROP_MS         70u
+
 static uint8_t s_board[BOARD_H][BOARD_W];
 
 static uint8_t s_piece, s_next_piece, s_rot;
@@ -145,6 +165,10 @@ typedef struct {
 } button_t;
 
 static button_t s_btn[2];   /* 0 = left, 1 = right */
+
+static bool     s_steer_mode;
+static uint32_t s_steer_next;      /* next move or rotate the wheel may make */
+static int8_t   s_steer_last_dir;  /* 0 while the wheel is near centre */
 
 static uint32_t s_rng = 0x12345678u;
 static char     s_score_text[12];
@@ -426,6 +450,97 @@ void GameTetris_Buttons(bool button1_pressed, bool button2_pressed)
     handle_button(&s_btn[1], button2_pressed, +1, now);
 }
 
+/* --- wheel and pedals ----------------------------------------------------- */
+
+/** Live sensor readings, or false when the VCU has stopped talking. */
+static bool read_controls(int *steer_deg, int *throttle, int *brake)
+{
+    if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)) {
+        return false;
+    }
+
+    *steer_deg = (int)g_vehicle.steering_deg;
+    *throttle = (int)g_vehicle.apps1_pu;
+
+    /* Either circuit counts. A driver pressing the pedal is not thinking about
+     * which end of the car the sensor is on, and the higher of the two is the
+     * one that says "the brake is on". */
+    *brake = 0;
+    if (!VehicleData_IsStale(VD_GROUP_VCU_SENSOR1, VD_DEFAULT_TIMEOUT_MS)) {
+        const int front = (int)g_vehicle.bse_front_pu;
+        const int rear = (int)g_vehicle.bse_rear_pu;
+        *brake = (front > rear) ? front : rear;
+    }
+
+    return true;
+}
+
+/** Steering, turned into a direction once it is clearly off centre. */
+static int steer_direction(int steer_deg)
+{
+    if (steer_deg > STEER_DEADZONE_DEG) {
+        return +1;
+    }
+    if (steer_deg < -STEER_DEADZONE_DEG) {
+        return -1;
+    }
+    return 0;
+}
+
+static void service_steering(uint32_t now)
+{
+    int steer_deg = 0, throttle = 0, brake = 0;
+
+    if (!read_controls(&steer_deg, &throttle, &brake)) {
+        s_steer_last_dir = 0;
+        return;
+    }
+
+    const int dir = steer_direction(steer_deg);
+
+    if (dir == 0) {
+        /* Back near centre: the next turn starts a fresh action rather than
+         * continuing the last one's repeat. */
+        s_steer_last_dir = 0;
+        return;
+    }
+
+    if (dir != s_steer_last_dir) {
+        s_steer_last_dir = (int8_t)dir;
+        s_steer_next = now;      /* act immediately on a new turn */
+    }
+
+    if (now < s_steer_next) {
+        return;
+    }
+
+    if (brake >= STEER_BRAKE_PCT) {
+        s_steer_next = now + ROTATE_REPEAT_MS;
+        rotate(dir);
+    }
+    else {
+        s_steer_next = now + STEER_REPEAT_MS;
+        step(dir);
+    }
+}
+
+/** Drop interval, shortened while the throttle is down in steering mode. */
+static uint32_t steer_drop_interval(void)
+{
+    int steer_deg = 0, throttle = 0, brake = 0;
+
+    if (!read_controls(&steer_deg, &throttle, &brake)) {
+        return drop_interval();
+    }
+
+    return (throttle >= STEER_DROP_THROTTLE) ? STEER_DROP_MS : drop_interval();
+}
+
+bool GameTetris_SteerMode(void)
+{
+    return s_steer_mode;
+}
+
 /* --- drawing -------------------------------------------------------------- */
 
 static void fill_rect(uint16_t *buf, int stride, int x, int y, int w, int h,
@@ -594,6 +709,17 @@ void GameTetris_SetActive(bool active)
     s_active = active;
 
     if (active) {
+        /*
+         * Sampled once here rather than watched continuously: the throttle is
+         * also the fast-drop control, so a live test would turn the mode off
+         * and on again every time a piece was dropped.
+         */
+        int steer_deg = 0, throttle = 0, brake = 0;
+        s_steer_mode = read_controls(&steer_deg, &throttle, &brake) &&
+                       (throttle >= STEER_ENTRY_THROTTLE);
+
+        s_steer_last_dir = 0;
+
         reset_game();
         redraw();
     }
@@ -634,7 +760,14 @@ void GameTetris_Service(uint32_t now_ms)
         return;
     }
 
-    if (!s_over && (now_ms - s_last_drop) >= drop_interval()) {
+    if (s_steer_mode && !s_over) {
+        service_steering(now_ms);
+    }
+
+    const uint32_t interval = s_steer_mode ? steer_drop_interval()
+                                           : drop_interval();
+
+    if (!s_over && (now_ms - s_last_drop) >= interval) {
         s_last_drop = now_ms;
 
         if (fits(s_piece, s_rot, s_px, s_py + 1)) {
