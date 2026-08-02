@@ -42,12 +42,17 @@ uint8_t Nav_CurrentPage(void);
 /**
  * Sample the buttons and act on them. Call every NAV_SCAN_PERIOD_MS.
  *
+ * @param now_ms           milliseconds, for the gestures that are held
  * @param button1_pressed  page back
  * @param button2_pressed  page forward
  *
- * Both held for a second toggles the debug overlay, and no page change happens
- * while they are held.
+ * Debounce counts consecutive samples, because that is what filters contact
+ * bounce. Everything longer is measured in milliseconds instead: the caller
+ * cannot guarantee the sampling rate - a busy frame delays the main loop on the
+ * car exactly as rendering does in the simulator - and a one second hold that
+ * quietly becomes three because the loop got slower is not a hold anyone can
+ * perform.
  */
-void Nav_Scan(bool button1_pressed, bool button2_pressed);
+void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed);
 
 #endif /* NAV_H */

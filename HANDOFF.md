@@ -149,6 +149,21 @@ refused to paint while the custom `bar` style was applied; setting colours
 directly on the widget fixed it. Root cause never found. If a widget mysteriously
 does not render, try removing its custom style first.
 
+**Held gestures must be measured in milliseconds, not in scan counts.** The
+main loop does not run at a fixed rate on either side - rendering a busy frame
+delays it on the car exactly as it does in the simulator - so the button scan
+happens roughly once a frame rather than every `NAV_SCAN_PERIOD_MS`. A
+threshold counted in scans therefore stretches by about three times, which is
+why a three second gesture once wanted nine and could not be performed at all.
+Debounce still counts consecutive samples, because filtering contact bounce is
+what sampling is for.
+
+**The simulator's clock was `GetTickCount()`, which moves in 15.6 ms steps.**
+It is `QueryPerformanceCounter` now, with `timeBeginPeriod(1)` so `Sleep(1)` in
+the loop is about 2 ms rather than 15. The headless screenshot tool sets its own
+clock and was never affected, which is exactly why no automated check ever
+caught it - only using the window did.
+
 **Verify UI changes in the simulator, not on the car.** It runs the same
 `screens.c`, `ui_bind.c` and `gif_pages.c`. `dashboard_shot.exe out.bmp 13350`
 renders the moment when SOC is 33%, which is a useful reference frame.

@@ -108,5 +108,6 @@ target_compile_options(${target} PRIVATE
 
 target_link_options(${target} PRIVATE -Wl,--gc-sections)
 
-target_link_libraries(${target} PRIVATE user32 gdi32)
+# winmm for timeBeginPeriod - see the clock note in sim_main.c
+target_link_libraries(${target} PRIVATE user32 gdi32 winmm)
 endforeach()

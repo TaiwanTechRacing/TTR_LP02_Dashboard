@@ -89,7 +89,7 @@ void SimApp_Step(uint32_t now)
     if ((now - s_last_button_scan) >= NAV_SCAN_PERIOD_MS) {
         s_last_button_scan = now;
         if (s_welcome_done) {
-            Nav_Scan(s_button1, s_button2);
+            Nav_Scan(now, s_button1, s_button2);
         }
     }
 

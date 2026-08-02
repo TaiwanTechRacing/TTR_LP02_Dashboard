@@ -11,9 +11,9 @@
 #include "ui.h"
 #include "screens.h"
 
-#define NAV_DEBOUNCE_SCANS      5U   /* 5 consecutive samples to accept a press = 25 ms */
-#define NAV_DEBUG_TOGGLE_SCANS 200U  /* both held 200 x 5 ms = 1 s toggles the overlay */
-#define NAV_GAME_EXIT_SCANS    400U  /* both held 2 s leaves the game */
+#define NAV_DEBOUNCE_SCANS       5U    /* consecutive samples to accept a press */
+#define NAV_DEBUG_TOGGLE_MS   1000U   /* both held this long toggles the overlay */
+#define NAV_GAME_EXIT_MS      2000U   /* both held this long leaves the game */
 
 /*
  * Getting into the game: hold both buttons for three seconds, let go, then tap
@@ -31,8 +31,8 @@
  * Counted in scans rather than milliseconds so nav.c stays free of the HAL, the
  * same way its debounce does.
  */
-#define NAV_EGG_ARM_SCANS      600U  /* 3 s on both buttons arms it */
-#define NAV_EGG_WINDOW_SCANS   600U  /* 3 s to then get both taps in */
+#define NAV_EGG_ARM_MS        3000U   /* both buttons held this long arms it */
+#define NAV_EGG_WINDOW_MS     3000U   /* then this long to get both taps in */
 
 /*
  * Page order. Index 0 is the splash screen shown at boot and is excluded from
@@ -108,7 +108,7 @@ void Nav_ShowPage(uint8_t index)
  * then saturates there until the button is released, which gives the
  * fire-once behaviour for free - no separate b1f / b2f flags needed.
  */
-void Nav_Scan(bool button1_pressed, bool button2_pressed)
+void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
 {
     static struct {
         int8_t  step;
@@ -120,18 +120,13 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
 
     const bool pressed[2] = { button1_pressed, button2_pressed };
 
-    /* Free running, only ever used as a difference, so wrapping is harmless. */
-    static uint32_t scan_tick = 0;
-
     /*
      * Armed by the three second hold, then waiting for two right taps. Zero
-     * means not armed; otherwise it is the scan the window closes on.
+     * means not armed; otherwise it is the tick the window closes on.
      */
     static uint32_t egg_expires = 0;
     static uint8_t  egg_taps = 0;
     static bool     egg_wants_release = false;
-
-    scan_tick++;
 
     /* The arming hold is itself two buttons down, so the taps only start
      * counting once they have both come back up. */
@@ -139,7 +134,7 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
         egg_wants_release = false;
     }
 
-    if (egg_expires != 0u && scan_tick > egg_expires) {
+    if (egg_expires != 0u && (int32_t)(now_ms - egg_expires) >= 0) {
         egg_expires = 0;
         egg_taps = 0;
     }
@@ -150,12 +145,21 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
      * 25 ms debounce elapses) nothing flips at all; slightly staggered presses
      * cost one page change first, which is an acceptable trade.
      */
-    static uint16_t both_counter = 0;
+    static uint32_t both_since = 0;   /* 0 while they are not both down */
+    static bool     both_done = false;
+    static bool     overlay_toggled = false;
 
     if (button1_pressed && button2_pressed) {
-        if (both_counter < NAV_EGG_ARM_SCANS) {
-            both_counter++;
+        if (both_since == 0u) {
+            both_since = now_ms;
+            both_done = false;
         }
+
+        if (both_done) {
+            return;         /* this hold has already had its effect */
+        }
+
+        const uint32_t held = now_ms - both_since;
 
         /*
          * Leaving the game takes a longer hold than the overlay toggle. Both
@@ -163,29 +167,31 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
          * reach by accident mid-piece; two is not.
          */
         if (GameTetris_IsActive()) {
-            if (both_counter == NAV_GAME_EXIT_SCANS) {
+            if (held >= NAV_GAME_EXIT_MS) {
+                both_done = true;
                 Nav_ShowPage(NAV_MIN_PAGE);
-                /* Past every threshold, so nothing else fires on the way back
-                 * up while the buttons are still down. */
-                both_counter = NAV_EGG_ARM_SCANS;
             }
         }
-        else if (both_counter == NAV_DEBUG_TOGGLE_SCANS) {
-            DebugOverlay_Toggle();   /* fire only on the sample that crosses the threshold */
-        }
-        else if (both_counter == NAV_EGG_ARM_SCANS) {
+        else if (held >= NAV_EGG_ARM_MS) {
             /* Put the overlay back where it was before this hold started, and
              * arm the game. */
+            both_done = true;
             DebugOverlay_Toggle();
-            egg_expires = scan_tick + NAV_EGG_WINDOW_SCANS;
+            egg_expires = now_ms + NAV_EGG_WINDOW_MS;
             egg_taps = 0;
             egg_wants_release = true;
+        }
+        else if (held >= NAV_DEBUG_TOGGLE_MS && !overlay_toggled) {
+            overlay_toggled = true;
+            DebugOverlay_Toggle();
         }
 
         return;
     }
 
-    both_counter = 0;
+    both_since = 0;
+    both_done = false;
+    overlay_toggled = false;
 
     /*
      * The game owns the buttons while it is on screen. It does its own edge
