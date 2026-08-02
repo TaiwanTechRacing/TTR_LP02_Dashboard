@@ -17,8 +17,11 @@
 #define NAV_GAME_EXIT_MS      2000U   /* both held this long leaves the game */
 
 /*
- * Getting into a game: hold both buttons for three seconds, let go, then tap
- * twice - right for tetris, left for the racer.
+ * Getting into a game: hold both buttons for three seconds or more, let go,
+ * then within two seconds tap twice - right for tetris, left for the racer.
+ *
+ * Holding longer than three seconds costs nothing: the window starts when the
+ * buttons come up, not when the hold completes.
  *
  * The hold does the work of keeping it hidden - nothing else on this dashboard
  * asks for three seconds - and the two taps afterwards mean an accidental long
@@ -33,7 +36,7 @@
  * same way its debounce does.
  */
 #define NAV_EGG_ARM_MS        3000U   /* both buttons held this long arms it */
-#define NAV_EGG_WINDOW_MS     5000U   /* after letting go, this long to tap twice */
+#define NAV_EGG_WINDOW_MS     2000U   /* after letting go, this long to tap twice */
 
 /*
  * Page order. Index 0 is the splash screen shown at boot and is excluded from

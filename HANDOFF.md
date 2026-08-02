@@ -246,6 +246,23 @@ The complete 3.64 MB GIF image was subsequently programmed to sectors 0-931
 and verified. Firmware detected the `TTRQ` header, all three entries, and
 created three non-null LVGL GIF objects.
 
+### The hidden games
+
+Two of the pages are outside the button cycle and are reached by a gesture:
+
+1. Hold **both buttons** for **three seconds or more**. The FPS overlay comes on
+   at one second and goes off again at three - that second change is the only
+   sign the gesture took.
+2. Let go.
+3. Within **two seconds**, tap twice on the same button: **right** for tetris on
+   GAME1, **left** for the racer on GAME2.
+
+Mixing the two taps abandons the attempt. Holding longer than three seconds
+costs nothing - the two second window starts when the buttons come up, not when
+the hold completes.
+
+Leaving either game is both buttons held for two seconds.
+
 ### Open items
 
 1. **The speed readout is clamped to 199 km/h** for layout reasons, so a real
