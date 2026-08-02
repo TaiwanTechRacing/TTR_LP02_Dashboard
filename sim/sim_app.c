@@ -92,6 +92,7 @@ void SimApp_Step(uint32_t now)
     }
 
     GameTetris_Service(now);
+    GifPages_ShowcaseService(now);
 
     lv_timer_handler();
 }

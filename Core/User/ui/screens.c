@@ -1644,7 +1644,7 @@ void create_screen_game1() {
             // kmLabel_2
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.km_label_2 = obj;
-            lv_obj_set_pos(obj, 5, 16);
+            lv_obj_set_pos(obj, 5, 12);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -1655,7 +1655,7 @@ void create_screen_game1() {
             // kmLabel_3
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.km_label_3 = obj;
-            lv_obj_set_pos(obj, 5, 125);
+            lv_obj_set_pos(obj, 5, 115);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_label_set_recolor(obj, true);
             add_style_text(obj);
@@ -1663,6 +1663,13 @@ void create_screen_game1() {
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xef3a5d), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "TETRIS");
+        }
+        {
+            // place_gif
+            lv_obj_t *obj = lv_canvas_create(parent_obj);
+            objects.place_gif = obj;
+            lv_obj_set_pos(obj, 6, 160);
+            lv_obj_set_size(obj, 136, 102);
         }
     }
     

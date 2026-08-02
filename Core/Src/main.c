@@ -349,6 +349,7 @@ int main(void)
 
     /* Cheap while the game page is not up: it returns immediately. */
     GameTetris_Service(now);
+    GifPages_ShowcaseService(now);
 
     if ((now - last_button_scan) >= NAV_SCAN_PERIOD_MS)
     {

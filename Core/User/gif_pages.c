@@ -63,6 +63,98 @@ static uint8_t screen_for(uint8_t index)
     return (uint8_t)(index + GIF_FIRST_SCREEN_INDEX);
 }
 
+/*
+ * Showcase: one widget in the corner of the game page that plays every
+ * animation in turn.
+ *
+ * Reuses the descriptors built above rather than opening the files again, so
+ * the only extra cost is one decoder's frame buffer.
+ */
+/* The slot EEZ lays out on the game page. */
+#define SHOWCASE_W  136
+#define SHOWCASE_H  102
+#define SHOWCASE_HOLD_MS 5000u
+
+static lv_obj_t *s_showcase;
+static uint8_t   s_showcase_index;
+static uint32_t  s_showcase_since;
+static bool      s_showcase_active;
+
+static void showcase_show(uint8_t index)
+{
+    if (s_showcase == NULL || index >= s_count) {
+        return;
+    }
+
+    s_showcase_index = index;
+    lv_gif_set_color_format(s_showcase, LV_COLOR_FORMAT_RGB565);
+    lv_gif_set_src(s_showcase, &s_dsc[index]);
+
+    /*
+     * Deliberately not scaled to fit.
+     *
+     * lv_image_set_scale() renders these as a sparse scatter of stray pixels -
+     * the software transform produces garbage for a GIF's frame buffer, and it
+     * is not the ARGB8888 support flag this time, since enabling that changes
+     * nothing. Unscaled the same animation draws perfectly and the slot simply
+     * crops it, which for a 200 px cat in a 136x102 window reads as a close-up
+     * rather than a fault. If you try scaling again, look at the slot before
+     * believing it worked.
+     */
+    lv_obj_center(s_showcase);
+}
+
+static void showcase_create(void)
+{
+    if (s_count == 0u || objects.place_gif == NULL) {
+        return;     /* nothing loaded, or the page has no slot for it */
+    }
+
+    s_showcase = lv_gif_create(objects.place_gif);
+    if (s_showcase == NULL) {
+        return;
+    }
+
+    showcase_show(0u);
+}
+
+void GifPages_SetShowcaseActive(bool active)
+{
+    s_showcase_active = active;
+
+    if (s_showcase == NULL) {
+        return;
+    }
+
+    if (active) {
+        s_showcase_since = 0;   /* ShowcaseService() restarts the clock */
+        lv_gif_resume(s_showcase);
+    }
+    else {
+        lv_gif_pause(s_showcase);
+    }
+}
+
+void GifPages_ShowcaseService(uint32_t now_ms)
+{
+    if (!s_showcase_active || s_showcase == NULL || s_count <= 1u) {
+        return;
+    }
+
+    if (s_showcase_since == 0u) {
+        s_showcase_since = now_ms;
+        return;
+    }
+
+    if ((now_ms - s_showcase_since) < SHOWCASE_HOLD_MS) {
+        return;
+    }
+
+    s_showcase_since = now_ms;
+    showcase_show((uint8_t)((s_showcase_index + 1u) % s_count));
+    lv_gif_resume(s_showcase);
+}
+
 void GifPages_Init(void)
 {
     s_count = 0;
@@ -148,8 +240,11 @@ void GifPages_Init(void)
         s_count++;
     }
 
+    showcase_create();
+
     /* Nothing is on screen yet, so leave every animation paused. */
     GifPages_SetVisiblePage(0u);
+    GifPages_SetShowcaseActive(false);
 }
 
 uint8_t GifPages_Count(void)

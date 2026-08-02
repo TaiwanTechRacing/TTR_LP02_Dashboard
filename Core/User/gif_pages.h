@@ -42,4 +42,16 @@ uint8_t GifPages_Count(void);
  */
 void GifPages_SetVisiblePage(uint8_t screen_index);
 
+/**
+ * Run the showcase in the corner of the game page, cycling every animation in
+ * turn. Pass false when leaving the page so it stops decoding.
+ */
+void GifPages_SetShowcaseActive(bool active);
+
+/**
+ * Advance the showcase to the next animation when its turn is up. Call from the
+ * main loop; does nothing while the showcase is stopped.
+ */
+void GifPages_ShowcaseService(uint32_t now_ms);
+
 #endif /* GIF_PAGES_H */

@@ -125,6 +125,12 @@ GIF widget defaults to ARGB8888 and hit exactly this, which is why
 before setting the source. If new artwork ever renders as nothing, check the
 colour format before anything else.
 
+**`lv_image_set_scale()` does not work on a GIF here.** It renders as a sparse
+scatter of stray pixels. It is not the ARGB8888 flag - enabling that changes
+nothing - and the same animation unscaled draws perfectly. The showcase on the
+game page therefore lets its slot crop the image instead. Root cause not found;
+if you try scaling again, look at the result before believing it.
+
 **Don't apply a shared EEZ style to a bar.** The SOC bar's indicator silently
 refused to paint while the custom `bar` style was applied; setting colours
 directly on the widget fixed it. Root cause never found. If a widget mysteriously
