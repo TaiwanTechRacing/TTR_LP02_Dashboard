@@ -9,11 +9,14 @@
  *  regressions in CI without anyone having to look at a screen.
  *
  *  Usage:
- *      dashboard_shot <out.bmp> [scene_ms]
+ *      dashboard_shot <out.bmp> [scene_ms] [page]
  *
  *  scene_ms fast-forwards the synthetic data generator, so a specific moment
  *  can be captured: the startup sweep, a mid-range reading, or the stale
  *  window where everything falls back to "---".
+ *
+ *  page indexes screens[] in Core/Src/main.c and defaults to 1 (main). 5, 6
+ *  and 7 are the debug pages, which is where the QSPI animations appear.
  */
 
 #include "lvgl.h"
@@ -110,6 +113,7 @@ int main(int argc, char **argv)
     }
 
     const uint32_t scene_ms = (argc >= 3) ? (uint32_t)strtoul(argv[2], NULL, 10) : 5000u;
+    const uint8_t  page     = (argc >= 4) ? (uint8_t)strtoul(argv[3], NULL, 10) : 1u;
 
     s_virtual_tick = 0;
 
@@ -125,6 +129,7 @@ int main(int argc, char **argv)
     VehicleData_Init();
     ui_init();
     SimApp_Reset();
+    SimApp_ShowPage(page);
 
     /*
      * Step the virtual clock to the requested moment, letting LVGL run at each

@@ -27,4 +27,13 @@ void SimApp_Reset(void);
 /** Advance one iteration of the firmware's main loop, minus the hardware. */
 void SimApp_Step(uint32_t now);
 
+/**
+ * Choose which page the welcome screen hands over to, indexed the same as
+ * screens[] in Core/Src/main.c. Defaults to 1 (main), matching the firmware.
+ *
+ * There are no buttons here, so this stands in for pressing them - mainly to
+ * reach the debug pages, where the animations live.
+ */
+void SimApp_ShowPage(uint8_t index);
+
 #endif /* SIM_APP_H */

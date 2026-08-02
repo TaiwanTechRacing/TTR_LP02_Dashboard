@@ -114,14 +114,35 @@ display fonts at **bpp 4** and restrict the character range - the speed readout
 only needs `45-57` (digits plus `- . /`). A font whose bitmap data exceeds 1 MB
 also overflows LVGL's 20-bit `bitmap_index` and fails to compile.
 
+**lv_conf.h only enables RGB565 in the software renderer.** Every other
+`LV_DRAW_SW_SUPPORT_*` is 0 to save flash. Anything handing LVGL an image in
+another format gets **nothing drawn and no error** - the pixels decode fine, the
+widget is laid out, visible and the right size, and the screen stays black. The
+GIF widget defaults to ARGB8888 and hit exactly this, which is why
+`gif_pages.c` calls `lv_gif_set_color_format(gif, LV_COLOR_FORMAT_RGB565)`
+before setting the source. If new artwork ever renders as nothing, check the
+colour format before anything else.
+
 **Don't apply a shared EEZ style to a bar.** The SOC bar's indicator silently
 refused to paint while the custom `bar` style was applied; setting colours
 directly on the widget fixed it. Root cause never found. If a widget mysteriously
 does not render, try removing its custom style first.
 
 **Verify UI changes in the simulator, not on the car.** It runs the same
-`screens.c` and `ui_bind.c`. `dashboard_shot.exe out.bmp 13350` renders the
-moment when SOC is 33%, which is a useful reference frame.
+`screens.c`, `ui_bind.c` and `gif_pages.c`. `dashboard_shot.exe out.bmp 13350`
+renders the moment when SOC is 33%, which is a useful reference frame.
+
+The simulator reads the QSPI image too. Point `TTR_QSPI_IMAGE` at a `qspi.bin`
+and pass a page index as the third argument - 5, 6 and 7 are the debug pages:
+
+```powershell
+$env:TTR_QSPI_IMAGE = "qspi.bin"
+sim\build\dashboard_shot.exe debug1.bmp 6000 5
+```
+
+`gif_pages.c` reaches the flash through `BSP_QSPI_GetMappedBase()` rather than
+casting `QSPI_BASE_ADDR`, which is the seam that lets `sim/sim_qspi.c` answer
+with a file instead of the register-level driver.
 
 ---
 
@@ -183,8 +204,10 @@ at 73 Hz; `LV_DEF_REFR_PERIOD` is 16 ms so the practical figure is ~62 fps.
    shares the same code through `bsp_qspi.c`.
 2. **The external loader has never run.** Builds clean with all six entry points
    and a valid `.Dev_Info`, but has not been used against CubeProgrammer.
-3. **Animations are untested end to end** - nothing has been programmed into the
-   QSPI yet.
+3. **Animations render in the simulator but are unconfirmed on the board.** All
+   three decode, animate and land in the right containers when the image is fed
+   through `sim_qspi.c`. What that does not cover is reading them back out of
+   the real flash part.
 4. **Speed clips at the left edge** with three wide digits (`250` is cut, `147`
    is not). The label is content-sized and left-anchored; centring it in EEZ
    would fix it.

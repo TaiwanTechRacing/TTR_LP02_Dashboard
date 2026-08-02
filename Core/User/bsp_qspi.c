@@ -147,6 +147,11 @@ uint32_t BSP_QSPI_GetFlashSize(void)
     return g_qspi_flash_size;
 }
 
+const uint8_t *BSP_QSPI_GetMappedBase(void)
+{
+    return (const uint8_t *)QSPI_BASE_ADDR;
+}
+
 uint32_t BSP_QSPI_GetJedecId(void)
 {
     return g_qspi_jedec_id;

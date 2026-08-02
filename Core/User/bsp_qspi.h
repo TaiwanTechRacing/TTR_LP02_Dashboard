@@ -31,6 +31,16 @@
 #define QSPI_BASE_ADDR   0x90000000UL
 
 /**
+ * Start of the mapped contents, as a pointer.
+ *
+ * Callers that read the flash should go through this rather than casting
+ * QSPI_BASE_ADDR themselves. It is the seam that lets the PC simulator swap in
+ * an ordinary heap buffer loaded from a file, so the image parsing and the GIF
+ * decoding can be exercised on the desktop instead of on the car.
+ */
+const uint8_t *BSP_QSPI_GetMappedBase(void);
+
+/**
  * Bring up QUADSPI, read the JEDEC ID to determine capacity, enable quad mode
  * and switch to memory-mapped reads.
  *

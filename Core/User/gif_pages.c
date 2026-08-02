@@ -70,7 +70,12 @@ void GifPages_Init(void)
         return;     /* the part never answered; nothing to read */
     }
 
-    const qspi_image_header_t *header = (const qspi_image_header_t *)QSPI_BASE_ADDR;
+    const uint8_t *base = BSP_QSPI_GetMappedBase();
+    if (base == NULL) {
+        return;
+    }
+
+    const qspi_image_header_t *header = (const qspi_image_header_t *)base;
 
     /*
      * A blank device reads 0xFF everywhere, so without this check the decoder
@@ -81,7 +86,7 @@ void GifPages_Init(void)
     }
 
     const qspi_image_entry_t *entries =
-        (const qspi_image_entry_t *)(QSPI_BASE_ADDR + sizeof(qspi_image_header_t));
+        (const qspi_image_entry_t *)(base + sizeof(qspi_image_header_t));
 
     uint32_t count = header->count;
     if (count > GIF_PAGES_MAX) {
@@ -110,12 +115,30 @@ void GifPages_Init(void)
         s_dsc[i].header.w = 0;
         s_dsc[i].header.h = 0;
         s_dsc[i].data_size = size;
-        s_dsc[i].data = (const uint8_t *)(QSPI_BASE_ADDR + offset);
+        s_dsc[i].data = base + offset;
 
         lv_obj_t *gif = lv_gif_create(parent);
         if (gif == NULL) {
             continue;
         }
+
+        /*
+         * Decode straight to RGB565. This is not an optimisation, it is what
+         * makes the animation appear at all: the decoder defaults to
+         * ARGB8888, and lv_conf.h leaves LV_DRAW_SW_SUPPORT_ARGB8888 off to
+         * save flash. The software renderer then declines to draw the frame
+         * and does so silently - correct pixels sit in the buffer, the widget
+         * is laid out and visible, and the screen stays black.
+         *
+         * Must come before lv_gif_set_src(): the format is read when the file
+         * is opened. Setting it afterwards works too but re-opens the file.
+         *
+         * RGB565 also matches the panel, so no conversion happens per blend,
+         * and the frame buffer drops from w*h*5 to w*h*3 bytes. None of the
+         * three animations uses transparency, so nothing is lost by giving up
+         * the alpha channel.
+         */
+        lv_gif_set_color_format(gif, LV_COLOR_FORMAT_RGB565);
 
         lv_gif_set_src(gif, &s_dsc[i]);
         lv_obj_center(gif);

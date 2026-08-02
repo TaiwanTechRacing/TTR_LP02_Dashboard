@@ -33,11 +33,17 @@ file(GLOB UI_SOURCES CONFIGURE_DEPENDS
 set(SHARED_SOURCES
     sim_data.c
     sim_app.c
+    sim_qspi.c
     ${UI_SOURCES}
     ${LVGL_SOURCES}
     ${REPO_ROOT}/Core/User/ui_bind.c
     ${REPO_ROOT}/Core/User/vehicle_data.c
     ${REPO_ROOT}/Core/User/debug_overlay.c
+
+    # Compiles unmodified. It reaches the flash through
+    # BSP_QSPI_GetMappedBase(), which sim_qspi.c answers with a file loaded
+    # into ordinary memory instead of the register-level driver.
+    ${REPO_ROOT}/Core/User/gif_pages.c
 )
 
 # Windowed simulator.
