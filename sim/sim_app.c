@@ -13,6 +13,7 @@
 #include "nav.h"
 #include "game_tetris.h"
 #include "cell_map.h"
+#include "racer.h"
 
 #include <stdbool.h>
 
@@ -42,6 +43,7 @@ void SimApp_Reset(void)
     GifPages_Init();
     GameTetris_Init();
     CellMap_Init();
+    Racer_Init();
 }
 
 void SimApp_ShowPage(uint8_t index)
@@ -96,6 +98,7 @@ void SimApp_Step(uint32_t now)
     GameTetris_Service(now);
     GifPages_ShowcaseService(now);
     CellMap_Service(now);
+    Racer_Service(now);
 
     lv_timer_handler();
 }

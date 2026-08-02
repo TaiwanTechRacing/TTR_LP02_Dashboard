@@ -98,6 +98,22 @@ void BSP_SDRAM_Init(void)
     FMC_Bank5_6_R->SDRTR |= (SDRAM_REFRESH_COUNT << FMC_SDRTR_COUNT_Pos);
 }
 
+void *BSP_SDRAM_Alloc(uint32_t size_bytes)
+{
+    static uint32_t next = SDRAM_FREE_ADDR;
+
+    /* Keep every block on a cache line, so two of them can never share one. */
+    const uint32_t aligned = (size_bytes + 31u) & ~31u;
+
+    if (aligned > (SDRAM_FREE_ADDR + SDRAM_FREE_SIZE - next)) {
+        return NULL;
+    }
+
+    void *p = (void *)next;
+    next += aligned;
+    return p;
+}
+
 bool BSP_SDRAM_SelfTest(void)
 {
     /* A handful of addresses spread across rows and banks, enough to catch a

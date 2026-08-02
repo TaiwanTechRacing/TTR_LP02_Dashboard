@@ -2224,7 +2224,9 @@ void create_screen_game2() {
     {
         lv_obj_t *parent_obj = obj;
         {
+            // racerCanvas
             lv_obj_t *obj = lv_canvas_create(parent_obj);
+            objects.racer_canvas = obj;
             lv_obj_set_pos(obj, 0, 0);
             lv_obj_set_size(obj, 480, 272);
         }

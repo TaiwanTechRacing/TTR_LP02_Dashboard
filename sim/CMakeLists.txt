@@ -35,6 +35,7 @@ set(SHARED_SOURCES
     sim_data.c
     sim_app.c
     sim_qspi.c
+    sim_sdram.c
     ${UI_SOURCES}
     ${LVGL_SOURCES}
     ${REPO_ROOT}/Core/User/ui_bind.c
@@ -46,6 +47,7 @@ set(SHARED_SOURCES
     ${REPO_ROOT}/Core/User/nav.c
     ${REPO_ROOT}/Core/User/game_tetris.c
     ${REPO_ROOT}/Core/User/cell_map.c
+    ${REPO_ROOT}/Core/User/racer.c
 
     # Compiles unmodified. It reaches the flash through
     # BSP_QSPI_GetMappedBase(), which sim_qspi.c answers with a file loaded

@@ -40,6 +40,7 @@
 #include "nav.h"
 #include "game_tetris.h"
 #include "cell_map.h"
+#include "racer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -242,6 +243,7 @@ int main(void)
   Nav_Init();
   GameTetris_Init();
   CellMap_Init();
+  Racer_Init();
 
   /* Animations come from QSPI. Does nothing if the part is blank, so a
    * board that has never been programmed still boots normally. */
@@ -353,6 +355,7 @@ int main(void)
     GameTetris_Service(now);
     GifPages_ShowcaseService(now);
     CellMap_Service(now);
+    Racer_Service(now);
 
     if ((now - last_button_scan) >= NAV_SCAN_PERIOD_MS)
     {

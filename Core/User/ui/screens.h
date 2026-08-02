@@ -131,6 +131,7 @@ typedef struct _objects_t {
     lv_obj_t *km_label_3;
     lv_obj_t *place_gif;
     lv_obj_t *mode_label_1;
+    lv_obj_t *racer_canvas;
 } objects_t;
 
 extern objects_t objects;

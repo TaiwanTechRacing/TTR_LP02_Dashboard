@@ -63,4 +63,22 @@ void BSP_SDRAM_Init(void);
  */
 bool BSP_SDRAM_SelfTest(void);
 
+/**
+ * Hand out a block of the unused SDRAM above the LVGL heap.
+ *
+ * A bump allocator with no free, because the only callers are features that
+ * take their buffer once at start-up and keep it for the life of the board.
+ * Returns NULL when the request does not fit, which is a build-time mistake
+ * rather than a runtime condition.
+ *
+ * The whole SDRAM is write-back cacheable except the framebuffers, so a buffer
+ * from here is fast for the CPU to fill. That matters for anything drawing a
+ * full screen: writes land in the D-cache and burst out rather than crossing
+ * the FMC one at a time.
+ *
+ * Going through a function rather than a hard-coded address is what lets the
+ * PC simulator answer with ordinary memory - see sim/sim_sdram.c.
+ */
+void *BSP_SDRAM_Alloc(uint32_t size_bytes);
+
 #endif /* BSP_SDRAM_H */

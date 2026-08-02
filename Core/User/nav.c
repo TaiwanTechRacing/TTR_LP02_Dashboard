@@ -7,6 +7,7 @@
 #include "debug_overlay.h"
 #include "game_tetris.h"
 #include "cell_map.h"
+#include "racer.h"
 
 #include "ui.h"
 #include "screens.h"
@@ -16,8 +17,8 @@
 #define NAV_GAME_EXIT_MS      2000U   /* both held this long leaves the game */
 
 /*
- * Getting into the game: hold both buttons for three seconds, let go, then tap
- * the right button twice.
+ * Getting into a game: hold both buttons for three seconds, let go, then tap
+ * twice - right for tetris, left for the racer.
  *
  * The hold does the work of keeping it hidden - nothing else on this dashboard
  * asks for three seconds - and the two taps afterwards mean an accidental long
@@ -53,6 +54,7 @@ static const enum ScreensEnum s_screens[] = {
     SCREEN_ID_DEBUG2,    /* 8 */
     SCREEN_ID_DEBUG3,    /* 9 */
     SCREEN_ID_GAME1,     /* 10 */
+    SCREEN_ID_GAME2,     /* 11 */
 };
 
 #define NAV_PAGE_COUNT ((uint8_t)(sizeof(s_screens) / sizeof(s_screens[0])))
@@ -63,8 +65,9 @@ static const enum ScreensEnum s_screens[] = {
  * buttons walk 1..NAV_MAX_PAGE and never land on it. It is reached only by the
  * sequence above.
  */
-#define NAV_GAME_PAGE  (NAV_PAGE_COUNT - 1U)
-#define NAV_MAX_PAGE   (NAV_PAGE_COUNT - 2U)
+#define NAV_GAME_PAGE  (NAV_PAGE_COUNT - 2U)
+#define NAV_RACER_PAGE (NAV_PAGE_COUNT - 1U)
+#define NAV_MAX_PAGE   (NAV_PAGE_COUNT - 3U)
 
 static uint8_t s_page;
 
@@ -91,6 +94,7 @@ void Nav_ShowPage(uint8_t index)
      * for as long as it does. */
     const bool on_game = (s_screens[s_page] == SCREEN_ID_GAME1);
     GameTetris_SetActive(on_game);
+    Racer_SetActive(s_screens[s_page] == SCREEN_ID_GAME2);
 
     /* The showcase lives in the corner of the same page. */
     GifPages_SetShowcaseActive(on_game);
@@ -126,6 +130,7 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
      */
     static uint32_t egg_expires = 0;
     static uint8_t  egg_taps = 0;
+    static uint8_t  egg_tap_side = 0;
     static bool     egg_wants_release = false;
 
     /* The arming hold is itself two buttons down, so the taps only start
@@ -166,7 +171,7 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
          * buttons are in constant use while playing, so a second is easy to
          * reach by accident mid-piece; two is not.
          */
-        if (GameTetris_IsActive()) {
+        if (GameTetris_IsActive() || Racer_IsActive()) {
             if (held >= NAV_GAME_EXIT_MS) {
                 both_done = true;
                 Nav_ShowPage(NAV_MIN_PAGE);
@@ -203,6 +208,11 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
         return;
     }
 
+    if (Racer_IsActive()) {
+        Racer_Buttons(button1_pressed, button2_pressed);
+        return;
+    }
+
     for (uint8_t i = 0; i < 2u; i++) {
         if (!pressed[i]) {
             buttons[i].counter = 0;   /* released */
@@ -217,20 +227,25 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
             continue;                 /* still debouncing */
         }
 
+        /*
+         * Two taps on the same button pick which game: right for tetris, left
+         * for the racer. Mixing them gives up the window, so a stray press
+         * cannot walk into either one.
+         */
         if (egg_expires != 0u && !egg_wants_release) {
-            if (i == 1u) {
+            if (egg_taps != 0u && i != egg_tap_side) {
+                egg_expires = 0;
+                egg_taps = 0;
+            }
+            else {
+                egg_tap_side = i;
                 egg_taps++;
                 if (egg_taps >= 2u) {
                     egg_expires = 0;
                     egg_taps = 0;
-                    Nav_ShowPage(NAV_GAME_PAGE);
+                    Nav_ShowPage((i == 1u) ? NAV_GAME_PAGE : NAV_RACER_PAGE);
                     return;
                 }
-            }
-            else {
-                /* A left press is not part of it and gives up the window. */
-                egg_expires = 0;
-                egg_taps = 0;
             }
         }
 
