@@ -63,6 +63,31 @@ The keys are read as held-or-not, not as key events, and fed to the same
 both ends of the page list and the one-second hold therefore behave exactly as
 they do in the car - a tap shorter than 25 ms is ignored here too.
 
+## Racer tuning
+
+```powershell
+simuild.bat racer
+```
+
+Opens straight to the racer on GAME2, with nothing else on screen. The arrow
+keys are the wheel and pedals, written into `vehicle_data` and marked fresh so
+`racer.c` reads them through the same path it uses in the car rather than a
+second input route that could behave differently.
+
+| key | |
+|---|---|
+| left / right | steer, self-centring when released |
+| up / down | throttle, brake |
+| tab, shift-tab | pick a parameter |
+| `+` / `-` | adjust it by 5%, hold shift for 1% |
+| `r` | restart the run |
+| `d` | back to the compiled-in values |
+| `p` | write the current set to `racer_tuning.txt` |
+
+It links the same `Core/User/racer.c` the firmware does, so what is being tuned
+is the real thing. When the numbers feel right, press `p` and paste the file
+into `Racer_Defaults()`.
+
 ## Animations
 
 The GIFs live on the QSPI flash, so the simulator needs the same image the

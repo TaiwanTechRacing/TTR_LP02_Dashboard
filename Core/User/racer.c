@@ -24,21 +24,25 @@ static uint16_t *s_buf;
 /*
  * The projection, in the usual form for this kind of racer:
  *
- *   scale   = CAMERA_DEPTH / (segment z - camera z)
+ *   scale   = s_tune.camera_depth / (segment z - camera z)
  *   screenY = H/2 - scale * (segment height - camera height) * H/2
  *   screenX = W/2 + scale * (segment centre - camera x)     * W/2
- *   width   = scale * ROAD_WIDTH * W/2
+ *   width   = scale * s_tune.road_width * W/2
  *
- * CAMERA_DEPTH is 1/tan(fov/2); 0.84 is a field of view of about 100 degrees,
+ * s_tune.camera_depth is 1/tan(fov/2); 0.84 is a field of view of about 100 degrees,
  * which is wide enough that a corner does not appear out of nowhere.
  */
-#define SEGMENT_LENGTH  200.0f
-#define ROAD_WIDTH     2000.0f
-#define CAMERA_HEIGHT  1200.0f
-#define CAMERA_DEPTH      0.84f
-#define DRAW_SEGMENTS   140          /* how far down the road is drawn */
-
 #define SEGMENT_COUNT   600          /* the track loops after this many */
+#define DRAW_SEGMENTS_MAX SEGMENT_COUNT
+
+/* The compiled-in tuning. Racer_Defaults() puts these back. */
+#define DEF_SEGMENT_LENGTH  200.0f
+#define DEF_ROAD_WIDTH     2000.0f
+#define DEF_CAMERA_HEIGHT  1200.0f
+#define DEF_CAMERA_DEPTH      0.84f
+#define DEF_DRAW_SEGMENTS   140
+
+static racer_tuning_t s_tune;
 
 typedef struct {
     float curve;      /* how hard this segment turns */
@@ -69,12 +73,35 @@ static float s_speed;         /* world units per second */
 
 static bool s_btn_left, s_btn_right;
 
-#define MAX_SPEED   (SEGMENT_LENGTH * 60.0f)
-#define ACCEL       (MAX_SPEED / 2.5f)
-#define BRAKING     (MAX_SPEED / 1.2f)
-#define DECEL       (MAX_SPEED / 6.0f)
-#define OFF_ROAD_DECEL (MAX_SPEED / 2.0f)
-#define CENTRIFUGAL 0.35f
+#define DEF_MAX_SPEED   (DEF_SEGMENT_LENGTH * 60.0f)
+#define DEF_ACCEL       (DEF_MAX_SPEED / 2.5f)
+#define DEF_BRAKING     (DEF_MAX_SPEED / 1.2f)
+#define DEF_DECEL       (DEF_MAX_SPEED / 6.0f)
+#define DEF_OFF_ROAD    (DEF_MAX_SPEED / 2.0f)
+#define DEF_STEER_RATE  2.2f
+#define DEF_CENTRIFUGAL 0.35f
+
+racer_tuning_t *Racer_Tuning(void)
+{
+    return &s_tune;
+}
+
+void Racer_Defaults(void)
+{
+    s_tune.segment_length = DEF_SEGMENT_LENGTH;
+    s_tune.road_width     = DEF_ROAD_WIDTH;
+    s_tune.camera_height  = DEF_CAMERA_HEIGHT;
+    s_tune.camera_depth   = DEF_CAMERA_DEPTH;
+    s_tune.draw_segments  = DEF_DRAW_SEGMENTS;
+
+    s_tune.max_speed      = DEF_MAX_SPEED;
+    s_tune.accel          = DEF_ACCEL;
+    s_tune.braking        = DEF_BRAKING;
+    s_tune.decel          = DEF_DECEL;
+    s_tune.off_road_decel = DEF_OFF_ROAD;
+    s_tune.steer_rate     = DEF_STEER_RATE;
+    s_tune.centrifugal    = DEF_CENTRIFUGAL;
+}
 
 /* --- track ---------------------------------------------------------------- */
 
@@ -190,8 +217,8 @@ static void trapezoid(int ytop, float xtop, float wtop,
 
 static void render(void)
 {
-    const int base = (int)(s_position / SEGMENT_LENGTH);
-    const float offset = s_position - ((float)base * SEGMENT_LENGTH);
+    const int base = (int)(s_position / s_tune.segment_length);
+    const float offset = s_position - ((float)base * s_tune.segment_length);
 
     /* Sky and the ground behind everything, so hills never show a gap. */
     fill_rows(0, H / 2, SKY);
@@ -207,29 +234,34 @@ static void render(void)
     float x = 0.0f;      /* accumulated sideways shift from the curves */
     float dx = 0.0f;
 
-    float cam_h = CAMERA_HEIGHT + s_road[base % SEGMENT_COUNT].height;
+    float cam_h = s_tune.camera_height + s_road[base % SEGMENT_COUNT].height;
 
     int   py = H;
     float px = (float)W * 0.5f;
     float pw = 0.0f;
     bool  have_prev = false;
 
-    for (int n = 0; n < DRAW_SEGMENTS; n++) {
+    int draw = s_tune.draw_segments;
+    if (draw > DRAW_SEGMENTS_MAX) {
+        draw = DRAW_SEGMENTS_MAX;
+    }
+
+    for (int n = 0; n < draw; n++) {
         const int index = (base + n) % SEGMENT_COUNT;
         const segment_t *seg = &s_road[index];
 
-        const float z = ((float)(n + 1) * SEGMENT_LENGTH) - offset;
+        const float z = ((float)(n + 1) * s_tune.segment_length) - offset;
         if (z < 1.0f) {
             continue;
         }
 
-        const float scale = CAMERA_DEPTH / z;
+        const float scale = s_tune.camera_depth / z;
 
         const int   sy = (int)(((float)H * 0.5f) -
                                (scale * (seg->height - cam_h) * (float)H * 0.5f));
         const float sx = ((float)W * 0.5f) +
-                         (scale * (x - (s_player_x * ROAD_WIDTH * 0.5f)) * (float)W * 0.5f);
-        const float sw = scale * ROAD_WIDTH * 0.5f * (float)W * 0.5f;
+                         (scale * (x - (s_player_x * s_tune.road_width * 0.5f)) * (float)W * 0.5f);
+        const float sw = scale * s_tune.road_width * 0.5f * (float)W * 0.5f;
 
         x += dx;
         dx += seg->curve;
@@ -315,36 +347,36 @@ static void advance(float dt)
     float steer, throttle, brake;
     controls(dt, &steer, &throttle, &brake);
 
-    const float speed_pu = s_speed / MAX_SPEED;
+    const float speed_pu = s_speed / s_tune.max_speed;
 
     if (brake > 0.05f) {
-        s_speed -= BRAKING * brake * dt;
+        s_speed -= s_tune.braking * brake * dt;
     }
     else if (throttle > 0.05f) {
-        s_speed += ACCEL * throttle * dt;
+        s_speed += s_tune.accel * throttle * dt;
     }
     else {
-        s_speed -= DECEL * dt;
+        s_speed -= s_tune.decel * dt;
     }
 
     /* Off the road, the grass slows the car down. */
-    if ((s_player_x < -1.0f || s_player_x > 1.0f) && s_speed > (MAX_SPEED * 0.35f)) {
-        s_speed -= OFF_ROAD_DECEL * dt;
+    if ((s_player_x < -1.0f || s_player_x > 1.0f) && s_speed > (s_tune.max_speed * 0.35f)) {
+        s_speed -= s_tune.off_road_decel * dt;
     }
 
     if (s_speed < 0.0f) {
         s_speed = 0.0f;
     }
-    if (s_speed > MAX_SPEED) {
-        s_speed = MAX_SPEED;
+    if (s_speed > s_tune.max_speed) {
+        s_speed = s_tune.max_speed;
     }
 
     /* Steering authority falls away as the car slows, as it would. */
-    s_player_x += steer * 2.2f * speed_pu * dt;
+    s_player_x += steer * s_tune.steer_rate * speed_pu * dt;
 
     /* Thrown to the outside of a corner, harder the faster you take it. */
-    const int index = ((int)(s_position / SEGMENT_LENGTH)) % SEGMENT_COUNT;
-    s_player_x -= s_road[index].curve * 0.0015f * speed_pu * speed_pu * CENTRIFUGAL;
+    const int index = ((int)(s_position / s_tune.segment_length)) % SEGMENT_COUNT;
+    s_player_x -= s_road[index].curve * 0.0015f * speed_pu * speed_pu * s_tune.centrifugal;
 
     if (s_player_x < -2.0f) {
         s_player_x = -2.0f;
@@ -355,7 +387,7 @@ static void advance(float dt)
 
     s_position += s_speed * dt;
 
-    const float track_length = (float)SEGMENT_COUNT * SEGMENT_LENGTH;
+    const float track_length = (float)SEGMENT_COUNT * s_tune.segment_length;
     while (s_position >= track_length) {
         s_position -= track_length;
     }
@@ -365,6 +397,8 @@ static void advance(float dt)
 
 void Racer_Init(void)
 {
+    Racer_Defaults();
+
     s_buf = (uint16_t *)BSP_SDRAM_Alloc((uint32_t)W * H * sizeof(uint16_t));
     if (s_buf == NULL) {
         return;     /* nothing to draw into; the page stays blank */
@@ -378,6 +412,16 @@ void Racer_Init(void)
     lv_obj_invalidate(objects.racer_canvas);
 }
 
+void Racer_Restart(void)
+{
+    s_position = 0.0f;
+    s_player_x = 0.0f;
+    s_speed = 0.0f;
+    s_last = 0;
+    s_btn_left = false;
+    s_btn_right = false;
+}
+
 void Racer_SetActive(bool active)
 {
     if (active == s_active) {
@@ -387,12 +431,7 @@ void Racer_SetActive(bool active)
     s_active = active;
 
     if (active) {
-        s_position = 0.0f;
-        s_player_x = 0.0f;
-        s_speed = 0.0f;
-        s_last = 0;
-        s_btn_left = false;
-        s_btn_right = false;
+        Racer_Restart();
     }
 }
 

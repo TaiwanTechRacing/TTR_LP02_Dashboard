@@ -5,6 +5,7 @@ rem  Build the PC simulator and launch it.
 rem
 rem      sim\build.bat            build, then launch the windowed simulator
 rem      sim\build.bat build      build only, no window
+rem      sim\build.bat racer      build, then launch the racer tuning rig
 rem
 rem  Launching is the default because this is what gets run after every edit.
 rem
@@ -23,6 +24,7 @@ rem
 rem  Full paths on purpose. Run from Git Bash, a bare "find" resolves to Git's
 rem  Unix find rather than the Windows one, and the check this replaced silently
 rem  did nothing.
+"%SystemRoot%\System32\taskkill.exe" /im racer_tune.exe /f >nul 2>&1
 "%SystemRoot%\System32\taskkill.exe" /im dashboard_sim.exe /f >nul 2>&1
 if not errorlevel 1 (
     echo Closed the running simulator so its executable can be replaced.
@@ -57,6 +59,17 @@ echo   dashboard_shot.exe out.bmp ^<ms^> ^<page^>   headless screenshots
 if /i "%~1"=="build" (
     echo.
     echo Built only, as asked.
+    exit /b 0
+)
+
+if /i "%~1"=="racer" (
+    echo.
+    echo   arrows            steer, throttle, brake
+    echo   tab / shift-tab   pick a parameter
+    echo   + / -             adjust it, hold shift for finer steps
+    echo   r / d / p         restart, defaults, save to racer_tuning.txt
+    echo.
+    start "" "%BUILD%\racer_tune.exe"
     exit /b 0
 )
 

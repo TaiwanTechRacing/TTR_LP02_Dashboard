@@ -63,7 +63,12 @@ add_executable(${PROJECT_NAME} sim_main.c ${SHARED_SOURCES})
 # anyone looking at a screen.
 add_executable(dashboard_shot sim_shot.c ${SHARED_SOURCES})
 
-foreach(target ${PROJECT_NAME} dashboard_shot)
+# Racer tuning rig. Opens straight to the racer with the wheel and pedals on
+# the keyboard and every parameter adjustable while it runs. It links the same
+# racer.c the firmware does, so what gets tuned is the real thing.
+add_executable(racer_tune racer_tune.c ${SHARED_SOURCES})
+
+foreach(target ${PROJECT_NAME} dashboard_shot racer_tune)
 target_include_directories(${target} PRIVATE
     # shim first: it supplies the stand-in stm32h7xx_hal.h so the shared
     # firmware sources compile unmodified
