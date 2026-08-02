@@ -5,6 +5,7 @@
 #include "nav.h"
 #include "gif_pages.h"
 #include "debug_overlay.h"
+#include "game_tetris.h"
 
 #include "ui.h"
 #include "screens.h"
@@ -24,11 +25,13 @@ static const enum ScreensEnum s_screens[] = {
     SCREEN_ID_MAIN,      /* 1 */
     SCREEN_ID_SYSTEM_SDC, /* 2 */
     SCREEN_ID_SYSTEM_ECU, /* 3 */
-    SCREEN_ID_BATTERY,   /* 4 */
-    SCREEN_ID_INVERTER,  /* 5 */
-    SCREEN_ID_DEBUG1,    /* 6 */
-    SCREEN_ID_DEBUG2,    /* 7 */
-    SCREEN_ID_DEBUG3,    /* 8 */
+    SCREEN_ID_SYSTEM_SENSOR, /* 4 */
+    SCREEN_ID_BATTERY,   /* 5 */
+    SCREEN_ID_INVERTER,  /* 6 */
+    SCREEN_ID_DEBUG1,    /* 7 */
+    SCREEN_ID_DEBUG2,    /* 8 */
+    SCREEN_ID_DEBUG3,    /* 9 */
+    SCREEN_ID_GAME1,     /* 10 */
 };
 
 #define NAV_PAGE_COUNT ((uint8_t)(sizeof(s_screens) / sizeof(s_screens[0])))
@@ -55,6 +58,10 @@ void Nav_ShowPage(uint8_t index)
 
     s_page = index;
     loadScreen(s_screens[s_page]);
+
+    /* The game only runs while it is being looked at, and takes the buttons
+     * for as long as it does. */
+    GameTetris_SetActive(s_screens[s_page] == SCREEN_ID_GAME1);
 
     /* Only the visible page's animation should run; the others burn CPU on
      * frames nobody can see. */
@@ -91,13 +98,31 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
         if (both_counter < NAV_DEBUG_TOGGLE_SCANS) {
             both_counter++;
             if (both_counter == NAV_DEBUG_TOGGLE_SCANS) {
-                DebugOverlay_Toggle();   /* fire only on the sample that crosses the threshold */
+                /* On the game page this is the only way out, since both
+                 * buttons are being used to play. Everywhere else it is the
+                 * overlay toggle. */
+                if (GameTetris_IsActive()) {
+                    Nav_ShowPage(NAV_MIN_PAGE);
+                }
+                else {
+                    DebugOverlay_Toggle();   /* fire only on the sample that crosses the threshold */
+                }
             }
         }
         return;
     }
 
     both_counter = 0;
+
+    /*
+     * The game owns the buttons while it is on screen. It does its own edge
+     * detection and auto-repeat, which is why the raw states go through rather
+     * than the debounced page steps below.
+     */
+    if (GameTetris_IsActive()) {
+        GameTetris_Buttons(button1_pressed, button2_pressed);
+        return;
+    }
 
     for (uint8_t i = 0; i < 2u; i++) {
         if (!pressed[i]) {

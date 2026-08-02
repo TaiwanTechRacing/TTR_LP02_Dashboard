@@ -1402,6 +1402,30 @@ void tick_screen_system_ecu() {
     }
 }
 
+void create_screen_system_sensor() {
+    lv_obj_t *obj = lv_obj_create(0);
+    objects.system_sensor = obj;
+    lv_obj_set_pos(obj, 0, 0);
+    lv_obj_set_size(obj, 480, 272);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    {
+        lv_obj_t *parent_obj = obj;
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 8, 12);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "SYSTEM-SENSOR");
+        }
+    }
+    
+    tick_screen_system_sensor();
+}
+
+void tick_screen_system_sensor() {
+}
+
 void create_screen_battery() {
     lv_obj_t *obj = lv_obj_create(0);
     objects.battery = obj;
@@ -1564,20 +1588,115 @@ void create_screen_debug3() {
 void tick_screen_debug3() {
 }
 
+void create_screen_game1() {
+    lv_obj_t *obj = lv_obj_create(0);
+    objects.game1 = obj;
+    lv_obj_set_pos(obj, 0, 0);
+    lv_obj_set_size(obj, 480, 272);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    {
+        lv_obj_t *parent_obj = obj;
+        {
+            // tetris_game_canva
+            lv_obj_t *obj = lv_canvas_create(parent_obj);
+            objects.tetris_game_canva = obj;
+            lv_obj_set_pos(obj, 152, 11);
+            lv_obj_set_size(obj, 186, 251);
+            lv_obj_set_style_outline_width(obj, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_outline_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
+        {
+            // next_block
+            lv_obj_t *obj = lv_canvas_create(parent_obj);
+            objects.next_block = obj;
+            lv_obj_set_pos(obj, 351, 38);
+            lv_obj_set_size(obj, 116, 77);
+            lv_obj_set_style_outline_width(obj, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_outline_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 377, 11);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "NEXT");
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 368, 125);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "SCORE");
+        }
+        {
+            // hvSOCLabel_1
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.hv_soc_label_1 = obj;
+            lv_obj_set_pos(obj, 396, 148);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // kmLabel_2
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.km_label_2 = obj;
+            lv_obj_set_pos(obj, 5, 16);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "TAIWAN \nTECH \nRACING");
+        }
+        {
+            // kmLabel_3
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.km_label_3 = obj;
+            lv_obj_set_pos(obj, 5, 125);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_recolor(obj, true);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_color(obj, lv_color_hex(0xef3a5d), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "TETRIS");
+        }
+    }
+    
+    tick_screen_game1();
+}
+
+void tick_screen_game1() {
+    {
+        const char *new_val = get_var_tetris_score();
+        const char *cur_val = lv_label_get_text(objects.hv_soc_label_1);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.hv_soc_label_1;
+            lv_label_set_text(objects.hv_soc_label_1, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+}
+
 typedef void (*tick_screen_func_t)();
 tick_screen_func_t tick_screen_funcs[] = {
     tick_screen_welcome,
     tick_screen_main,
     tick_screen_system_sdc,
     tick_screen_system_ecu,
+    tick_screen_system_sensor,
     tick_screen_battery,
     tick_screen_inverter,
     tick_screen_debug1,
     tick_screen_debug2,
     tick_screen_debug3,
+    tick_screen_game1,
 };
 void tick_screen(int screen_index) {
-    if (screen_index >= 0 && screen_index < 9) {
+    if (screen_index >= 0 && screen_index < 11) {
         tick_screen_funcs[screen_index]();
     }
 }
@@ -1683,9 +1802,11 @@ void create_screens() {
     create_screen_main();
     create_screen_system_sdc();
     create_screen_system_ecu();
+    create_screen_system_sensor();
     create_screen_battery();
     create_screen_inverter();
     create_screen_debug1();
     create_screen_debug2();
     create_screen_debug3();
+    create_screen_game1();
 }

@@ -11,6 +11,7 @@
 #include "debug_overlay.h"
 #include "gif_pages.h"
 #include "nav.h"
+#include "game_tetris.h"
 
 #include <stdbool.h>
 
@@ -38,6 +39,7 @@ void SimApp_Reset(void)
      * widgets are built, because gif_pages.c points them straight at it. */
     (void)SimQspi_Load(NULL);
     GifPages_Init();
+    GameTetris_Init();
 }
 
 void SimApp_ShowPage(uint8_t index)
@@ -88,6 +90,8 @@ void SimApp_Step(uint32_t now)
             Nav_Scan(s_button1, s_button2);
         }
     }
+
+    GameTetris_Service(now);
 
     lv_timer_handler();
 }

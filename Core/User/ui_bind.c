@@ -23,6 +23,7 @@
 #include "ui_bind.h"
 #include "vehicle_data.h"
 #include "screens.h"
+#include "game_tetris.h"
 #include "stm32h7xx_hal.h"
 #include <stddef.h>
 #include <string.h>
@@ -427,6 +428,12 @@ ECU_GETTER(imu,  VD_ONLINE_IMU,  VD_ERR_IMU)
  * knowing: a GPS that is present but producing nonsense would still show green.
  */
 ECU_GETTER(gps,  VD_ONLINE_GPS,  0)
+
+/** Score on the game page. */
+const char *get_var_tetris_score(void)
+{
+    return GameTetris_ScoreText();
+}
 
 /**
  * Value driving the SOC bar, 0..100 percent.

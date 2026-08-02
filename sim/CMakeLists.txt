@@ -44,6 +44,7 @@ set(SHARED_SOURCES
     # Page order and button behaviour, shared with main.c so the simulator
     # runs the real thing rather than an imitation of it.
     ${REPO_ROOT}/Core/User/nav.c
+    ${REPO_ROOT}/Core/User/game_tetris.c
 
     # Compiles unmodified. It reaches the flash through
     # BSP_QSPI_GetMappedBase(), which sim_qspi.c answers with a file loaded

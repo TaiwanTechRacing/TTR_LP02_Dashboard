@@ -15,12 +15,14 @@ enum ScreensEnum {
     SCREEN_ID_MAIN = 2,
     SCREEN_ID_SYSTEM_SDC = 3,
     SCREEN_ID_SYSTEM_ECU = 4,
-    SCREEN_ID_BATTERY = 5,
-    SCREEN_ID_INVERTER = 6,
-    SCREEN_ID_DEBUG1 = 7,
-    SCREEN_ID_DEBUG2 = 8,
-    SCREEN_ID_DEBUG3 = 9,
-    _SCREEN_ID_LAST = 9
+    SCREEN_ID_SYSTEM_SENSOR = 5,
+    SCREEN_ID_BATTERY = 6,
+    SCREEN_ID_INVERTER = 7,
+    SCREEN_ID_DEBUG1 = 8,
+    SCREEN_ID_DEBUG2 = 9,
+    SCREEN_ID_DEBUG3 = 10,
+    SCREEN_ID_GAME1 = 11,
+    _SCREEN_ID_LAST = 11
 };
 
 typedef struct _objects_t {
@@ -28,11 +30,13 @@ typedef struct _objects_t {
     lv_obj_t *main;
     lv_obj_t *system_sdc;
     lv_obj_t *system_ecu;
+    lv_obj_t *system_sensor;
     lv_obj_t *battery;
     lv_obj_t *inverter;
     lv_obj_t *debug1;
     lv_obj_t *debug2;
     lv_obj_t *debug3;
+    lv_obj_t *game1;
     lv_obj_t *km_label_1;
     lv_obj_t *ready_label_1;
     lv_obj_t *obj0;
@@ -94,6 +98,11 @@ typedef struct _objects_t {
     lv_obj_t *gif;
     lv_obj_t *gif_1;
     lv_obj_t *gif_2;
+    lv_obj_t *tetris_game_canva;
+    lv_obj_t *next_block;
+    lv_obj_t *hv_soc_label_1;
+    lv_obj_t *km_label_2;
+    lv_obj_t *km_label_3;
 } objects_t;
 
 extern objects_t objects;
@@ -110,6 +119,9 @@ void tick_screen_system_sdc();
 void create_screen_system_ecu();
 void tick_screen_system_ecu();
 
+void create_screen_system_sensor();
+void tick_screen_system_sensor();
+
 void create_screen_battery();
 void tick_screen_battery();
 
@@ -124,6 +136,9 @@ void tick_screen_debug2();
 
 void create_screen_debug3();
 void tick_screen_debug3();
+
+void create_screen_game1();
+void tick_screen_game1();
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);

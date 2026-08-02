@@ -56,7 +56,7 @@ static lv_obj_t *container_for(uint8_t index)
  * Battery and Inverter were inserted after Main, and again when the System
  * page was split into SDC and ECU.
  */
-#define GIF_FIRST_SCREEN_INDEX 6u   /* 0 welcome, 1 main, 2..5 sdc/ecu/battery/inverter */
+#define GIF_FIRST_SCREEN_INDEX 7u   /* 0 welcome, 1 main, 2..6 sdc/ecu/sensor/battery/inverter */
 
 static uint8_t screen_for(uint8_t index)
 {

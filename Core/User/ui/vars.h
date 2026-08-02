@@ -43,7 +43,8 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_ECU_MCU4 = 27,
     FLOW_GLOBAL_VARIABLE_ECU_AMS = 28,
     FLOW_GLOBAL_VARIABLE_ECU_IMU = 29,
-    FLOW_GLOBAL_VARIABLE_ECU_GPS = 30
+    FLOW_GLOBAL_VARIABLE_ECU_GPS = 30,
+    FLOW_GLOBAL_VARIABLE_TETRIS_SCORE = 31
 };
 
 // Native global variables
@@ -110,6 +111,8 @@ extern int32_t get_var_ecu_imu();
 extern void set_var_ecu_imu(int32_t value);
 extern int32_t get_var_ecu_gps();
 extern void set_var_ecu_gps(int32_t value);
+extern const char *get_var_tetris_score();
+extern void set_var_tetris_score(const char *value);
 
 #ifdef __cplusplus
 }
