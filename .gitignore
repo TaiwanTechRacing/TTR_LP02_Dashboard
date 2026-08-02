@@ -22,4 +22,4 @@ dashboard_layout/src/
 # them by tools/gif_optimize.py and can be regenerated at any time.
 dashboard_layout/gif/optimized/
 # Built from the optimised GIFs by tools/make_qspi_image.py
-dashboard_layout/gif/qspi.bin
+/qspi.bin

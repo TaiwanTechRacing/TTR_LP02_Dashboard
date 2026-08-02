@@ -56,23 +56,26 @@ bad place for that to hide.
 
 `Loader_Src.c` therefore contains only what a loader needs beyond that:
 
-- **Clock setup.** The QSPI timings in `bsp_qspi.c` are derived from HCLK3, so
-  the loader configures the same PLL as the firmware. A different clock would
-  silently change them.
-- **A timebase.** No interrupts run, so there is no SysTick. `HAL_GetTick()` is
-  backed by the Cortex-M7 cycle counter instead.
+- **Clock and timebase.** The loader stays on the reset-default 64 MHz HSI, so
+  the fixed QSPI divider produces a conservative 16 MHz clock. No interrupts
+  run, so `HAL_GetTick()` uses the Cortex-M7 cycle counter.
 - **Freestanding fill-ins.** Linked `-nostdlib` and without HAL startup, so
-  `memset`, `memcpy`, `uwTickPrio`, `HAL_InitTick` and `HAL_GetREVID` are
-  supplied locally.
+  `memset`, `memcpy` and `HAL_InitTick` are supplied locally.
 - **MPU off.** The firmware marks the QSPI window no-access until it knows the
   capacity. The loader is the only thing running, so it disables the MPU
   outright rather than reproducing that logic.
 
 ## Things that will bite if changed
 
-**`.Dev_Info` must keep its section name.** CubeProgrammer locates the device
-descriptor by section, not address. `KEEP()` in the linker script and `used` on
-the struct stop `--gc-sections` discarding it.
+**`.Dev_Info` must be a loadable segment at address zero, and code must start at
+`0x24000004`.** This is CubeProgrammer's external-loader ELF layout. `KEEP()` in
+the linker script and `used` on the struct stop `--gc-sections` discarding the
+descriptor.
+
+**Do not call the CMSIS cache-disable helpers from `Init()`.** CubeProgrammer
+enters the loader directly without running `Reset_Handler`/`SystemInit`; the
+set/way cache-maintenance routine stalled on hardware. The caches are already
+disabled by CubeProgrammer's reset.
 
 **Every entry point needs pinning.** Only `Init` is reachable from `ENTRY`, so
 `--gc-sections` removes the others. `CMakeLists.txt` passes `--undefined` for
@@ -84,11 +87,11 @@ called there; there is no flash region and no vector table.
 
 ## Status
 
-Builds clean and exports all six entry points with a correct `.Dev_Info`
-section. **Not yet run against hardware.**
+Verified on hardware with STM32CubeProgrammer 2.20.0 and ST-Link on 2026-08-02:
 
-Before trusting it, run the firmware's own write test - set
-`g_qspi_run_write_test` to 1 in a debugger and read `g_qspi_write_test_result`.
-That exercises the same erase and program path through the same source file, so
-if it fails, the loader would have failed too, and it is far easier to debug
-from a running firmware than from inside CubeProgrammer.
+- Firmware write self-test returned `g_qspi_write_test_result = 1`.
+- The loader erased sectors 2044-2047, programmed a 13.35 KB binary at
+  `0x907FC000`, and CubeProgrammer verified the complete readback successfully.
+- The complete 3.64 MB GIF image was programmed to sectors 0-931 and verified.
+  The running firmware detected the `TTRQ` header and created all three LVGL
+  GIF objects from the memory-mapped data.

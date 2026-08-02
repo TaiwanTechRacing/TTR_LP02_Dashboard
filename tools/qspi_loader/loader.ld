@@ -14,11 +14,22 @@ ENTRY(Init)
 
 MEMORY
 {
-    RAM (xrw) : ORIGIN = 0x24000000, LENGTH = 512K
+    /* CubeProgrammer reserves the first word and expects executable loader
+     * code to start at +4 (the same layout used by ST's H743 loaders). */
+    RAM (xrw) : ORIGIN = 0x24000004, LENGTH = 512K - 4
 }
 
 SECTIONS
 {
+    /* Device metadata is a host-side descriptor. CubeProgrammer expects its
+     * loadable segment at address zero, not mixed into the target RAM image. */
+    .Dev_Info 0x00000000 :
+    {
+        . = ALIGN(4);
+        KEEP(*(.Dev_Info))
+        . = ALIGN(4);
+    }
+
     .text :
     {
         . = ALIGN(4);
@@ -26,17 +37,6 @@ SECTIONS
         *(.text*)
         *(.rodata)
         *(.rodata*)
-        . = ALIGN(4);
-    } > RAM
-
-    /*
-     * CubeProgrammer finds the device description by section name, so this must
-     * survive with its name intact. KEEP stops --gc-sections discarding it.
-     */
-    .Dev_Info :
-    {
-        . = ALIGN(4);
-        KEEP(*(.Dev_Info))
         . = ALIGN(4);
     } > RAM
 

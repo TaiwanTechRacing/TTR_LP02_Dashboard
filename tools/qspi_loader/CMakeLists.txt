@@ -33,6 +33,7 @@ add_executable(W25Q64_TTR.stldr
 
     # The loader runs with no startup code, so only the HAL pieces its own
     # setup touches are pulled in.
+    ${REPO_ROOT}/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
     ${REPO_ROOT}/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
     ${REPO_ROOT}/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
     ${REPO_ROOT}/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
@@ -84,4 +85,8 @@ target_link_options(W25Q64_TTR.stldr PRIVATE
     -Wl,--undefined=Verify
 
     -Wl,-Map=${CMAKE_BINARY_DIR}/W25Q64_TTR.map
+)
+
+set_property(TARGET W25Q64_TTR.stldr APPEND PROPERTY
+    LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/loader.ld
 )

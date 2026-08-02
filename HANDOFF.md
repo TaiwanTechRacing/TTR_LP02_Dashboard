@@ -196,33 +196,29 @@ pins.
 
 Working and verified on hardware: display, CAN decode, speed/LV/HV/SOC, stale
 detection (`---` when a signal times out), drive mode, startup sweep, splash
-animation, SOC bar.
+animation, SOC bar, and all three QSPI GIF pages.
 
 Flash 21.75% of 2 MB, RAM_D1 1.4% of 512 KB. Frame rate is capped by the panel
 at 73 Hz; `LV_DEF_REFR_PERIOD` is 16 ms so the practical figure is ~62 fps.
 
+QSPI write/erase/readback and the external loader were verified on hardware on
+2026-08-02. The firmware self-test returned 1; CubeProgrammer 2.20.0 then erased
+sectors 2044-2047, wrote 13.35 KB at `0x907FC000`, and verified the readback.
+The complete 3.64 MB GIF image was subsequently programmed to sectors 0-931
+and verified. Firmware detected the `TTRQ` header, all three entries, and
+created three non-null LVGL GIF objects.
+
 ### Open items
 
-1. **QSPI write path is untested.** Flash the firmware, set
-   `g_qspi_run_write_test = 1` in a debugger watch window, then read
-   `g_qspi_write_test_result` - 1 pass, 0 fail, -1 not yet run. It erases and
-   reprograms the last sector. **Do this before trusting the loader**, which
-   shares the same code through `bsp_qspi.c`.
-2. **The external loader has never run.** Builds clean with all six entry points
-   and a valid `.Dev_Info`, but has not been used against CubeProgrammer.
-3. **Animations render in the simulator but are unconfirmed on the board.** All
-   three decode, animate and land in the right containers when the image is fed
-   through `sim_qspi.c`. What that does not cover is reading them back out of
-   the real flash part.
-4. **The speed readout is clamped to 199 km/h** for layout reasons, so a real
+1. **The speed readout is clamped to 199 km/h** for layout reasons, so a real
    reading above that would show wrong rather than merely wide. The car does
    not go near it. If it ever does, raise `SPEED_DISPLAY_MAX` in `ui_bind.c`
    and re-check the margins in the simulator - `250` fits, but with only 11 px
    before the SOC panel.
-5. **`CAN_RX_IsLinkStale()` is not surfaced.** Per-signal staleness works;
+2. **`CAN_RX_IsLinkStale()` is not surfaced.** Per-signal staleness works;
    whole-bus loss has no dedicated indicator.
-6. **An unused `lv` float variable** sits in the EEZ project bound to nothing.
-7. **`.git` is about 630 MB**, mostly historical artwork and the previously
+3. **An unused `lv` float variable** sits in the EEZ project bound to nothing.
+4. **`.git` is about 630 MB**, mostly historical artwork and the previously
    vendored LVGL. Clone times suffer; not urgent.
 
 ### Deliberately not done

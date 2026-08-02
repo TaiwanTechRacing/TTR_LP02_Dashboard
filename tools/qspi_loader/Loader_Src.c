@@ -53,20 +53,10 @@ void *memcpy(void *dst, const void *src, size_t len)
 /* HAL_RCC_ClockConfig() reconfigures the tick on success. The loader has no
  * tick to reconfigure - HAL_GetTick() below reads the cycle counter directly -
  * so this only has to succeed. */
-uint32_t uwTickPrio = 0;
-
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 {
     (void)TickPriority;
     return HAL_OK;
-}
-
-/* Lives in stm32h7xx_hal.c, which is not linked in. HAL_RCC_OscConfig() uses it
- * to pick PLL workarounds by silicon revision, so it must report the truth
- * rather than a constant. */
-uint32_t HAL_GetREVID(void)
-{
-    return ((DBGMCU->IDCODE) >> 16);
 }
 
 /*
@@ -106,55 +96,6 @@ static void enable_cycle_counter(uint32_t sysclk_hz)
     s_cycles_per_ms = sysclk_hz / 1000u;
 }
 
-/*
- * Same PLL configuration as the firmware: 25 MHz HSE, VCO 960 MHz, SYSCLK
- * 480 MHz, HCLK 240 MHz. The QSPI timings in bsp_qspi.c are derived from
- * HCLK3, so running the loader at a different clock would silently change them.
- */
-static int clock_config(void)
-{
-    RCC_OscInitTypeDef osc = {0};
-    RCC_ClkInitTypeDef clk = {0};
-
-    HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
-    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
-    while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
-        /* wait */
-    }
-
-    osc.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    osc.HSEState = RCC_HSE_ON;
-    osc.PLL.PLLState = RCC_PLL_ON;
-    osc.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-    osc.PLL.PLLM = 5;
-    osc.PLL.PLLN = 192;
-    osc.PLL.PLLP = 2;
-    osc.PLL.PLLQ = 2;
-    osc.PLL.PLLR = 2;
-    osc.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
-    osc.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
-    osc.PLL.PLLFRACN = 0;
-    if (HAL_RCC_OscConfig(&osc) != HAL_OK) {
-        return 0;
-    }
-
-    clk.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-                  | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2
-                  | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1;
-    clk.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-    clk.SYSCLKDivider = RCC_SYSCLK_DIV1;
-    clk.AHBCLKDivider = RCC_HCLK_DIV2;
-    clk.APB3CLKDivider = RCC_APB3_DIV2;
-    clk.APB1CLKDivider = RCC_APB1_DIV2;
-    clk.APB2CLKDivider = RCC_APB2_DIV2;
-    clk.APB4CLKDivider = RCC_APB4_DIV2;
-    if (HAL_RCC_ClockConfig(&clk, FLASH_LATENCY_4) != HAL_OK) {
-        return 0;
-    }
-
-    return 1;
-}
-
 /**
  * Called once before anything else. Must leave the part readable at
  * 0x90000000, because CubeProgrammer verifies by reading through the mapping.
@@ -168,14 +109,18 @@ int Init(void)
      * reproducing that logic: the loader is the only thing running.
      */
     HAL_MPU_Disable();
-    SCB_DisableDCache();
-    SCB_DisableICache();
+    /* CubeProgrammer holds the part in reset before loading this image, so the
+     * caches are already disabled. CMSIS' set/way cache-maintenance routine
+     * is unsafe here because no Reset_Handler/SystemInit cache setup ran. */
 
-    if (!clock_config()) {
+    /* CubeProgrammer enters Init directly; unlike normal firmware startup,
+     * neither Reset_Handler nor main() has called HAL_Init(). Give it a
+     * working polling timebase at the reset-clock rate. The loader stays on
+     * the 64 MHz HSI, making the fixed QSPI divider a conservative 16 MHz. */
+    enable_cycle_counter(64000000u);
+    if (HAL_Init() != HAL_OK) {
         return 0;
     }
-
-    enable_cycle_counter(480000000u);
 
     BSP_QSPI_Init();
 
