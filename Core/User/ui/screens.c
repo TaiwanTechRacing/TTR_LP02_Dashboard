@@ -2215,6 +2215,27 @@ void tick_screen_game1() {
     }
 }
 
+void create_screen_game2() {
+    lv_obj_t *obj = lv_obj_create(0);
+    objects.game2 = obj;
+    lv_obj_set_pos(obj, 0, 0);
+    lv_obj_set_size(obj, 480, 272);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    {
+        lv_obj_t *parent_obj = obj;
+        {
+            lv_obj_t *obj = lv_canvas_create(parent_obj);
+            lv_obj_set_pos(obj, 0, 0);
+            lv_obj_set_size(obj, 480, 272);
+        }
+    }
+    
+    tick_screen_game2();
+}
+
+void tick_screen_game2() {
+}
+
 typedef void (*tick_screen_func_t)();
 tick_screen_func_t tick_screen_funcs[] = {
     tick_screen_welcome,
@@ -2228,9 +2249,10 @@ tick_screen_func_t tick_screen_funcs[] = {
     tick_screen_debug2,
     tick_screen_debug3,
     tick_screen_game1,
+    tick_screen_game2,
 };
 void tick_screen(int screen_index) {
-    if (screen_index >= 0 && screen_index < 11) {
+    if (screen_index >= 0 && screen_index < 12) {
         tick_screen_funcs[screen_index]();
     }
 }
@@ -2343,4 +2365,5 @@ void create_screens() {
     create_screen_debug2();
     create_screen_debug3();
     create_screen_game1();
+    create_screen_game2();
 }

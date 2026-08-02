@@ -22,7 +22,8 @@ enum ScreensEnum {
     SCREEN_ID_DEBUG2 = 9,
     SCREEN_ID_DEBUG3 = 10,
     SCREEN_ID_GAME1 = 11,
-    _SCREEN_ID_LAST = 11
+    SCREEN_ID_GAME2 = 12,
+    _SCREEN_ID_LAST = 12
 };
 
 typedef struct _objects_t {
@@ -37,6 +38,7 @@ typedef struct _objects_t {
     lv_obj_t *debug2;
     lv_obj_t *debug3;
     lv_obj_t *game1;
+    lv_obj_t *game2;
     lv_obj_t *km_label_1;
     lv_obj_t *ready_label_1;
     lv_obj_t *obj0;
@@ -165,6 +167,9 @@ void tick_screen_debug3();
 
 void create_screen_game1();
 void tick_screen_game1();
+
+void create_screen_game2();
+void tick_screen_game2();
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);
