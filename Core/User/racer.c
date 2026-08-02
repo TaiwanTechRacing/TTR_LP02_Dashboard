@@ -115,8 +115,15 @@ static const char CONE_ART[] =
 #define CONE_BAND   0xFFFFu
 #define CONE_BASE   0x2124u
 
-/* How far out the boundary cones sit, in road half-widths, and how often. */
-#define BOUNDARY_X       1.15f
+/*
+ * How far out the boundary cones sit, in road half-widths, and how often.
+ *
+ * Just inside the asphalt, not out on the grass. A Formula Student course is
+ * cones laid on a pad - the cones are the edge, the asphalt carries on past
+ * them. Standing them off in the grass made the asphalt look like a road with
+ * a verge, which is a different thing entirely.
+ */
+#define BOUNDARY_X       0.90f
 #define BOUNDARY_EVERY   3
 
 /*
