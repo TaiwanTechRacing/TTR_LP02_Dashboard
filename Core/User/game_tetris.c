@@ -18,24 +18,33 @@
 #define BOARD_H 20
 
 /*
- * Canvas geometry, from the EEZ layout.
+ * Canvas geometry.
  *
- * The playfield canvas is 186x251, which is not a 10x20 shape. Rather than
- * stretch the cells, the largest square cell that fits both axes is used and
- * the grid is centred - min(186/10, 251/20) is 12. The leftover margin is the
- * price of square blocks, which matters more here than filling the box.
+ * These derive the canvas size from the board rather than fitting the board
+ * into whatever size the canvas happens to be, so there is no leftover margin
+ * and no rounding. The EEZ canvases must be set to match:
+ *
+ *     tetris_game_canva   120 x 240
+ *     next_block           80 x  40
+ *
+ * 12 px is the largest square cell this panel allows - 20 rows at 13 px is 260,
+ * which leaves no room above or below on a 272 px screen.
+ *
+ * Every piece is 4 cells wide and 2 tall in its spawn rotation, which is why
+ * the preview is 4x2 rather than 4x4.
  */
-#define PLAY_W 186
-#define PLAY_H 251
-#define CELL   12
-#define PLAY_X ((PLAY_W - (BOARD_W * CELL)) / 2)
-#define PLAY_Y ((PLAY_H - (BOARD_H * CELL)) / 2)
+#define CELL      12
+#define NEXT_CELL 20
 
-#define NEXT_W 116
-#define NEXT_H 77
-#define NEXT_CELL 14
-#define NEXT_X ((NEXT_W - (4 * NEXT_CELL)) / 2)
-#define NEXT_Y ((NEXT_H - (4 * NEXT_CELL)) / 2)
+#define PLAY_W (BOARD_W * CELL)
+#define PLAY_H (BOARD_H * CELL)
+#define PLAY_X 0
+#define PLAY_Y 0
+
+#define NEXT_W (4 * NEXT_CELL)
+#define NEXT_H (2 * NEXT_CELL)
+#define NEXT_X 0
+#define NEXT_Y 0
 
 /*
  * Canvas buffers. RGB565 to match the panel, so LVGL blits them without
@@ -81,8 +90,17 @@ static const uint16_t COLOURS[8] = {
 
 #define DROP_START_MS 600u
 #define DROP_MIN_MS   120u
-#define REPEAT_DELAY_MS  260u   /* before a held button starts repeating */
-#define REPEAT_RATE_MS    90u
+/*
+ * Short press moves, long press rotates.
+ *
+ * A move therefore lands on release, not on press. That is the cost of telling
+ * the two apart with one button each, and a tap is short enough that it does
+ * not read as lag. Rotation fires the moment the hold crosses the threshold,
+ * so it feels immediate, and repeats while held so a piece can be spun round
+ * without letting go.
+ */
+#define LONG_PRESS_MS    350u
+#define ROTATE_REPEAT_MS 400u
 #define GAMEOVER_HOLD_MS 2500u
 
 static uint8_t s_board[BOARD_H][BOARD_W];
@@ -98,9 +116,14 @@ static bool     s_dirty;
 static uint32_t s_last_drop;
 static uint32_t s_over_since;
 
-static bool     s_b1_prev, s_b2_prev;
-static uint32_t s_b1_since, s_b2_since;
-static uint32_t s_b1_next_repeat, s_b2_next_repeat;
+typedef struct {
+    bool     prev;
+    uint32_t since;         /* tick the press began */
+    bool     rotated;       /* the hold has already turned into a rotate */
+    uint32_t next_rotate;
+} button_t;
+
+static button_t s_btn[2];   /* 0 = left, 1 = right */
 
 static uint32_t s_rng = 0x12345678u;
 static char     s_score_text[12];
@@ -154,6 +177,20 @@ static int leftmost_x(uint8_t piece, uint8_t rot)
         for (int r = 0; r < 4; r++) {
             if (cell_filled(piece, rot, r, c)) {
                 return -c;   /* shift so this column lands on 0 */
+            }
+        }
+    }
+
+    return 0;
+}
+
+/** Rightmost column the piece can sit at, used when wrapping the other way. */
+static int rightmost_x(uint8_t piece, uint8_t rot)
+{
+    for (int c = 3; c >= 0; c--) {
+        for (int r = 0; r < 4; r++) {
+            if (cell_filled(piece, rot, r, c)) {
+                return (BOARD_W - 1) - c;
             }
         }
     }
@@ -263,37 +300,44 @@ static void lock_piece(void)
 
 /* --- input ---------------------------------------------------------------- */
 
-static void step_right(void)
+/**
+ * Move one column, wrapping around the edge it runs off.
+ *
+ * @param dir  -1 for left, +1 for right
+ *
+ * The wrap survives from when one button had to reach every column. It is no
+ * longer necessary now that both directions exist, but sliding off one edge and
+ * back on the other is a nicer way to cross a crowded board than reversing.
+ * Only a wall wraps; a stack in the way stops the piece.
+ */
+static void step(int dir)
 {
     if (s_over) {
         return;
     }
 
-    if (fits(s_piece, s_rot, s_px + 1, s_py)) {
-        s_px++;
+    if (fits(s_piece, s_rot, s_px + dir, s_py)) {
+        s_px = (int8_t)(s_px + dir);
         s_dirty = true;
         return;
     }
 
-    /*
-     * Blocked. If it was the wall rather than a stack, come back on the far
-     * side - that wrap is the whole reason one button is enough to reach every
-     * column. If a stack is in the way at the far side too, nothing moves.
-     */
-    const int wrapped = leftmost_x(s_piece, s_rot);
+    const int wrapped = (dir > 0) ? leftmost_x(s_piece, s_rot)
+                                  : rightmost_x(s_piece, s_rot);
+
     if (wrapped != s_px && fits(s_piece, s_rot, wrapped, s_py)) {
         s_px = (int8_t)wrapped;
         s_dirty = true;
     }
 }
 
-static void rotate_cw(void)
+static void rotate(int dir)
 {
     if (s_over) {
         return;
     }
 
-    const uint8_t next_rot = (uint8_t)((s_rot + 1u) & 3u);
+    const uint8_t next_rot = (uint8_t)((s_rot + (dir > 0 ? 1u : 3u)) & 3u);
 
     /*
      * Kick sideways if rotating in place does not fit. Without this a piece
@@ -312,28 +356,37 @@ static void rotate_cw(void)
     }
 }
 
-/** Edge detect plus auto-repeat for one button. */
-static bool pressed_edge(bool now_pressed, bool *prev, uint32_t *since,
-                         uint32_t *next_repeat, uint32_t now)
+/**
+ * One button: a tap moves on release, a hold rotates and keeps rotating.
+ *
+ * @param dir  -1 for the left button, +1 for the right one
+ */
+static void handle_button(button_t *b, bool now_pressed, int dir, uint32_t now)
 {
-    if (!now_pressed) {
-        *prev = false;
-        return false;
+    if (now_pressed) {
+        if (!b->prev) {
+            b->prev = true;
+            b->since = now;
+            b->rotated = false;
+            b->next_rotate = now + LONG_PRESS_MS;
+            return;                     /* wait and see which it becomes */
+        }
+
+        if (now >= b->next_rotate) {
+            b->rotated = true;          /* no move when this is released */
+            b->next_rotate = now + ROTATE_REPEAT_MS;
+            rotate(dir);
+        }
+
+        return;
     }
 
-    if (!*prev) {
-        *prev = true;
-        *since = now;
-        *next_repeat = now + REPEAT_DELAY_MS;
-        return true;        /* the press itself */
+    if (b->prev) {
+        b->prev = false;
+        if (!b->rotated) {
+            step(dir);                  /* it was a tap after all */
+        }
     }
-
-    if (now >= *next_repeat) {
-        *next_repeat = now + REPEAT_RATE_MS;
-        return true;        /* held long enough to repeat */
-    }
-
-    return false;
 }
 
 void GameTetris_Buttons(bool button1_pressed, bool button2_pressed)
@@ -355,15 +408,8 @@ void GameTetris_Buttons(bool button1_pressed, bool button2_pressed)
         return;
     }
 
-    if (pressed_edge(button2_pressed, &s_b2_prev, &s_b2_since,
-                     &s_b2_next_repeat, now)) {
-        step_right();
-    }
-
-    if (pressed_edge(button1_pressed, &s_b1_prev, &s_b1_since,
-                     &s_b1_next_repeat, now)) {
-        rotate_cw();
-    }
+    handle_button(&s_btn[0], button1_pressed, -1, now);
+    handle_button(&s_btn[1], button2_pressed, +1, now);
 }
 
 /* --- drawing -------------------------------------------------------------- */
@@ -456,7 +502,7 @@ static void draw_next(void)
         s_next_buf[i] = BG_COLOUR;
     }
 
-    for (int r = 0; r < 4; r++) {
+    for (int r = 0; r < 2; r++) {
         for (int c = 0; c < 4; c++) {
             if (!cell_filled(s_next_piece, 0, r, c)) {
                 continue;

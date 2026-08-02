@@ -10,13 +10,12 @@
  *
  *  Controls, given two buttons:
  *
- *      button 2 (right)  move one column right, wrapping off the right edge
- *                        back to the left
- *      button 1 (left)   rotate clockwise
- *      both, held 1 s    leave the page
+ *      tap left / right     move one column that way, wrapping off the edge
+ *      hold left / right    rotate that way, repeating while held
+ *      both, held 2 s       leave the page
  *
- *  One movement direction is enough to reach any column because the piece
- *  wraps, which is what makes a two-button layout playable at all.
+ *  Telling a tap from a hold is what gets four actions out of two buttons. The
+ *  cost is that a move lands on release rather than on press.
  */
 
 #ifndef GAME_TETRIS_H
