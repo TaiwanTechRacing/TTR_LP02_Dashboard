@@ -14,6 +14,8 @@
  *      hold left / right    rotate that way, repeating while held
  *      both, held 2 s       leave the page
  *
+ *  Getting in is in nav.c: both buttons for three seconds, then two right taps.
+ *
  *  Or with the car's own controls, if the throttle is past half when the page
  *  opens - "STEER" then shows in the corner:
  *

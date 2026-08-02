@@ -17,12 +17,17 @@ rem  closed first.
 set "SIMDIR=%~dp0"
 set "BUILD=%SIMDIR%build"
 
-tasklist /fi "imagename eq dashboard_sim.exe" 2>nul | find /i "dashboard_sim.exe" >nul
+rem  taskkill returns 0 when it killed something and 128 when there was nothing
+rem  to kill, which is all the detection needed - no tasklist, no find.
+rem
+rem  Full paths on purpose. Run from Git Bash, a bare "find" resolves to Git's
+rem  Unix find rather than the Windows one, and the check this replaced silently
+rem  did nothing.
+"%SystemRoot%\System32\taskkill.exe" /im dashboard_sim.exe /f >nul 2>&1
 if not errorlevel 1 (
-    echo Closing the running simulator so its executable can be replaced.
-    taskkill /im dashboard_sim.exe /f >nul 2>&1
+    echo Closed the running simulator so its executable can be replaced.
     rem Windows releases the file handle a moment after the process goes.
-    ping -n 2 127.0.0.1 >nul
+    "%SystemRoot%\System32\ping.exe" -n 2 127.0.0.1 >nul
 )
 
 if not exist "%BUILD%\CMakeCache.txt" (

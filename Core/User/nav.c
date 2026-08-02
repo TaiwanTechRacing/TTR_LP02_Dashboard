@@ -16,24 +16,23 @@
 #define NAV_GAME_EXIT_SCANS    400U  /* both held 2 s leaves the game */
 
 /*
- * Getting into the game: right, right, left, then left held down.
+ * Getting into the game: hold both buttons for three seconds, let go, then tap
+ * the right button twice.
  *
- * Each step has to follow the one before it within NAV_EGG_STEP_SCANS, so it is
- * a deliberate rhythm rather than something four ordinary page changes could
- * stumble into. The hold on the end is what makes it safe: three taps happen by
- * accident, three taps followed by a deliberate press-and-wait do not.
+ * The hold does the work of keeping it hidden - nothing else on this dashboard
+ * asks for three seconds - and the two taps afterwards mean an accidental long
+ * squeeze cannot land on the game on its own.
  *
- * The page still steps on every one of those presses - swallowing them would
- * make ordinary paging feel laggy - so it looks like flicking forward twice and
- * back twice, and then the game appears. That is the whole trick, and it is why
- * the game sits outside the page cycle: paging into it by accident would spoil
- * it.
+ * Holding both also passes the one second mark that toggles the FPS overlay, so
+ * the overlay flips on at one second and back off at three. That blink is left
+ * in deliberately: it is the only feedback the arming gesture has, and it ends
+ * with the overlay where it started.
  *
  * Counted in scans rather than milliseconds so nav.c stays free of the HAL, the
  * same way its debounce does.
  */
-#define NAV_EGG_STEP_SCANS     180U  /* 900 ms between steps of the sequence */
-#define NAV_EGG_HOLD_SCANS     140U  /* 700 ms on the final press */
+#define NAV_EGG_ARM_SCANS      600U  /* 3 s on both buttons arms it */
+#define NAV_EGG_WINDOW_SCANS   600U  /* 3 s to then get both taps in */
 
 /*
  * Page order. Index 0 is the splash screen shown at boot and is excluded from
@@ -125,38 +124,24 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
     static uint32_t scan_tick = 0;
 
     /*
-     * How much of "right, right, left, left-held" has been seen so far, and
-     * when the last accepted step happened.
+     * Armed by the three second hold, then waiting for two right taps. Zero
+     * means not armed; otherwise it is the scan the window closes on.
      */
-    static uint8_t  egg_stage = 0;
-    static uint32_t egg_last = 0;
+    static uint32_t egg_expires = 0;
+    static uint8_t  egg_taps = 0;
     static bool     egg_wants_release = false;
-    static uint32_t egg_hold = 0;
 
     scan_tick++;
 
-    /* The final step is a hold, so this counts for as long as the left button
-     * stays down rather than firing once like the page steps below. */
-    if (egg_stage >= 3u && button1_pressed && !egg_wants_release) {
-        egg_hold++;
-        if (egg_hold >= NAV_EGG_HOLD_SCANS) {
-            egg_stage = 0;
-            egg_hold = 0;
-            Nav_ShowPage(NAV_GAME_PAGE);
-            return;
-        }
-    }
-    else {
-        egg_hold = 0;
-    }
-
-    if (!button1_pressed) {
+    /* The arming hold is itself two buttons down, so the taps only start
+     * counting once they have both come back up. */
+    if (!button1_pressed && !button2_pressed) {
         egg_wants_release = false;
     }
 
-    /* A gap anywhere in the sequence abandons it. */
-    if (egg_stage != 0u && (scan_tick - egg_last) > NAV_EGG_STEP_SCANS) {
-        egg_stage = 0;
+    if (egg_expires != 0u && scan_tick > egg_expires) {
+        egg_expires = 0;
+        egg_taps = 0;
     }
 
     /*
@@ -168,7 +153,7 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
     static uint16_t both_counter = 0;
 
     if (button1_pressed && button2_pressed) {
-        if (both_counter < NAV_GAME_EXIT_SCANS) {
+        if (both_counter < NAV_EGG_ARM_SCANS) {
             both_counter++;
         }
 
@@ -180,10 +165,21 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
         if (GameTetris_IsActive()) {
             if (both_counter == NAV_GAME_EXIT_SCANS) {
                 Nav_ShowPage(NAV_MIN_PAGE);
+                /* Past every threshold, so nothing else fires on the way back
+                 * up while the buttons are still down. */
+                both_counter = NAV_EGG_ARM_SCANS;
             }
         }
         else if (both_counter == NAV_DEBUG_TOGGLE_SCANS) {
             DebugOverlay_Toggle();   /* fire only on the sample that crosses the threshold */
+        }
+        else if (both_counter == NAV_EGG_ARM_SCANS) {
+            /* Put the overlay back where it was before this hold started, and
+             * arm the game. */
+            DebugOverlay_Toggle();
+            egg_expires = scan_tick + NAV_EGG_WINDOW_SCANS;
+            egg_taps = 0;
+            egg_wants_release = true;
         }
 
         return;
@@ -215,25 +211,22 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
             continue;                 /* still debouncing */
         }
 
-        /*
-         * Advance the sequence on this press, or start it over. A right press
-         * always starts a new attempt, so a mistimed run can be retried without
-         * waiting for the window to lapse.
-         */
-        if (i == 1u) {
-            egg_stage = (egg_stage == 1u) ? 2u : 1u;
+        if (egg_expires != 0u && !egg_wants_release) {
+            if (i == 1u) {
+                egg_taps++;
+                if (egg_taps >= 2u) {
+                    egg_expires = 0;
+                    egg_taps = 0;
+                    Nav_ShowPage(NAV_GAME_PAGE);
+                    return;
+                }
+            }
+            else {
+                /* A left press is not part of it and gives up the window. */
+                egg_expires = 0;
+                egg_taps = 0;
+            }
         }
-        else if (egg_stage == 2u) {
-            egg_stage = 3u;
-            /* The press that got here is still down. The hold has to be the
-             * next one, so wait for this button to come up first. */
-            egg_wants_release = true;
-        }
-        else if (egg_stage < 3u) {
-            egg_stage = 0;
-        }
-
-        egg_last = scan_tick;
 
         int8_t next = (int8_t)s_page + buttons[i].step;
         if (next < (int8_t)NAV_MIN_PAGE) next = (int8_t)NAV_MAX_PAGE;
