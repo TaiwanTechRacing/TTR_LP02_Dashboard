@@ -52,16 +52,26 @@ they do in the car - a tap shorter than 25 ms is ignored here too.
 ## Animations
 
 The GIFs live on the QSPI flash, so the simulator needs the same image the
-board is programmed with:
+board is programmed with. It looks for one automatically, in order:
+
+1. `$env:TTR_QSPI_IMAGE`, if set
+2. `qspi.bin` in the working directory
+3. `qspi.bin` at the repository root
+4. `dashboard_layout\gif\qspi.bin`
+
+so normally there is nothing to configure:
 
 ```powershell
 python tools\make_qspi_image.py dashboard_layout\gif\optimized -o qspi.bin
-$env:TTR_QSPI_IMAGE = "qspi.bin"
 sim\build\dashboard_sim.exe
 ```
 
-Without it the simulator behaves like an unprogrammed part, which is also worth
-checking - the firmware is required to boot that way.
+It prints which file it loaded, and if it finds none it says where it looked.
+Without an image the simulator behaves like an unprogrammed part, which is also
+worth checking - the firmware is required to boot that way.
+
+**The animations are on the debug pages**, so press the right arrow to reach
+them. Starting on main and seeing no animation is the expected view.
 
 `gif_pages.c` reaches the flash through `BSP_QSPI_GetMappedBase()`, which
 `sim_qspi.c` answers with the loaded file. That indirection is the only change

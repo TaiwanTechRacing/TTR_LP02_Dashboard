@@ -20,6 +20,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(REPO_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
+get_filename_component(REPO_ROOT_ABS ${REPO_ROOT} ABSOLUTE)
 
 file(GLOB_RECURSE LVGL_SOURCES CONFIGURE_DEPENDS
     ${REPO_ROOT}/Drivers/lvgl/src/*.c
@@ -75,6 +76,11 @@ target_compile_definitions(${target} PRIVATE
     LV_CONF_INCLUDE_SIMPLE
     LV_LVGL_H_INCLUDE_SIMPLE
     LV_SIMULATOR
+
+    # So sim_qspi.c can find the GIF image from any working directory. Looking
+    # only in the current one made a missing file indistinguishable from a
+    # blank flash part.
+    SIM_REPO_ROOT="${REPO_ROOT_ABS}"
 
     # LVGL's Win32 backend uses the touch API (TOUCHINPUT, TOUCHEVENTF_*) and
     # per-monitor DPI messages (WM_DPICHANGED). The MinGW headers gate those
