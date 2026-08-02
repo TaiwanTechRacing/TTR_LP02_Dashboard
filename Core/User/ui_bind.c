@@ -72,9 +72,26 @@ static char s_soc_buf[12];
 static char s_lv_buf[16];
 static char s_hv_buf[16];
 
+/*
+ * Speed is padded to three digits: 008, 090, 150.
+ *
+ * Without it the readout changes width as it crosses 9 to 10 and 99 to 100,
+ * and since the label is centred the whole number shifts sideways at those
+ * points. Padding removes the two largest jumps, which are worth the odd look
+ * of a leading zero at walking pace.
+ *
+ * It does not make the width constant. Orbiter's digits are not tabular - "1"
+ * is 63 px against 133 px for the rest at this size - so "111" and "888" still
+ * differ by about 210 px. Fixing that properly means a font with equal advance
+ * widths, not a format string.
+ *
+ * Three digits is also what STALE_TEXT is, so nothing moves when a signal
+ * times out.
+ */
+#define SPEED_FORMAT "%03u"
+
 /**
- * Vehicle speed. Integer, no leading zeros - padding wastes horizontal space
- * at the large font size used on the main screen.
+ * Vehicle speed, padded to three digits. See SPEED_FORMAT above.
  */
 const char *get_var_speed(void)
 {
@@ -101,7 +118,7 @@ const char *get_var_speed(void)
             const uint32_t half = SWEEP_DURATION_MS / 2u;
             const uint32_t phase = (elapsed < half) ? elapsed
                                                     : (SWEEP_DURATION_MS - elapsed);
-            snprintf(s_speed_buf, sizeof(s_speed_buf), "%u",
+            snprintf(s_speed_buf, sizeof(s_speed_buf), SPEED_FORMAT,
                      (unsigned)((phase * SWEEP_PEAK_KPH) / half));
             return s_speed_buf;
         }
@@ -111,7 +128,8 @@ const char *get_var_speed(void)
         return STALE_TEXT;
     }
 
-    snprintf(s_speed_buf, sizeof(s_speed_buf), "%u", (unsigned)g_vehicle.car_speed_kph);
+    snprintf(s_speed_buf, sizeof(s_speed_buf), SPEED_FORMAT,
+             (unsigned)g_vehicle.car_speed_kph);
     return s_speed_buf;
 }
 
