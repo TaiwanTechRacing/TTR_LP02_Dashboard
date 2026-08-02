@@ -13,7 +13,7 @@ enum ScreensEnum {
     _SCREEN_ID_FIRST = 1,
     SCREEN_ID_WELCOME = 1,
     SCREEN_ID_MAIN = 2,
-    SCREEN_ID_SYSTEM = 3,
+    SCREEN_ID_SYSTEM_SDC = 3,
     SCREEN_ID_BATTERY = 4,
     SCREEN_ID_INVERTER = 5,
     SCREEN_ID_DEBUG1 = 6,
@@ -25,7 +25,7 @@ enum ScreensEnum {
 typedef struct _objects_t {
     lv_obj_t *welcome;
     lv_obj_t *main;
-    lv_obj_t *system;
+    lv_obj_t *system_sdc;
     lv_obj_t *battery;
     lv_obj_t *inverter;
     lv_obj_t *debug1;
@@ -45,6 +45,36 @@ typedef struct _objects_t {
     lv_obj_t *mode_label;
     lv_obj_t *obj3;
     lv_obj_t *ready_label;
+    lv_obj_t *obj4;
+    lv_obj_t *imd_bar;
+    lv_obj_t *obj5;
+    lv_obj_t *pdoc_bar;
+    lv_obj_t *obj6;
+    lv_obj_t *soc_bar_3;
+    lv_obj_t *obj7;
+    lv_obj_t *soc_bar_4;
+    lv_obj_t *obj8;
+    lv_obj_t *soc_bar_5;
+    lv_obj_t *obj9;
+    lv_obj_t *ams_bar;
+    lv_obj_t *obj10;
+    lv_obj_t *soc_bar_7;
+    lv_obj_t *obj11;
+    lv_obj_t *soc_bar_8;
+    lv_obj_t *obj12;
+    lv_obj_t *soc_bar_9;
+    lv_obj_t *obj13;
+    lv_obj_t *soc_bar_10;
+    lv_obj_t *obj14;
+    lv_obj_t *bspd_bar;
+    lv_obj_t *obj15;
+    lv_obj_t *soc_bar_12;
+    lv_obj_t *obj16;
+    lv_obj_t *soc_bar_13;
+    lv_obj_t *obj17;
+    lv_obj_t *soc_bar_14;
+    lv_obj_t *obj18;
+    lv_obj_t *soc_bar_15;
     lv_obj_t *gif;
     lv_obj_t *gif_1;
     lv_obj_t *gif_2;
@@ -58,8 +88,8 @@ void tick_screen_welcome();
 void create_screen_main();
 void tick_screen_main();
 
-void create_screen_system();
-void tick_screen_system();
+void create_screen_system_sdc();
+void tick_screen_system_sdc();
 
 void create_screen_battery();
 void tick_screen_battery();

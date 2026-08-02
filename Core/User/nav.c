@@ -22,7 +22,7 @@
 static const enum ScreensEnum s_screens[] = {
     SCREEN_ID_WELCOME,   /* 0  splash, boot only */
     SCREEN_ID_MAIN,      /* 1 */
-    SCREEN_ID_SYSTEM,    /* 2 */
+    SCREEN_ID_SYSTEM_SDC, /* 2 */
     SCREEN_ID_BATTERY,   /* 3 */
     SCREEN_ID_INVERTER,  /* 4 */
     SCREEN_ID_DEBUG1,    /* 5 */

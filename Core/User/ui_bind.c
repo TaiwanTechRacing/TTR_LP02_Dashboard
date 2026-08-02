@@ -268,6 +268,47 @@ const char *get_var_mode(void)
     }
 }
 
+/*
+ * Shutdown circuit nodes on the SYSTEM-SDC page.
+ *
+ * One getter per node, each driving a 0..1 bar: full means the node is closed,
+ * empty means it has opened and is breaking the circuit.
+ *
+ * A stale VCU reads as open rather than closed. Both are wrong when there is no
+ * data, but only one of them is wrong in the direction that matters: showing a
+ * closed circuit for a car whose VCU has gone quiet invites someone to treat it
+ * as safe.
+ *
+ * TSMS is deliberately not on this page, so it has no getter here.
+ */
+static int32_t sdc_node(vd_sdc_node_t node)
+{
+    if (VehicleData_IsStale(VD_GROUP_VCU_SDC, VD_DEFAULT_TIMEOUT_MS)) {
+        return 0;
+    }
+
+    return VehicleData_SdcNode(node) ? 1 : 0;
+}
+
+#define SDC_GETTER(suffix, node) \
+    int32_t get_var_sdc_##suffix(void) { return sdc_node(node); }
+
+SDC_GETTER(imd,    VD_SDC_IMD)
+SDC_GETTER(ams,    VD_SDC_AMS)
+SDC_GETTER(bspd,   VD_SDC_BSPD)
+SDC_GETTER(pdoc,   VD_SDC_PDOC)
+SDC_GETTER(csb,    VD_SDC_CSB)
+SDC_GETTER(lsb,    VD_SDC_LSB)
+SDC_GETTER(rsb,    VD_SDC_RSB)
+SDC_GETTER(inrt,   VD_SDC_INRT)
+SDC_GETTER(bots,   VD_SDC_BOTS)
+SDC_GETTER(mcu_il, VD_SDC_MCU_IL)
+SDC_GETTER(m1_il,  VD_SDC_M1_IL)
+SDC_GETTER(m2_il,  VD_SDC_M2_IL)
+SDC_GETTER(m3_il,  VD_SDC_M3_IL)
+SDC_GETTER(m4_il,  VD_SDC_M4_IL)
+SDC_GETTER(msd,    VD_SDC_MSD)
+
 /**
  * Value driving the SOC bar, 0..100 percent.
  *
