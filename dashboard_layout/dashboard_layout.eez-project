@@ -7623,7 +7623,7 @@
               },
               "group": "",
               "groupIndex": 0,
-              "text": "mode",
+              "text": "game_mode_text",
               "textType": "expression",
               "longMode": "WRAP",
               "recolor": true,

@@ -2046,7 +2046,7 @@ void tick_screen_game1() {
         }
     }
     {
-        const char *new_val = get_var_mode();
+        const char *new_val = get_var_game_mode_text();
         const char *cur_val = lv_label_get_text(objects.mode_label_1);
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.mode_label_1;
