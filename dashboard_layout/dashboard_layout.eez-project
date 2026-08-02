@@ -662,10 +662,10 @@
             {
               "objID": "2634f508-231b-45ac-f78b-5164e56fdfe3",
               "type": "LVGLLabelWidget",
-              "left": -34,
+              "left": -33,
               "top": -55,
-              "width": 399,
-              "height": 116,
+              "width": 368,
+              "height": 131,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -695,7 +695,7 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "ORBITER_BOLD_160",
+                      "text_font": "ORBITER_BOLD_180",
                       "text_align": "CENTER",
                       "bg_color": "#ffffff",
                       "text_color": "#ffffff",
@@ -709,7 +709,7 @@
               "textType": "expression",
               "longMode": "WRAP",
               "recolor": false,
-              "previewValue": "250"
+              "previewValue": "199"
             },
             {
               "objID": "2cc6582e-f2d1-4821-9638-c3e28488b937",
@@ -2072,18 +2072,18 @@
       "embeddedFontFileIndex": 0
     },
     {
-      "objID": "c4263b77-8d96-496c-8fc7-fb5113ab82d6",
-      "name": "ORBITER_BOLD_160",
+      "objID": "0edd73ff-e8ef-4534-ad4c-cacce3d53bb3",
+      "name": "ORBITER_BOLD_180",
       "renderingEngine": "LVGL",
       "source": {
-        "objID": "c6f98f28-3b22-46c0-9137-b906f1d932d1",
+        "objID": "c39fa41d-f518-453b-ddf6-4d10493a726c",
         "filePath": "fonts\\Orbitron\\static\\Orbitron-Bold.ttf",
-        "size": 160
+        "size": 180
       },
-      "bpp": 8,
+      "bpp": 4,
       "threshold": 128,
-      "height": 116,
-      "ascent": 115,
+      "height": 131,
+      "ascent": 130,
       "descent": 1,
       "glyphs": [],
       "lvglRanges": "45-57",
