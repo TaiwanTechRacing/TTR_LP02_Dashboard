@@ -353,8 +353,8 @@ static void trapezoid(int ytop, float xtop, float wtop,
  */
 static void draw_cone(int base_y, int cx, int height, int clip_y, uint16_t body)
 {
-    if (height < 2) {
-        return;     /* far enough away to be a smudge; not worth the rows */
+    if (height < 1) {
+        return;
     }
 
     const int width = (height * CONE_W) / CONE_ROWS;
@@ -531,10 +531,19 @@ static void render(void)
      */
     for (int i = s_proj_count - 1; i >= 0; i--) {
         const projected_t *p = &s_proj[i];
-        if (!p->drawn) {
-            continue;
-        }
 
+        /*
+         * Deliberately not gated on whether this segment's road was drawn.
+         *
+         * Far away, consecutive segments project onto the same screen row, so
+         * the road skips them - and hanging the cones off that made them blink
+         * on and off as rounding flipped the comparison a pixel either way. A
+         * cone's visibility has nothing to do with whether the strip of
+         * asphalt under it happened to be a pixel tall.
+         *
+         * What hides a cone behind a crest is the clip line, which is recorded
+         * for every segment whether its road was drawn or not.
+         */
         const segment_t *seg = &s_road[p->index];
 
         /* Boundary cones: blue on the left, yellow on the right, the way a
