@@ -475,14 +475,20 @@ static bool read_controls(int *steer_deg, int *throttle, int *brake)
     return true;
 }
 
-/** Steering, turned into a direction once it is clearly off centre. */
+/**
+ * Steering, turned into a direction once it is clearly off centre.
+ *
+ * The sign is inverted because a positive STEERING_ANGLE is anticlockwise -
+ * that is, turning left. can_decode.c says the same thing where it flips the
+ * angle for the arc on the sensor page.
+ */
 static int steer_direction(int steer_deg)
 {
     if (steer_deg > STEER_DEADZONE_DEG) {
-        return +1;
+        return -1;      /* wheel left */
     }
     if (steer_deg < -STEER_DEADZONE_DEG) {
-        return -1;
+        return +1;      /* wheel right */
     }
     return 0;
 }
