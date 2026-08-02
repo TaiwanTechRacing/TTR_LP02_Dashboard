@@ -23,11 +23,12 @@ static const enum ScreensEnum s_screens[] = {
     SCREEN_ID_WELCOME,   /* 0  splash, boot only */
     SCREEN_ID_MAIN,      /* 1 */
     SCREEN_ID_SYSTEM_SDC, /* 2 */
-    SCREEN_ID_BATTERY,   /* 3 */
-    SCREEN_ID_INVERTER,  /* 4 */
-    SCREEN_ID_DEBUG1,    /* 5 */
-    SCREEN_ID_DEBUG2,    /* 6 */
-    SCREEN_ID_DEBUG3,    /* 7 */
+    SCREEN_ID_SYSTEM_ECU, /* 3 */
+    SCREEN_ID_BATTERY,   /* 4 */
+    SCREEN_ID_INVERTER,  /* 5 */
+    SCREEN_ID_DEBUG1,    /* 6 */
+    SCREEN_ID_DEBUG2,    /* 7 */
+    SCREEN_ID_DEBUG3,    /* 8 */
 };
 
 #define NAV_PAGE_COUNT ((uint8_t)(sizeof(s_screens) / sizeof(s_screens[0])))

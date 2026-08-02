@@ -51,11 +51,12 @@ static lv_obj_t *container_for(uint8_t index)
 /**
  * Screen index (as used by screens[] in main.c) showing each animation.
  *
- * Tied to the order of screens[], so adding a page ahead of the debug ones
- * shifts this. It has already moved once, when System, Battery and Inverter
- * were inserted between Main and Debug1.
+ * Tied to the order of the page list in nav.c, so adding a page ahead of the
+ * debug ones shifts this. It has moved twice already: once when System,
+ * Battery and Inverter were inserted after Main, and again when the System
+ * page was split into SDC and ECU.
  */
-#define GIF_FIRST_SCREEN_INDEX 5u   /* 0 welcome, 1 main, 2..4 system/battery/inverter */
+#define GIF_FIRST_SCREEN_INDEX 6u   /* 0 welcome, 1 main, 2..5 sdc/ecu/battery/inverter */
 
 static uint8_t screen_for(uint8_t index)
 {
