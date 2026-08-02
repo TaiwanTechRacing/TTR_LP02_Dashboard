@@ -61,7 +61,7 @@ void SimApp_Step(uint32_t now)
 {
     SimData_Feed(now);
 
-    if (!s_welcome_done && (now >= SIM_WELCOME_HOLD_MS)) {
+    if (!s_welcome_done && UIBind_BootComplete()) {
         s_welcome_done = true;
         Nav_ShowPage(s_start_page);
         UIBind_ArmStartupSweep();

@@ -16,9 +16,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/* Mirrors WELCOME_HOLD_MS in Core/Src/main.c */
-#define SIM_WELCOME_HOLD_MS 3000u
-
 /* Mirrors UI_UPDATE_PERIOD_MS in Core/Src/main.c */
 #define SIM_UI_PERIOD_MS 25u
 

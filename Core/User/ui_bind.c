@@ -198,24 +198,35 @@ const char *get_var_label_hv_value(void)
 }
 
 /*
- * Splash reveal: the car name appears one character at a time, left to right.
+ * Boot sequence, in order:
  *
- * "L", then "LE", "LEO", and so on. The label keeps the content size EEZ gave
- * it, so it simply grows rightward from its x - no alignment or width pinning
- * involved.
+ *   0 ms      the team name alone on black
+ *   500 ms    the car name reveals one character at a time, left to right
+ *   ~2160 ms  fully revealed, and the screen waits
+ *   until     every signal the main screen shows has arrived, or 10 s
+ *
+ * The pause before the reveal exists so the two titles read as two beats
+ * rather than one crowded frame.
+ *
+ * Waiting for CAN rather than switching on a fixed timer means the main screen
+ * appears with real numbers on it. Switching early showed a dashboard full of
+ * "---" for a second or two, which looks like a fault on a car that is merely
+ * still starting up. The timeout is what stops that from becoming a dashboard
+ * that never appears: if the bus really is dead, the driver still needs the
+ * screen, and "---" is then the honest reading.
  */
 #define SPLASH_NAME       "LEOPARD02"
+#define SPLASH_START_MS   500u   /* team name alone before the reveal begins */
 #define SPLASH_CHAR_MS    140u   /* per character; 9 chars ~ 1.3 s */
-#define SPLASH_HOLD_MS    400u   /* fully shown before the screen changes */
+#define SPLASH_HOLD_MS    400u   /* fully shown before the screen may change */
+#define BOOT_CAN_TIMEOUT_MS 10000u
 
 static uint32_t s_splash_start_tick;
 static bool     s_splash_started;
 
-/** How many characters of SPLASH_NAME should be visible right now. */
-static size_t splash_visible_chars(void)
+/** Milliseconds since the splash screen first drew. */
+static uint32_t splash_elapsed(void)
 {
-    const size_t len = sizeof(SPLASH_NAME) - 1u;
-
     if (!s_splash_started) {
         /* Self-arming on first use: the welcome screen is loaded by ui_init()
          * before the main loop starts, so there is no other natural hook. */
@@ -223,7 +234,20 @@ static size_t splash_visible_chars(void)
         s_splash_start_tick = HAL_GetTick();
     }
 
-    const size_t shown = ((HAL_GetTick() - s_splash_start_tick) / SPLASH_CHAR_MS) + 1u;
+    return HAL_GetTick() - s_splash_start_tick;
+}
+
+/** How many characters of SPLASH_NAME should be visible right now. */
+static size_t splash_visible_chars(void)
+{
+    const size_t len = sizeof(SPLASH_NAME) - 1u;
+
+    const uint32_t elapsed = splash_elapsed();
+    if (elapsed < SPLASH_START_MS) {
+        return 0u;      /* team name only */
+    }
+
+    const size_t shown = ((elapsed - SPLASH_START_MS) / SPLASH_CHAR_MS) + 1u;
     return (shown > len) ? len : shown;
 }
 
@@ -243,6 +267,57 @@ const char *get_var_leopard02(void)
     buf[shown] = '\0';
 
     return buf;
+}
+
+/**
+ * True once every signal the main screen displays has arrived.
+ *
+ * Deliberately only the four groups Main reads, not every group on the bus.
+ * Waiting on data no one is about to look at would hold the splash up for a
+ * subsystem the driver cannot see anyway.
+ */
+static bool boot_signals_ready(void)
+{
+    static const vd_group_t required[] = {
+        VD_GROUP_VCU_STATE,     /* ready flag, drive mode */
+        VD_GROUP_VCU_SENSOR2,   /* speed */
+        VD_GROUP_VCU_SYSTEM,    /* GLV voltage */
+        VD_GROUP_AMS_STATUS,    /* pack voltage and SOC */
+    };
+
+    for (size_t i = 0; i < (sizeof(required) / sizeof(required[0])); i++) {
+        if (VehicleData_IsStale(required[i], VD_DEFAULT_TIMEOUT_MS)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Whether the splash screen has finished and the main screen should take over.
+ *
+ * Lives here rather than in main.c because it is entirely about the splash
+ * animation and the data behind it, and because the simulator has to make the
+ * same decision - a second copy of this sequence would drift.
+ */
+bool UIBind_BootComplete(void)
+{
+    const uint32_t elapsed = splash_elapsed();
+
+    const uint32_t reveal_done = SPLASH_START_MS
+                               + ((sizeof(SPLASH_NAME) - 1u) * SPLASH_CHAR_MS)
+                               + SPLASH_HOLD_MS;
+
+    if (elapsed < reveal_done) {
+        return false;       /* never cut the animation short */
+    }
+
+    if (elapsed >= BOOT_CAN_TIMEOUT_MS) {
+        return true;        /* bus is not coming up; show the dashboard anyway */
+    }
+
+    return boot_signals_ready();
 }
 
 /**

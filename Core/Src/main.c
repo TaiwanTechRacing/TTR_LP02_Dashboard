@@ -69,7 +69,8 @@
  * time on different pages. They are all wall-clock milliseconds from
  * HAL_GetTick() now, which behaves predictably.
  */
-#define WELCOME_HOLD_MS        3000U   /* how long the splash screen stays up */
+/* How long the splash screen stays up is decided by UIBind_BootComplete(),
+ * which waits for the animation and then for CAN. */
 #define UI_UPDATE_PERIOD_MS      25U   /* rate at which the UI re-reads vehicle data (40 Hz) */
 /* Button sampling period and debounce now live in Core/User/nav.h, which the
  * simulator shares. */
@@ -323,7 +324,7 @@ int main(void)
     lv_timer_handler();
     BSP_Display_Service();
 
-    if (!welcome_done && (now >= WELCOME_HOLD_MS))
+    if (!welcome_done && UIBind_BootComplete())
     {
       welcome_done = true;
       Nav_ShowPage(1);

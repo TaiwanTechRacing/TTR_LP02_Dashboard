@@ -8,6 +8,8 @@
 #ifndef UI_BIND_H
 #define UI_BIND_H
 
+#include <stdbool.h>
+
 /**
  * Apply the parts of the UI state that cannot be expressed as a bound variable.
  * Call once per UI update, right after ui_tick().
@@ -23,5 +25,14 @@ void UIBind_ApplyDynamicStyles(void);
  * a self-test.
  */
 void UIBind_ArmStartupSweep(void);
+
+/**
+ * Whether the splash screen is finished and the main screen should take over.
+ *
+ * True once the name reveal has played out and either every signal the main
+ * screen shows has arrived or the bus has been given long enough to prove it
+ * is not coming up. Poll it from the main loop.
+ */
+bool UIBind_BootComplete(void);
 
 #endif /* UI_BIND_H */
