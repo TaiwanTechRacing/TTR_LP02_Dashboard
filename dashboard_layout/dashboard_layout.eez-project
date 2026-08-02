@@ -7628,59 +7628,6 @@
               "longMode": "WRAP",
               "recolor": true,
               "previewValue": "STEER"
-            },
-            {
-              "objID": "c219ca70-f5f7-41e8-a89e-4235b8d53351",
-              "type": "LVGLLabelWidget",
-              "left": 383,
-              "top": 232,
-              "width": 82,
-              "height": 23,
-              "customInputs": [],
-              "customOutputs": [],
-              "style": {
-                "objID": "3aa1b05e-d772-4451-9aae-8aaab3156c8f",
-                "useStyle": "default",
-                "conditionalStyles": [],
-                "childStyles": []
-              },
-              "locked": false,
-              "hiddenInEditor": false,
-              "timeline": [],
-              "eventHandlers": [],
-              "leftUnit": "px",
-              "topUnit": "px",
-              "widthUnit": "content",
-              "heightUnit": "content",
-              "children": [],
-              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-              "hiddenFlagType": "literal",
-              "clickableFlagType": "literal",
-              "flagScrollbarMode": "",
-              "flagScrollDirection": "",
-              "scrollSnapX": "",
-              "scrollSnapY": "",
-              "checkedStateType": "literal",
-              "disabledStateType": "literal",
-              "states": "",
-              "useStyle": "text",
-              "localStyles": {
-                "objID": "d61a6a58-d466-4438-b2e1-59130b5c5d74",
-                "definition": {
-                  "MAIN": {
-                    "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
-                    }
-                  }
-                }
-              },
-              "group": "",
-              "groupIndex": 0,
-              "text": "game_mode_text",
-              "textType": "expression",
-              "longMode": "WRAP",
-              "recolor": false,
-              "identifier": "gameModeLabel"
             }
           ],
           "widgetFlags": "CLICKABLE|PRESS_LOCK|CLICK_FOCUSABLE|GESTURE_BUBBLE|SNAPPABLE|SCROLLABLE|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER",
