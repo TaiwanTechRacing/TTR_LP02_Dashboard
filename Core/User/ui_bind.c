@@ -590,6 +590,71 @@ const char *get_var_game_mode_text(void)
     return GameTetris_SteerMode() ? "STEER" : "";
 }
 
+/*
+ * The four summary lines under the cell map.
+ *
+ * Each label carries its own caption so the page needs one widget per line
+ * rather than a caption and a value side by side.
+ *
+ * The numbers are the AMS's own min, max and delta rather than the extremes of
+ * the cell array. They are the same thing when everything is healthy, and when
+ * they are not, the AMS's view is the one that trips the shutdown circuit.
+ */
+static char s_bat_text[4][32];
+
+const char *get_var_bat_cell_text(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        return "CELL " STALE_TEXT;
+    }
+
+    snprintf(s_bat_text[0], sizeof(s_bat_text[0]), "CELL %.3f-%.3fV",
+             (double)g_vehicle.cell_v_min, (double)g_vehicle.cell_v_max);
+    return s_bat_text[0];
+}
+
+/**
+ * Cell spread, the headline number on this page.
+ *
+ * A pack is only as good as its worst cell, and the spread is what says how
+ * far gone that cell is while there is still time to do something about it.
+ */
+const char *get_var_bat_spread_text(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        return "SPREAD " STALE_TEXT;
+    }
+
+    snprintf(s_bat_text[1], sizeof(s_bat_text[1]), "SPREAD %.3fV",
+             (double)g_vehicle.cell_v_delta);
+    return s_bat_text[1];
+}
+
+const char *get_var_bat_temp_text(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        return "TEMP " STALE_TEXT;
+    }
+
+    snprintf(s_bat_text[2], sizeof(s_bat_text[2]), "TEMP %.0f-%.0f C",
+             (double)g_vehicle.temp_min, (double)g_vehicle.temp_max);
+    return s_bat_text[2];
+}
+
+const char *get_var_bat_power_text(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        return STALE_TEXT;
+    }
+
+    /* Watts on the bus, kW on the screen - nobody reads a five digit number
+     * at a glance. */
+    snprintf(s_bat_text[3], sizeof(s_bat_text[3]), "%.0fA %.1fkW",
+             (double)g_vehicle.pack_current,
+             (double)(g_vehicle.pack_power / 1000.0f));
+    return s_bat_text[3];
+}
+
 /** Score on the game page. */
 const char *get_var_tetris_score(void)
 {

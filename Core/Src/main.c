@@ -39,6 +39,7 @@
 #include "gif_pages.h"
 #include "nav.h"
 #include "game_tetris.h"
+#include "cell_map.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -240,6 +241,7 @@ int main(void)
   DebugOverlay_Init();
   Nav_Init();
   GameTetris_Init();
+  CellMap_Init();
 
   /* Animations come from QSPI. Does nothing if the part is blank, so a
    * board that has never been programmed still boots normally. */
@@ -350,6 +352,7 @@ int main(void)
     /* Cheap while the game page is not up: it returns immediately. */
     GameTetris_Service(now);
     GifPages_ShowcaseService(now);
+    CellMap_Service(now);
 
     if ((now - last_button_scan) >= NAV_SCAN_PERIOD_MS)
     {

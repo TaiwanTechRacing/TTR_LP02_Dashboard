@@ -1862,12 +1862,97 @@ void create_screen_battery() {
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "BATTERY");
         }
+        {
+            // cellMapCanvas
+            lv_obj_t *obj = lv_canvas_create(parent_obj);
+            objects.cell_map_canvas = obj;
+            lv_obj_set_pos(obj, 44, 52);
+            lv_obj_set_size(obj, 392, 128);
+            lv_obj_set_style_outline_width(obj, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_outline_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
+        {
+            // batCellLabel
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.bat_cell_label = obj;
+            lv_obj_set_pos(obj, 8, 196);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // batSpreadLabel
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.bat_spread_label = obj;
+            lv_obj_set_pos(obj, 250, 196);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // batTempLabel
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.bat_temp_label = obj;
+            lv_obj_set_pos(obj, 8, 228);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // batPowerLabel
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.bat_power_label = obj;
+            lv_obj_set_pos(obj, 250, 228);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
     }
     
     tick_screen_battery();
 }
 
 void tick_screen_battery() {
+    {
+        const char *new_val = get_var_bat_cell_text();
+        const char *cur_val = lv_label_get_text(objects.bat_cell_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.bat_cell_label;
+            lv_label_set_text(objects.bat_cell_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_bat_spread_text();
+        const char *cur_val = lv_label_get_text(objects.bat_spread_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.bat_spread_label;
+            lv_label_set_text(objects.bat_spread_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_bat_temp_text();
+        const char *cur_val = lv_label_get_text(objects.bat_temp_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.bat_temp_label;
+            lv_label_set_text(objects.bat_temp_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_bat_power_text();
+        const char *cur_val = lv_label_get_text(objects.bat_power_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.bat_power_label;
+            lv_label_set_text(objects.bat_power_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
 }
 
 void create_screen_inverter() {

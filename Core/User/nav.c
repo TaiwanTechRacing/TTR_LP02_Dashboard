@@ -6,6 +6,7 @@
 #include "gif_pages.h"
 #include "debug_overlay.h"
 #include "game_tetris.h"
+#include "cell_map.h"
 
 #include "ui.h"
 #include "screens.h"
@@ -89,6 +90,8 @@ void Nav_ShowPage(uint8_t index)
 
     /* The showcase lives in the corner of the same page. */
     GifPages_SetShowcaseActive(on_game);
+
+    CellMap_SetActive(s_screens[s_page] == SCREEN_ID_BATTERY);
 
     /* Only the visible page's animation should run; the others burn CPU on
      * frames nobody can see. */

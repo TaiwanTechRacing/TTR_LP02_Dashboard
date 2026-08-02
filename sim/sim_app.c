@@ -12,6 +12,7 @@
 #include "gif_pages.h"
 #include "nav.h"
 #include "game_tetris.h"
+#include "cell_map.h"
 
 #include <stdbool.h>
 
@@ -40,6 +41,7 @@ void SimApp_Reset(void)
     (void)SimQspi_Load(NULL);
     GifPages_Init();
     GameTetris_Init();
+    CellMap_Init();
 }
 
 void SimApp_ShowPage(uint8_t index)
@@ -93,6 +95,7 @@ void SimApp_Step(uint32_t now)
 
     GameTetris_Service(now);
     GifPages_ShowcaseService(now);
+    CellMap_Service(now);
 
     lv_timer_handler();
 }

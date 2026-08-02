@@ -65,11 +65,31 @@ void SimData_Feed(uint32_t now)
     VehicleData_MarkFresh(VD_GROUP_VCU_SYSTEM);
 
     g_vehicle.pack_voltage = 560.0f + wave * 40.0f;
+    /* Negative under load, positive under regen, so the sign is exercised too. */
+    g_vehicle.pack_current = (wave * -260.0f) + 30.0f;
+    g_vehicle.pack_power   = g_vehicle.pack_current * g_vehicle.pack_voltage;
     g_vehicle.pack_soc     = 15.0f + wave * 80.0f;
     g_vehicle.temp_max     = 30.0f + wave * 25.0f;
     g_vehicle.temp_min     = 28.0f + wave * 20.0f;
     g_vehicle.temp_delta   = g_vehicle.temp_max - g_vehicle.temp_min;
     VehicleData_MarkFresh(VD_GROUP_AMS_STATUS);
+
+    /*
+     * Cells around a nominal 3.7 V, with one deliberately weak cell so the map
+     * has something to point at. Without an outlier the page would look the
+     * same whether the colouring worked or not.
+     */
+    for (uint16_t i = 0; i < VD_NUM_CELLS; i++) {
+        const float ripple = (float)((i * 7u) % 23u) * 0.0009f;
+        g_vehicle.cell_voltage[i] = 3.70f + ripple - (wave * 0.25f);
+    }
+    g_vehicle.cell_voltage[45] -= 0.11f;      /* the one that ends the run */
+    g_vehicle.cell_voltage[46] -= 0.04f;
+
+    g_vehicle.cell_v_min = 3.70f - (wave * 0.25f) - 0.11f;
+    g_vehicle.cell_v_max = 3.70f + 0.0198f - (wave * 0.25f);
+    g_vehicle.cell_v_delta = g_vehicle.cell_v_max - g_vehicle.cell_v_min;
+    VehicleData_MarkFresh(VD_GROUP_AMS_CELLS);
 
     /* Spend most of the cycle ready so the green state is the common case,
      * with a stretch of N-RDY to check the red styling and the shorter text. */

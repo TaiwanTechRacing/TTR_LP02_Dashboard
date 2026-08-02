@@ -57,7 +57,11 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_STEERING_TEXT = 41,
     FLOW_GLOBAL_VARIABLE_GAME_MODE_TEXT = 42,
     FLOW_GLOBAL_VARIABLE_BSE_FRONT_PRESS = 43,
-    FLOW_GLOBAL_VARIABLE_BSE_REAR_PRESS = 44
+    FLOW_GLOBAL_VARIABLE_BSE_REAR_PRESS = 44,
+    FLOW_GLOBAL_VARIABLE_BAT_CELL_TEXT = 45,
+    FLOW_GLOBAL_VARIABLE_BAT_SPREAD_TEXT = 46,
+    FLOW_GLOBAL_VARIABLE_BAT_TEMP_TEXT = 47,
+    FLOW_GLOBAL_VARIABLE_BAT_POWER_TEXT = 48
 };
 
 // Native global variables
@@ -152,6 +156,14 @@ extern const char *get_var_bse_front_press();
 extern void set_var_bse_front_press(const char *value);
 extern const char *get_var_bse_rear_press();
 extern void set_var_bse_rear_press(const char *value);
+extern const char *get_var_bat_cell_text();
+extern void set_var_bat_cell_text(const char *value);
+extern const char *get_var_bat_spread_text();
+extern void set_var_bat_spread_text(const char *value);
+extern const char *get_var_bat_temp_text();
+extern void set_var_bat_temp_text(const char *value);
+extern const char *get_var_bat_power_text();
+extern void set_var_bat_power_text(const char *value);
 
 #ifdef __cplusplus
 }
