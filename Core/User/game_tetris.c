@@ -108,6 +108,17 @@ static const uint16_t COLOURS[8] = {
 #define ROTATE_REPEAT_MS 400u
 #define GAMEOVER_HOLD_MS 2500u
 
+/*
+ * A completed line blinks before it disappears.
+ *
+ * Without it the row simply vanishes between two frames, which at speed is easy
+ * to miss entirely - the stack drops and it is not obvious why. Six steps of
+ * 70 ms is three blinks and a little over a third of a second: long enough to
+ * register, short enough that it never feels like the game has stalled.
+ */
+#define FLASH_STEP_MS 70u
+#define FLASH_STEPS    6u
+
 static uint8_t s_board[BOARD_H][BOARD_W];
 
 static uint8_t s_piece, s_next_piece, s_rot;
@@ -120,6 +131,11 @@ static bool     s_over;
 static bool     s_dirty;
 static uint32_t s_last_drop;
 static uint32_t s_over_since;
+
+/* Rows waiting to be cleared, one bit per row, while they blink. */
+static uint32_t s_flash_rows;
+static uint8_t  s_flash_step;
+static uint32_t s_flash_next;
 
 typedef struct {
     bool     prev;
@@ -194,6 +210,8 @@ static void spawn(void)
 static void reset_game(void)
 {
     memset(s_board, 0, sizeof(s_board));
+    s_flash_rows = 0;
+    s_flash_step = 0;
     s_score = 0;
     s_lines = 0;
     s_over = false;
@@ -222,11 +240,12 @@ static uint32_t drop_interval(void)
     return DROP_START_MS - faster;
 }
 
-static void clear_lines(void)
+/** Bitmask of the rows that are currently complete. */
+static uint32_t full_rows(void)
 {
-    int cleared = 0;
+    uint32_t mask = 0;
 
-    for (int y = BOARD_H - 1; y >= 0; y--) {
+    for (int y = 0; y < BOARD_H; y++) {
         bool full = true;
         for (int x = 0; x < BOARD_W; x++) {
             if (s_board[y][x] == 0u) {
@@ -234,8 +253,21 @@ static void clear_lines(void)
                 break;
             }
         }
+        if (full) {
+            mask |= (1u << y);
+        }
+    }
 
-        if (!full) {
+    return mask;
+}
+
+/** Drop everything above the marked rows down over them, and score. */
+static void remove_rows(uint32_t mask)
+{
+    int cleared = 0;
+
+    for (int y = BOARD_H - 1; y >= 0; y--) {
+        if ((mask & (1u << y)) == 0u) {
             continue;
         }
 
@@ -243,6 +275,10 @@ static void clear_lines(void)
             memcpy(s_board[yy], s_board[yy - 1], BOARD_W);
         }
         memset(s_board[0], 0, BOARD_W);
+
+        /* Everything above shifted down, so the rows still marked above this
+         * one moved with it. */
+        mask = (mask & ((1u << y) - 1u)) << 1u;
 
         cleared++;
         y++;    /* the row that dropped into y has not been checked yet */
@@ -271,8 +307,19 @@ static void lock_piece(void)
         }
     }
 
-    clear_lines();
-    spawn();
+    s_flash_rows = full_rows();
+
+    if (s_flash_rows != 0u) {
+        /* Hold the piece where it landed and blink the completed rows. The
+         * next piece waits until the blinking is over, so the board the player
+         * is looking at is the board that scored. */
+        s_flash_step = 0;
+        s_flash_next = HAL_GetTick() + FLASH_STEP_MS;
+        s_dirty = true;
+    }
+    else {
+        spawn();
+    }
 }
 
 /* --- input ---------------------------------------------------------------- */
@@ -288,7 +335,7 @@ static void lock_piece(void)
  */
 static void step(int dir)
 {
-    if (s_over) {
+    if (s_over || s_flash_rows != 0u) {
         return;
     }
 
@@ -300,7 +347,7 @@ static void step(int dir)
 
 static void rotate(int dir)
 {
-    if (s_over) {
+    if (s_over || s_flash_rows != 0u) {
         return;
     }
 
@@ -420,8 +467,12 @@ static void draw_play(void)
             const int py = PLAY_Y + (y * CELL);
 
             if (s_board[y][x] != 0u) {
+                /* A row being cleared blinks white on the odd steps. */
+                const bool lit = ((s_flash_rows & (1u << y)) != 0u) &&
+                                 ((s_flash_step & 1u) == 0u);
+
                 draw_cell(s_play_buf, PLAY_W, px, py, CELL,
-                          COLOURS[s_board[y][x]]);
+                          lit ? 0xFFFFu : COLOURS[s_board[y][x]]);
             }
             else {
                 fill_rect(s_play_buf, PLAY_W, px, py, CELL, 1, GRID_COLOUR);
@@ -430,7 +481,7 @@ static void draw_play(void)
         }
     }
 
-    if (!s_over) {
+    if (!s_over && s_flash_rows == 0u) {
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
                 if (!cell_filled(s_piece, s_rot, r, c)) {
@@ -448,9 +499,13 @@ static void draw_play(void)
             }
         }
     }
-    else {
+    else if (s_over) {
         /* Grey everything out rather than printing text - there is no font
-         * bound to this canvas, and a drained board is unambiguous. */
+         * bound to this canvas, and a drained board is unambiguous.
+         *
+         * Only when the game is actually over: this used to be the plain else
+         * of the branch above, which meant the board went grey during a line
+         * clear too and painted over the blink. */
         for (int y = 0; y < BOARD_H; y++) {
             for (int x = 0; x < BOARD_W; x++) {
                 if (s_board[y][x] == 0u) {
@@ -469,14 +524,41 @@ static void draw_next(void)
         s_next_buf[i] = BG_COLOUR;
     }
 
+    /*
+     * Centre on the piece's own bounding box rather than on the 4x4 mask. The
+     * masks are not centred within themselves - an S sits to the left, an I
+     * fills the width - so drawing them at face value leaves each piece sitting
+     * somewhere different in the box.
+     */
+    int min_c = 4, max_c = -1, min_r = 2, max_r = -1;
     for (int r = 0; r < 2; r++) {
         for (int c = 0; c < 4; c++) {
             if (!cell_filled(s_next_piece, 0, r, c)) {
                 continue;
             }
-            draw_cell(s_next_buf, NEXT_W, NEXT_X + (c * NEXT_CELL),
-                      NEXT_Y + (r * NEXT_CELL), NEXT_CELL,
-                      COLOURS[s_next_piece + 1u]);
+            if (c < min_c) min_c = c;
+            if (c > max_c) max_c = c;
+            if (r < min_r) min_r = r;
+            if (r > max_r) max_r = r;
+        }
+    }
+
+    if (max_c < 0) {
+        return;     /* cannot happen, but do not divide by a bogus width */
+    }
+
+    const int off_x = (NEXT_W - ((max_c - min_c + 1) * NEXT_CELL)) / 2;
+    const int off_y = (NEXT_H - ((max_r - min_r + 1) * NEXT_CELL)) / 2;
+
+    for (int r = min_r; r <= max_r; r++) {
+        for (int c = min_c; c <= max_c; c++) {
+            if (!cell_filled(s_next_piece, 0, r, c)) {
+                continue;
+            }
+            draw_cell(s_next_buf, NEXT_W,
+                      off_x + ((c - min_c) * NEXT_CELL),
+                      off_y + ((r - min_r) * NEXT_CELL),
+                      NEXT_CELL, COLOURS[s_next_piece + 1u]);
         }
     }
 }
@@ -525,6 +607,30 @@ bool GameTetris_IsActive(void)
 void GameTetris_Service(uint32_t now_ms)
 {
     if (!s_active) {
+        return;
+    }
+
+    /* While rows are blinking nothing else moves - not gravity, not the next
+     * piece. The board holds still until the blinking finishes. */
+    if (s_flash_rows != 0u) {
+        if (now_ms >= s_flash_next) {
+            s_flash_next = now_ms + FLASH_STEP_MS;
+            s_flash_step++;
+            s_dirty = true;
+
+            if (s_flash_step >= FLASH_STEPS) {
+                remove_rows(s_flash_rows);
+                s_flash_rows = 0;
+                s_flash_step = 0;
+                s_last_drop = now_ms;
+                spawn();
+            }
+        }
+
+        if (s_dirty) {
+            s_dirty = false;
+            redraw();
+        }
         return;
     }
 
