@@ -73,25 +73,26 @@ static char s_lv_buf[16];
 static char s_hv_buf[16];
 
 /*
- * Speed is padded to three digits: 008, 090, 150.
+ * Upper bound on what the speed readout will show.
  *
- * Without it the readout changes width as it crosses 9 to 10 and 99 to 100,
- * and since the label is centred the whole number shifts sideways at those
- * points. Padding removes the two largest jumps, which are worth the odd look
- * of a leading zero at walking pace.
+ * This is a layout constraint, not a vehicle limit. The label is centred and
+ * content-sized, so its width decides how far it reaches, and Orbitron's digits
+ * are not tabular: at 160 px "1" advances 63 px where the others take about
+ * 133. Holding the hundreds digit at 1 therefore caps the whole reading at
+ * roughly 330 px instead of 400, which keeps a comfortable margin from the SOC
+ * panel no matter what the other two digits are.
  *
- * It does not make the width constant. Orbiter's digits are not tabular - "1"
- * is 63 px against 133 px for the rest at this size - so "111" and "888" still
- * differ by about 210 px. Fixing that properly means a font with equal advance
- * widths, not a format string.
- *
- * Three digits is also what STALE_TEXT is, so nothing moves when a signal
- * times out.
+ * The trade is that a genuine reading above this would display wrong rather
+ * than merely wide. 199 km/h is far beyond anything the car does, so in
+ * practice the clamp never engages - but it is a clamp on the truth, so if the
+ * car ever gets quick enough to reach it, widen this and check the layout
+ * again rather than leaving it lying.
  */
-#define SPEED_FORMAT "%03u"
+#define SPEED_DISPLAY_MAX 199u
 
 /**
- * Vehicle speed, padded to three digits. See SPEED_FORMAT above.
+ * Vehicle speed. Integer, no leading zeros - padding wastes horizontal space
+ * at the large font size used on the main screen.
  */
 const char *get_var_speed(void)
 {
@@ -118,7 +119,7 @@ const char *get_var_speed(void)
             const uint32_t half = SWEEP_DURATION_MS / 2u;
             const uint32_t phase = (elapsed < half) ? elapsed
                                                     : (SWEEP_DURATION_MS - elapsed);
-            snprintf(s_speed_buf, sizeof(s_speed_buf), SPEED_FORMAT,
+            snprintf(s_speed_buf, sizeof(s_speed_buf), "%u",
                      (unsigned)((phase * SWEEP_PEAK_KPH) / half));
             return s_speed_buf;
         }
@@ -128,8 +129,12 @@ const char *get_var_speed(void)
         return STALE_TEXT;
     }
 
-    snprintf(s_speed_buf, sizeof(s_speed_buf), SPEED_FORMAT,
-             (unsigned)g_vehicle.car_speed_kph);
+    unsigned kph = (unsigned)g_vehicle.car_speed_kph;
+    if (kph > SPEED_DISPLAY_MAX) {
+        kph = SPEED_DISPLAY_MAX;
+    }
+
+    snprintf(s_speed_buf, sizeof(s_speed_buf), "%u", kph);
     return s_speed_buf;
 }
 

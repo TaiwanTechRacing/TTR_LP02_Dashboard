@@ -214,11 +214,11 @@ at 73 Hz; `LV_DEF_REFR_PERIOD` is 16 ms so the practical figure is ~62 fps.
    three decode, animate and land in the right containers when the image is fed
    through `sim_qspi.c`. What that does not cover is reading them back out of
    the real flash part.
-4. **The speed font is bpp 8 and should be 4.** `ui_font_orbiter_bold_160` was
-   exported at `--bpp 8`, which doubles its bitmap data for antialiasing nobody
-   can see in white-on-black at 160 px. Change it in EEZ and re-export; worth
-   about 68 KB. (The clipping this entry used to describe is fixed - at 160 px
-   the widest reading leaves 16 px on the left and 11 px on the right.)
+4. **The speed readout is clamped to 199 km/h** for layout reasons, so a real
+   reading above that would show wrong rather than merely wide. The car does
+   not go near it. If it ever does, raise `SPEED_DISPLAY_MAX` in `ui_bind.c`
+   and re-check the margins in the simulator - `250` fits, but with only 11 px
+   before the SOC panel.
 5. **`CAN_RX_IsLinkStale()` is not surfaced.** Per-signal staleness works;
    whole-bus loss has no dedicated indicator.
 6. **An unused `lv` float variable** sits in the EEZ project bound to nothing.
