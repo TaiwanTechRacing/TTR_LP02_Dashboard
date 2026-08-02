@@ -1946,7 +1946,7 @@ void create_screen_game1() {
             // tetris_game_canva
             lv_obj_t *obj = lv_canvas_create(parent_obj);
             objects.tetris_game_canva = obj;
-            lv_obj_set_pos(obj, 174, 12);
+            lv_obj_set_pos(obj, 188, 11);
             lv_obj_set_size(obj, 150, 240);
             lv_obj_set_style_outline_width(obj, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_outline_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -1955,8 +1955,8 @@ void create_screen_game1() {
             // next_block
             lv_obj_t *obj = lv_canvas_create(parent_obj);
             objects.next_block = obj;
-            lv_obj_set_pos(obj, 351, 38);
-            lv_obj_set_size(obj, 116, 80);
+            lv_obj_set_pos(obj, 369, 35);
+            lv_obj_set_size(obj, 80, 80);
             lv_obj_set_style_outline_width(obj, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_outline_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
         }

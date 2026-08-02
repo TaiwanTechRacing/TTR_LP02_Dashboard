@@ -10,7 +10,7 @@
  *
  *  Controls, given two buttons:
  *
- *      tap left / right     move one column that way, wrapping off the edge
+ *      tap left / right     move one column that way; the walls block
  *      hold left / right    rotate that way, repeating while held
  *      both, held 2 s       leave the page
  *

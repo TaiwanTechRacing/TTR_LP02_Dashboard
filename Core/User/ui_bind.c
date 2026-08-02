@@ -522,6 +522,18 @@ int32_t get_var_steering_deg(void)
                      (g_vehicle.steering_deg >= 0.0f ? 0.5f : -0.5f));
 }
 
+/*
+ * EEZ gives the arc a value-changed handler because an arc is draggable, and
+ * that handler writes back through this setter. There is no touch controller
+ * on this panel, so it can never fire - but the reference is real and has to
+ * link. Writing the steering angle from the UI would be nonsense in any case:
+ * it is a measurement, and the arc is a readout.
+ */
+void set_var_steering_deg(int32_t value)
+{
+    (void)value;
+}
+
 const char *get_var_steering_text(void)
 {
     if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)) {

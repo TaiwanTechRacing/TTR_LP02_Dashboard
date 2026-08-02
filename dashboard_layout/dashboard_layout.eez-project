@@ -6345,6 +6345,7 @@
                   "locked": false,
                   "timeline": [],
                   "eventHandlers": [],
+                  "identifier": "steeringArc",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -6402,8 +6403,7 @@
                   "previewBgEndAngle": "45",
                   "rotation": 0,
                   "rotationType": "literal",
-                  "previewRotation": "0",
-                  "identifier": "steeringArc"
+                  "previewRotation": "0"
                 }
               ],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7168,8 +7168,8 @@
             {
               "objID": "52a5d2a5-5b06-4bfa-9be0-469c00527cbc",
               "type": "LVGLCanvasWidget",
-              "left": 174,
-              "top": 12,
+              "left": 188,
+              "top": 11,
               "width": 150,
               "height": 240,
               "customInputs": [],
@@ -7215,9 +7215,9 @@
             {
               "objID": "fe7cb000-565d-4c4f-a67f-50039292e026",
               "type": "LVGLCanvasWidget",
-              "left": 351,
-              "top": 38,
-              "width": 116,
+              "left": 369,
+              "top": 35,
+              "width": 80,
               "height": 80,
               "customInputs": [],
               "customOutputs": [],

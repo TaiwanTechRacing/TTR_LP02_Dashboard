@@ -14,7 +14,7 @@
 
 /* --- board ---------------------------------------------------------------- */
 
-#define BOARD_W 10
+#define BOARD_W 12
 #define BOARD_H 20
 
 /*
@@ -28,9 +28,12 @@
  *     next_block           80 x  40
  *
  * 12 px is the largest square cell this panel allows - 20 rows at 13 px is 260,
- * which leaves no room above or below on a 272 px screen. The playfield is
- * therefore 120 px of blocks centred in a 150 px canvas: the extra width cannot
- * become bigger cells without breaking the height, so it becomes margin.
+ * which leaves no room above or below on a 272 px screen. The board is 12
+ * columns rather than the usual 10 so that 150 px is nearly filled: 12 x 12 is
+ * 144, leaving 3 px each side instead of 15.
+ *
+ * A wider board is an easier game - there is more room to place a piece and a
+ * line takes two more blocks to complete.
  *
  * Every piece is 4 cells wide and 2 tall in its spawn rotation, which is why
  * the preview is 4x2 rather than 4x4.
@@ -172,34 +175,6 @@ static bool fits(uint8_t piece, uint8_t rot, int px, int py)
     return true;
 }
 
-/** Leftmost column the piece can sit at, used when wrapping around the edge. */
-static int leftmost_x(uint8_t piece, uint8_t rot)
-{
-    for (int c = 0; c < 4; c++) {
-        for (int r = 0; r < 4; r++) {
-            if (cell_filled(piece, rot, r, c)) {
-                return -c;   /* shift so this column lands on 0 */
-            }
-        }
-    }
-
-    return 0;
-}
-
-/** Rightmost column the piece can sit at, used when wrapping the other way. */
-static int rightmost_x(uint8_t piece, uint8_t rot)
-{
-    for (int c = 3; c >= 0; c--) {
-        for (int r = 0; r < 4; r++) {
-            if (cell_filled(piece, rot, r, c)) {
-                return (BOARD_W - 1) - c;
-            }
-        }
-    }
-
-    return 0;
-}
-
 static void spawn(void)
 {
     s_piece = s_next_piece;
@@ -303,14 +278,13 @@ static void lock_piece(void)
 /* --- input ---------------------------------------------------------------- */
 
 /**
- * Move one column, wrapping around the edge it runs off.
+ * Move one column, or stay put if a wall or a stack is in the way.
  *
  * @param dir  -1 for left, +1 for right
  *
- * The wrap survives from when one button had to reach every column. It is no
- * longer necessary now that both directions exist, but sliding off one edge and
- * back on the other is a nicer way to cross a crowded board than reversing.
- * Only a wall wraps; a stack in the way stops the piece.
+ * This used to wrap around the edges, back when one button had to reach every
+ * column. With both directions available the wrap only made it easy to shoot
+ * a piece off the side you were aiming at, so the walls block now.
  */
 static void step(int dir)
 {
@@ -320,15 +294,6 @@ static void step(int dir)
 
     if (fits(s_piece, s_rot, s_px + dir, s_py)) {
         s_px = (int8_t)(s_px + dir);
-        s_dirty = true;
-        return;
-    }
-
-    const int wrapped = (dir > 0) ? leftmost_x(s_piece, s_rot)
-                                  : rightmost_x(s_piece, s_rot);
-
-    if (wrapped != s_px && fits(s_piece, s_rot, wrapped, s_py)) {
-        s_px = (int8_t)wrapped;
         s_dirty = true;
     }
 }
