@@ -16,19 +16,24 @@
 #define NAV_GAME_EXIT_SCANS    400U  /* both held 2 s leaves the game */
 
 /*
- * Getting into the game: tap the right button twice quickly, then the left one.
+ * Getting into the game: right, right, left, then left held down.
  *
- * The page still steps on each of those presses - there is no way to swallow
- * them without making ordinary paging feel laggy - so the sequence looks like
- * flicking forward twice and back once, and then the game appears. That is the
- * whole trick, and it is why the game is not in the page cycle: paging into it
- * by accident would spoil it.
+ * Each step has to follow the one before it within NAV_EGG_STEP_SCANS, so it is
+ * a deliberate rhythm rather than something four ordinary page changes could
+ * stumble into. The hold on the end is what makes it safe: three taps happen by
+ * accident, three taps followed by a deliberate press-and-wait do not.
+ *
+ * The page still steps on every one of those presses - swallowing them would
+ * make ordinary paging feel laggy - so it looks like flicking forward twice and
+ * back twice, and then the game appears. That is the whole trick, and it is why
+ * the game sits outside the page cycle: paging into it by accident would spoil
+ * it.
  *
  * Counted in scans rather than milliseconds so nav.c stays free of the HAL, the
  * same way its debounce does.
  */
-#define NAV_EGG_DOUBLE_SCANS    80U  /* 400 ms between the two right taps */
-#define NAV_EGG_FOLLOW_SCANS   180U  /* 900 ms to then press left */
+#define NAV_EGG_STEP_SCANS     180U  /* 900 ms between steps of the sequence */
+#define NAV_EGG_HOLD_SCANS     140U  /* 700 ms on the final press */
 
 /*
  * Page order. Index 0 is the splash screen shown at boot and is excluded from
@@ -118,10 +123,41 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
 
     /* Free running, only ever used as a difference, so wrapping is harmless. */
     static uint32_t scan_tick = 0;
-    static uint32_t right_tap_prev = 0;   /* 0 means "no tap recorded yet" */
-    static uint32_t right_tap_last = 0;
+
+    /*
+     * How much of "right, right, left, left-held" has been seen so far, and
+     * when the last accepted step happened.
+     */
+    static uint8_t  egg_stage = 0;
+    static uint32_t egg_last = 0;
+    static bool     egg_wants_release = false;
+    static uint32_t egg_hold = 0;
 
     scan_tick++;
+
+    /* The final step is a hold, so this counts for as long as the left button
+     * stays down rather than firing once like the page steps below. */
+    if (egg_stage >= 3u && button1_pressed && !egg_wants_release) {
+        egg_hold++;
+        if (egg_hold >= NAV_EGG_HOLD_SCANS) {
+            egg_stage = 0;
+            egg_hold = 0;
+            Nav_ShowPage(NAV_GAME_PAGE);
+            return;
+        }
+    }
+    else {
+        egg_hold = 0;
+    }
+
+    if (!button1_pressed) {
+        egg_wants_release = false;
+    }
+
+    /* A gap anywhere in the sequence abandons it. */
+    if (egg_stage != 0u && (scan_tick - egg_last) > NAV_EGG_STEP_SCANS) {
+        egg_stage = 0;
+    }
 
     /*
      * Handle the both-buttons gesture first and return while it is held, so no
@@ -179,18 +215,25 @@ void Nav_Scan(bool button1_pressed, bool button2_pressed)
             continue;                 /* still debouncing */
         }
 
+        /*
+         * Advance the sequence on this press, or start it over. A right press
+         * always starts a new attempt, so a mistimed run can be retried without
+         * waiting for the window to lapse.
+         */
         if (i == 1u) {
-            right_tap_prev = right_tap_last;
-            right_tap_last = scan_tick;
+            egg_stage = (egg_stage == 1u) ? 2u : 1u;
         }
-        else if (right_tap_prev != 0u &&
-                 (right_tap_last - right_tap_prev) <= NAV_EGG_DOUBLE_SCANS &&
-                 (scan_tick - right_tap_last) <= NAV_EGG_FOLLOW_SCANS) {
-            right_tap_prev = 0;
-            right_tap_last = 0;
-            Nav_ShowPage(NAV_GAME_PAGE);
-            return;
+        else if (egg_stage == 2u) {
+            egg_stage = 3u;
+            /* The press that got here is still down. The hold has to be the
+             * next one, so wait for this button to come up first. */
+            egg_wants_release = true;
         }
+        else if (egg_stage < 3u) {
+            egg_stage = 0;
+        }
+
+        egg_last = scan_tick;
 
         int8_t next = (int8_t)s_page + buttons[i].step;
         if (next < (int8_t)NAV_MIN_PAGE) next = (int8_t)NAV_MAX_PAGE;
