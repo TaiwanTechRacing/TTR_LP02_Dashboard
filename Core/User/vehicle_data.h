@@ -132,11 +132,14 @@ typedef struct {
     uint16_t sdc_status;          /* bit positions per vd_sdc_node_t */
 
     /* --- VCU_SENSOR1 --- */
-    float    bse_rear_pu;         /* brake pedal, 0..100 */
+    float    bse_rear_pu;         /* rear brake pressure, 0..100 */
+    float    bse_front_pu;        /* front brake pressure, 0..100 */
 
     /* --- VCU_SENSOR2 --- */
     float    steering_pct;        /* steering angle mapped to 0..100 */
-    float    apps1_pu;            /* throttle pedal, 0..100 */
+    float    apps1_pu;            /* throttle pedal channel 1, 0..100 */
+    float    apps2_pu;            /* throttle pedal channel 2, 0..100 */
+    float    steering_deg;        /* steering angle, -180..180 */
     uint16_t car_speed_kph;
 
     /* --- VCU_SYSTEM_STATUS --- */

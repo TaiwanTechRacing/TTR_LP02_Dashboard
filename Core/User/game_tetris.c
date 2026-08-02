@@ -24,11 +24,13 @@
  * into whatever size the canvas happens to be, so there is no leftover margin
  * and no rounding. The EEZ canvases must be set to match:
  *
- *     tetris_game_canva   120 x 240
+ *     tetris_game_canva   150 x 240
  *     next_block           80 x  40
  *
  * 12 px is the largest square cell this panel allows - 20 rows at 13 px is 260,
- * which leaves no room above or below on a 272 px screen.
+ * which leaves no room above or below on a 272 px screen. The playfield is
+ * therefore 120 px of blocks centred in a 150 px canvas: the extra width cannot
+ * become bigger cells without breaking the height, so it becomes margin.
  *
  * Every piece is 4 cells wide and 2 tall in its spawn rotation, which is why
  * the preview is 4x2 rather than 4x4.
@@ -36,9 +38,9 @@
 #define CELL      12
 #define NEXT_CELL 20
 
-#define PLAY_W (BOARD_W * CELL)
+#define PLAY_W 150
 #define PLAY_H (BOARD_H * CELL)
-#define PLAY_X 0
+#define PLAY_X ((PLAY_W - (BOARD_W * CELL)) / 2)
 #define PLAY_Y 0
 
 #define NEXT_W (4 * NEXT_CELL)

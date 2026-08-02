@@ -429,6 +429,110 @@ ECU_GETTER(imu,  VD_ONLINE_IMU,  VD_ERR_IMU)
  */
 ECU_GETTER(gps,  VD_ONLINE_GPS,  0)
 
+/*
+ * Sensor page: the two throttle channels, the two brake pressures and the
+ * steering angle.
+ *
+ * Both APPS channels and both BSE channels are shown rather than one of each,
+ * because the interesting failure is the two disagreeing - that is what the
+ * VCU's plausibility check trips on, and a single reading would hide it.
+ */
+static char s_sensor_text[5][8];
+
+static int32_t sensor_pct(float value)
+{
+    if (value <= 0.0f) {
+        return 0;
+    }
+    if (value >= 100.0f) {
+        return 100;
+    }
+    return (int32_t)(value + 0.5f);
+}
+
+static const char *sensor_pct_text(uint8_t slot, float value, vd_group_t group)
+{
+    if (VehicleData_IsStale(group, VD_DEFAULT_TIMEOUT_MS)) {
+        return STALE_TEXT;
+    }
+
+    snprintf(s_sensor_text[slot], sizeof(s_sensor_text[slot]), "%d%%",
+             (int)sensor_pct(value));
+    return s_sensor_text[slot];
+}
+
+int32_t get_var_apps1_bar(void)
+{
+    return VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)
+           ? 0 : sensor_pct(g_vehicle.apps1_pu);
+}
+
+int32_t get_var_apps2_bar(void)
+{
+    return VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)
+           ? 0 : sensor_pct(g_vehicle.apps2_pu);
+}
+
+int32_t get_var_bse_front_bar(void)
+{
+    return VehicleData_IsStale(VD_GROUP_VCU_SENSOR1, VD_DEFAULT_TIMEOUT_MS)
+           ? 0 : sensor_pct(g_vehicle.bse_front_pu);
+}
+
+int32_t get_var_bse_rear_bar(void)
+{
+    return VehicleData_IsStale(VD_GROUP_VCU_SENSOR1, VD_DEFAULT_TIMEOUT_MS)
+           ? 0 : sensor_pct(g_vehicle.bse_rear_pu);
+}
+
+const char *get_var_apps1_text(void)
+{
+    return sensor_pct_text(0, g_vehicle.apps1_pu, VD_GROUP_VCU_SENSOR2);
+}
+
+const char *get_var_apps2_text(void)
+{
+    return sensor_pct_text(1, g_vehicle.apps2_pu, VD_GROUP_VCU_SENSOR2);
+}
+
+const char *get_var_bse_front_text(void)
+{
+    return sensor_pct_text(2, g_vehicle.bse_front_pu, VD_GROUP_VCU_SENSOR1);
+}
+
+const char *get_var_bse_rear_text(void)
+{
+    return sensor_pct_text(3, g_vehicle.bse_rear_pu, VD_GROUP_VCU_SENSOR1);
+}
+
+/**
+ * Steering angle for the arc, in degrees.
+ *
+ * The arc is symmetrical over -180..180, so it takes the angle directly. On
+ * timeout it centres, which is wrong in the same way an empty bar is wrong -
+ * but a needle frozen at full lock would be read as a real reading.
+ */
+int32_t get_var_steering_deg(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)) {
+        return 0;
+    }
+
+    return (int32_t)(g_vehicle.steering_deg +
+                     (g_vehicle.steering_deg >= 0.0f ? 0.5f : -0.5f));
+}
+
+const char *get_var_steering_text(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)) {
+        return STALE_TEXT;
+    }
+
+    snprintf(s_sensor_text[4], sizeof(s_sensor_text[4]), "%d",
+             (int)get_var_steering_deg());
+    return s_sensor_text[4];
+}
+
 /** Score on the game page. */
 const char *get_var_tetris_score(void)
 {

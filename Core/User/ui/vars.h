@@ -44,7 +44,17 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_ECU_AMS = 28,
     FLOW_GLOBAL_VARIABLE_ECU_IMU = 29,
     FLOW_GLOBAL_VARIABLE_ECU_GPS = 30,
-    FLOW_GLOBAL_VARIABLE_TETRIS_SCORE = 31
+    FLOW_GLOBAL_VARIABLE_TETRIS_SCORE = 31,
+    FLOW_GLOBAL_VARIABLE_APPS1_BAR = 32,
+    FLOW_GLOBAL_VARIABLE_APPS1_TEXT = 33,
+    FLOW_GLOBAL_VARIABLE_APPS2_BAR = 34,
+    FLOW_GLOBAL_VARIABLE_APPS2_TEXT = 35,
+    FLOW_GLOBAL_VARIABLE_BSE_FRONT_BAR = 36,
+    FLOW_GLOBAL_VARIABLE_BSE_FRONT_TEXT = 37,
+    FLOW_GLOBAL_VARIABLE_BSE_REAR_BAR = 38,
+    FLOW_GLOBAL_VARIABLE_BSE_REAR_TEXT = 39,
+    FLOW_GLOBAL_VARIABLE_STEERING_DEG = 40,
+    FLOW_GLOBAL_VARIABLE_STEERING_TEXT = 41
 };
 
 // Native global variables
@@ -113,6 +123,26 @@ extern int32_t get_var_ecu_gps();
 extern void set_var_ecu_gps(int32_t value);
 extern const char *get_var_tetris_score();
 extern void set_var_tetris_score(const char *value);
+extern int32_t get_var_apps1_bar();
+extern void set_var_apps1_bar(int32_t value);
+extern const char *get_var_apps1_text();
+extern void set_var_apps1_text(const char *value);
+extern int32_t get_var_apps2_bar();
+extern void set_var_apps2_bar(int32_t value);
+extern const char *get_var_apps2_text();
+extern void set_var_apps2_text(const char *value);
+extern int32_t get_var_bse_front_bar();
+extern void set_var_bse_front_bar(int32_t value);
+extern const char *get_var_bse_front_text();
+extern void set_var_bse_front_text(const char *value);
+extern int32_t get_var_bse_rear_bar();
+extern void set_var_bse_rear_bar(int32_t value);
+extern const char *get_var_bse_rear_text();
+extern void set_var_bse_rear_text(const char *value);
+extern int32_t get_var_steering_deg();
+extern void set_var_steering_deg(int32_t value);
+extern const char *get_var_steering_text();
+extern void set_var_steering_text(const char *value);
 
 #ifdef __cplusplus
 }

@@ -100,7 +100,8 @@ static void decode_one(const ttr_can_frame_t *frame)
     case TTR_CAN_ID_VCU_VCU_SENSOR1: {
         ttr_vcu_vcu_sensor1_t s;
         ttr_vcu_vcu_sensor1_unpack(&s, frame);
-        g_vehicle.bse_rear_pu = s.BSE_REAR_PU;
+        g_vehicle.bse_rear_pu  = s.BSE_REAR_PU;
+        g_vehicle.bse_front_pu = s.BSE_FRONT_PU;
         VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR1);
         break;
     }
@@ -112,6 +113,11 @@ static void decode_one(const ttr_can_frame_t *frame)
          * arc grows clockwise while positive steering angle is anticlockwise. */
         g_vehicle.steering_pct  = 100.0f - (s.STEERING_ANGLE + 180.0f) / 360.0f * 100.0f;
         g_vehicle.apps1_pu      = s.APPS1_PU;
+        g_vehicle.apps2_pu      = s.APPS2_PU;
+
+        /* The sensor page's arc is symmetrical over -180..180, so it wants the
+         * angle itself rather than the 0..100 mapping above. */
+        g_vehicle.steering_deg  = s.STEERING_ANGLE;
         g_vehicle.car_speed_kph = (uint16_t)(s.CAR_SPEED + 0.5f);   /* float in the new DBC */
         VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR2);
         break;

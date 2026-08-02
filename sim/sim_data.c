@@ -47,8 +47,13 @@ void SimData_Feed(uint32_t now)
 
     g_vehicle.car_speed_kph = (uint16_t)(wave * 250.0f);
     g_vehicle.apps1_pu      = wave * 100.0f;
+    /* Channel 2 tracks channel 1 with a small offset, which is what a healthy
+     * pair looks like - identical readings would hide a wiring mistake. */
+    g_vehicle.apps2_pu      = wave * 100.0f * 0.97f;
     g_vehicle.bse_rear_pu   = (1.0f - wave) * 100.0f;
+    g_vehicle.bse_front_pu  = (1.0f - wave) * 100.0f * 0.92f;
     g_vehicle.steering_pct  = 50.0f + (wave - 0.5f) * 60.0f;
+    g_vehicle.steering_deg  = (wave - 0.5f) * 240.0f;
     VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR2);
     VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR1);
 
