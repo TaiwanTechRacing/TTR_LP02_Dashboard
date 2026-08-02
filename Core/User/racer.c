@@ -81,22 +81,29 @@ static segment_t s_road[SEGMENT_COUNT];
  * shapes a dozen pixels tall. A cone is a triangle.
  */
 #define CONE_W    16
-#define CONE_ROWS 14
+#define CONE_ROWS 16
 
+/*
+ * Squarer than a plain triangle, because a traffic cone is not one: it is
+ * closer to a column that tapers, standing on a flat base plate. A straight
+ * triangle read as a pyramid.
+ */
 static const char CONE_ART[] =
-    ".......xx......."
-    ".......xx......."
+    "......xxxx......"
     "......xxxx......"
     "......xxxx......"
     ".....xxxxxx....."
     ".....wwwwww....."
+    ".....wwwwww....."
+    ".....xxxxxx....."
+    ".....xxxxxx....."
     "....xxxxxxxx...."
+    "....wwwwwwww...."
     "....xxxxxxxx...."
     "...xxxxxxxxxx..."
-    "...wwwwwwwwww..."
+    "...xxxxxxxxxx..."
     "..xxxxxxxxxxxx.."
-    "..xxxxxxxxxxxx.."
-    ".xxxxxxxxxxxxxx."
+    ".kkkkkkkkkkkkkk."
     "kkkkkkkkkkkkkkkk";
 
 /* Formula Student marks the course this way: blue on the left of the
@@ -347,6 +354,34 @@ static void draw_cone(int base_y, int cx, int height, int clip_y, uint16_t body)
     const int x0 = cx - (width / 2);
     const int top = base_y - height;
 
+    /*
+     * Too small to sample the artwork: at three or four rows, nearest
+     * neighbour picks a different band each time the height changes by a
+     * pixel, and a line of distant cones strobes. A solid blob of the body
+     * colour is what they look like at that size anyway, and it holds still.
+     */
+    if (height < 7) {
+        for (int row = 0; row < height; row++) {
+            const int y = top + row;
+            if (y < 0 || y >= H || y > clip_y) {
+                continue;
+            }
+
+            /* Narrower at the top, like the shape it stands in for. */
+            const int w = 1 + ((width * (row + 2)) / (height + 2));
+            int a = cx - (w / 2);
+            int b = a + w;
+            if (a < 0) a = 0;
+            if (b > W) b = W;
+
+            uint16_t *dst = s_buf + ((size_t)y * W);
+            for (int x = a; x < b; x++) {
+                dst[x] = body;
+            }
+        }
+        return;
+    }
+
     for (int row = 0; row < height; row++) {
         const int y = top + row;
         /* clip_y is the top edge of the nearer road, so anything below it is
@@ -465,15 +500,13 @@ static void render(void)
             trapezoid(sy, (float)W * 0.5f, (float)W, py, (float)W * 0.5f, (float)W,
                       light ? GRASS_B : GRASS_A);
 
-            trapezoid(sy, sx, sw * 1.18f, py, px, pw * 1.18f,
-                      light ? RUMBLE_B : RUMBLE_A);
-
+            /*
+             * No kerbs and no centre line. Red and white rumble strips sat
+             * badly next to red and white cones, and an autocross pad has
+             * neither - it is asphalt with cones on it, and the cones are the
+             * edge marking.
+             */
             trapezoid(sy, sx, sw, py, px, pw, light ? ROAD_B : ROAD_A);
-
-            if (light) {
-                /* Centre line, only on the light stripes so it dashes. */
-                trapezoid(sy, sx, sw * 0.03f, py, px, pw * 0.03f, LANE);
-            }
 
             maxy = sy;
         }
