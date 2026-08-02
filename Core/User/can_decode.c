@@ -102,6 +102,12 @@ static void decode_one(const ttr_can_frame_t *frame)
         ttr_vcu_vcu_sensor1_unpack(&s, frame);
         g_vehicle.bse_rear_pu  = s.BSE_REAR_PU;
         g_vehicle.bse_front_pu = s.BSE_FRONT_PU;
+
+        /* The same two circuits as a real pressure rather than a percentage of
+         * travel. Worth having both: the percentage says how hard the pedal is
+         * being pushed, the pressure says what actually reached the calipers. */
+        g_vehicle.bse_rear_bar  = s.BSE_REAR_REAL;
+        g_vehicle.bse_front_bar = s.BSE_FRONT_REAL;
         VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR1);
         break;
     }

@@ -134,6 +134,8 @@ typedef struct {
     /* --- VCU_SENSOR1 --- */
     float    bse_rear_pu;         /* rear brake pressure, 0..100 */
     float    bse_front_pu;        /* front brake pressure, 0..100 */
+    float    bse_rear_bar;        /* rear brake line pressure, bar */
+    float    bse_front_bar;       /* front brake line pressure, bar */
 
     /* --- VCU_SENSOR2 --- */
     float    steering_pct;        /* steering angle mapped to 0..100 */

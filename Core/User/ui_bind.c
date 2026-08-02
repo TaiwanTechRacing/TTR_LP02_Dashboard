@@ -437,7 +437,7 @@ ECU_GETTER(gps,  VD_ONLINE_GPS,  0)
  * because the interesting failure is the two disagreeing - that is what the
  * VCU's plausibility check trips on, and a single reading would hide it.
  */
-static char s_sensor_text[5][8];
+static char s_sensor_text[7][12];
 
 static int32_t sensor_pct(float value)
 {
@@ -503,6 +503,40 @@ const char *get_var_bse_front_text(void)
 const char *get_var_bse_rear_text(void)
 {
     return sensor_pct_text(3, g_vehicle.bse_rear_pu, VD_GROUP_VCU_SENSOR1);
+}
+
+/*
+ * Brake line pressure, to the nearest bar.
+ *
+ * The unit is on the value because the two bars further left are the same two
+ * circuits as a percentage of pedal travel, and an unlabelled number next to
+ * them would read as another percentage.
+ *
+ * Whole bar rather than one decimal, because that is what fits. Orbitron's
+ * digits are tabular at this size, so "128 bar" is 88 px whatever the digits
+ * are, against 96 px of room beside the caption - but the decimal point adds
+ * 13 px and "99.9 bar" spills out of the container. A bar of resolution is
+ * plenty for a readout that is being glanced at.
+ */
+static const char *brake_bar_text(uint8_t slot, float value)
+{
+    if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR1, VD_DEFAULT_TIMEOUT_MS)) {
+        return STALE_TEXT;
+    }
+
+    snprintf(s_sensor_text[slot], sizeof(s_sensor_text[slot]), "%.0f bar",
+             (double)value);
+    return s_sensor_text[slot];
+}
+
+const char *get_var_bse_front_press(void)
+{
+    return brake_bar_text(5, g_vehicle.bse_front_bar);
+}
+
+const char *get_var_bse_rear_press(void)
+{
+    return brake_bar_text(6, g_vehicle.bse_rear_bar);
 }
 
 /**

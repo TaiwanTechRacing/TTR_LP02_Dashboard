@@ -52,6 +52,9 @@ void SimData_Feed(uint32_t now)
     g_vehicle.apps2_pu      = wave * 100.0f * 0.97f;
     g_vehicle.bse_rear_pu   = (1.0f - wave) * 100.0f;
     g_vehicle.bse_front_pu  = (1.0f - wave) * 100.0f * 0.92f;
+    /* Rear runs a little higher than front on this car. */
+    g_vehicle.bse_rear_bar  = (1.0f - wave) * 62.0f;
+    g_vehicle.bse_front_bar = (1.0f - wave) * 55.0f;
     g_vehicle.steering_pct  = 50.0f + (wave - 0.5f) * 60.0f;
     g_vehicle.steering_deg  = (wave - 0.5f) * 240.0f;
     VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR2);
