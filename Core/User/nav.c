@@ -33,7 +33,7 @@
  * same way its debounce does.
  */
 #define NAV_EGG_ARM_MS        3000U   /* both buttons held this long arms it */
-#define NAV_EGG_WINDOW_MS     3000U   /* then this long to get both taps in */
+#define NAV_EGG_WINDOW_MS     5000U   /* after letting go, this long to tap twice */
 
 /*
  * Page order. Index 0 is the splash screen shown at boot and is excluded from
@@ -125,18 +125,25 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
     const bool pressed[2] = { button1_pressed, button2_pressed };
 
     /*
-     * Armed by the three second hold, then waiting for two right taps. Zero
-     * means not armed; otherwise it is the tick the window closes on.
+     * Armed by the three second hold, then waiting for two taps. egg_expires is
+     * zero until the window is running; otherwise it is the tick it closes on.
      */
-    static uint32_t egg_expires = 0;
+    static bool     egg_armed = false;      /* hold done, buttons still down */
+    static uint32_t egg_expires = 0;        /* window running */
     static uint8_t  egg_taps = 0;
     static uint8_t  egg_tap_side = 0;
-    static bool     egg_wants_release = false;
 
-    /* The arming hold is itself two buttons down, so the taps only start
-     * counting once they have both come back up. */
-    if (!button1_pressed && !button2_pressed) {
-        egg_wants_release = false;
+    /*
+     * The window starts when the buttons come up, not when the hold reaches
+     * three seconds. Nobody lets go on the exact second, and starting it early
+     * meant a hold of four or five seconds - which is what holding "about
+     * three" actually looks like - had spent most of its window before the
+     * first tap.
+     */
+    if (egg_armed && !button1_pressed && !button2_pressed) {
+        egg_armed = false;
+        egg_expires = now_ms + NAV_EGG_WINDOW_MS;
+        egg_taps = 0;
     }
 
     if (egg_expires != 0u && (int32_t)(now_ms - egg_expires) >= 0) {
@@ -182,9 +189,7 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
              * arm the game. */
             both_done = true;
             DebugOverlay_Toggle();
-            egg_expires = now_ms + NAV_EGG_WINDOW_MS;
-            egg_taps = 0;
-            egg_wants_release = true;
+            egg_armed = true;
         }
         else if (held >= NAV_DEBUG_TOGGLE_MS && !overlay_toggled) {
             overlay_toggled = true;
@@ -232,7 +237,7 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
          * for the racer. Mixing them gives up the window, so a stray press
          * cannot walk into either one.
          */
-        if (egg_expires != 0u && !egg_wants_release) {
+        if (egg_expires != 0u) {
             if (egg_taps != 0u && i != egg_tap_side) {
                 egg_expires = 0;
                 egg_taps = 0;
