@@ -107,6 +107,19 @@ and never sees the D-cache; write-back would show tearing and stale pixels.
 **`-u _printf_float` is required at link time.** newlib-nano omits floating
 point printf, and without it every voltage renders blank.
 
+**An open EEZ Studio will overwrite edits made to the `.eez-project` file.**
+It holds the project in memory and writes its own copy back when you save, so a
+change made to that file from outside the editor vanishes without a word. Close
+the editor, or reopen the project, before editing it any other way. A widget
+that "disappeared" and an export that ignored a rename were both this.
+
+**`tools\eez_export.bat` regenerates `Core/User/ui` without opening the editor.**
+EEZ Studio takes `--build-project <file>` and quits when done, skipping its
+single-instance lock. One catch: a headless build **deletes the generated font
+`.c` files** - font rendering needs the editor's own environment - so the script
+restores them from git afterwards. That is correct as long as no font changed;
+if one did, export from the editor.
+
 **EEZ regenerates `Core/User/ui` wholesale but never deletes stale files.**
 After changing the layout, check for orphaned `ui_image_*.c` - 29 of them once
 sat there consuming 10% of flash for artwork nothing referenced.

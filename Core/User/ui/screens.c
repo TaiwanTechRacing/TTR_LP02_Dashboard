@@ -1902,9 +1902,9 @@ void create_screen_battery() {
             lv_label_set_text(obj, "");
         }
         {
-            // batPowerLabel
+            // batLowLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.bat_power_label = obj;
+            objects.bat_low_label = obj;
             lv_obj_set_pos(obj, 250, 228);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
@@ -1945,11 +1945,11 @@ void tick_screen_battery() {
         }
     }
     {
-        const char *new_val = get_var_bat_power_text();
-        const char *cur_val = lv_label_get_text(objects.bat_power_label);
+        const char *new_val = get_var_bat_low_text();
+        const char *cur_val = lv_label_get_text(objects.bat_low_label);
         if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.bat_power_label;
-            lv_label_set_text(objects.bat_power_label, new_val);
+            tick_value_change_obj = objects.bat_low_label;
+            lv_label_set_text(objects.bat_low_label, new_val);
             tick_value_change_obj = NULL;
         }
     }

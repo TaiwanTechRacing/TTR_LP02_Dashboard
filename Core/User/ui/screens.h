@@ -118,7 +118,7 @@ typedef struct _objects_t {
     lv_obj_t *bat_cell_label;
     lv_obj_t *bat_spread_label;
     lv_obj_t *bat_temp_label;
-    lv_obj_t *bat_power_label;
+    lv_obj_t *bat_low_label;
     lv_obj_t *gif;
     lv_obj_t *gif_1;
     lv_obj_t *gif_2;

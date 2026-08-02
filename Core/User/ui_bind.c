@@ -614,18 +614,20 @@ const char *get_var_bat_cell_text(void)
 }
 
 /**
- * Cell spread, the headline number on this page.
+ * Cell voltage delta - the highest cell minus the lowest.
  *
- * A pack is only as good as its worst cell, and the spread is what says how
- * far gone that cell is while there is still time to do something about it.
+ * Named to match CELL_V_DELTA in the DBC rather than invented here, so it is
+ * the same word on the dashboard as in the AMS. It is the headline number on
+ * this page: a pack is only as good as its worst cell, and the delta is what
+ * says how far gone that cell is while there is still time to act.
  */
 const char *get_var_bat_spread_text(void)
 {
     if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
-        return "SPREAD " STALE_TEXT;
+        return "DELTA " STALE_TEXT;
     }
 
-    snprintf(s_bat_text[1], sizeof(s_bat_text[1]), "SPREAD %.3fV",
+    snprintf(s_bat_text[1], sizeof(s_bat_text[1]), "DELTA %.3fV",
              (double)g_vehicle.cell_v_delta);
     return s_bat_text[1];
 }
@@ -641,17 +643,45 @@ const char *get_var_bat_temp_text(void)
     return s_bat_text[2];
 }
 
-const char *get_var_bat_power_text(void)
+/**
+ * Where the weakest cell is, as segment and cell number.
+ *
+ * This slot used to show pack current and power. Both are live values that only
+ * matter while driving, and while driving nobody is on this page - the main
+ * screen is. What this page is for is standing next to the car afterwards, and
+ * then the question is which cell to go and look at.
+ *
+ * Numbered the way the DBC does it: segments from 1, matching AMS_MODULE_1..8,
+ * and cells from 0, matching C0..C13. Reading a coordinate off a heat map is
+ * easy to get wrong by one, so it is printed.
+ */
+const char *get_var_bat_low_text(void)
 {
-    if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
-        return STALE_TEXT;
+    if (VehicleData_IsStale(VD_GROUP_AMS_CELLS, VD_DEFAULT_TIMEOUT_MS)) {
+        return "LOW " STALE_TEXT;
     }
 
-    /* Watts on the bus, kW on the screen - nobody reads a five digit number
-     * at a glance. */
-    snprintf(s_bat_text[3], sizeof(s_bat_text[3]), "%.0fA %.1fkW",
-             (double)g_vehicle.pack_current,
-             (double)(g_vehicle.pack_power / 1000.0f));
+    uint16_t lowest = VD_NUM_CELLS;
+    float lowest_v = 0.0f;
+
+    for (uint16_t i = 0; i < VD_NUM_CELLS; i++) {
+        const float v = g_vehicle.cell_voltage[i];
+        if (v <= 0.0f) {
+            continue;       /* never received */
+        }
+        if (lowest == VD_NUM_CELLS || v < lowest_v) {
+            lowest = i;
+            lowest_v = v;
+        }
+    }
+
+    if (lowest == VD_NUM_CELLS) {
+        return "LOW " STALE_TEXT;
+    }
+
+    snprintf(s_bat_text[3], sizeof(s_bat_text[3]), "LOW S%u-C%u",
+             (unsigned)((lowest / VD_CELLS_PER_SEG) + 1u),
+             (unsigned)(lowest % VD_CELLS_PER_SEG));
     return s_bat_text[3];
 }
 
