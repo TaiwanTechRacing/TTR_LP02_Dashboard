@@ -5,6 +5,7 @@
 #include "gif_pages.h"
 #include "bsp_qspi.h"
 #include "screens.h"
+#include "nav.h"
 
 #include "lvgl.h"
 
@@ -49,18 +50,21 @@ static lv_obj_t *container_for(uint8_t index)
 }
 
 /**
- * Screen index (as used by screens[] in main.c) showing each animation.
+ * Which page each animation lives on, asked rather than assumed.
  *
- * Tied to the order of the page list in nav.c, so adding a page ahead of the
- * debug ones shifts this. It has moved twice already: once when System,
- * Battery and Inverter were inserted after Main, and again when the System
- * page was split into SDC and ECU.
+ * This used to be a constant offset into nav.c's page list, and it went wrong
+ * three times as pages were added ahead of the debug ones - quietly, because a
+ * wrong index pauses the animation being looked at and runs two nobody can
+ * see. Returns -1 when the debug pages are compiled out.
  */
-#define GIF_FIRST_SCREEN_INDEX 7u   /* 0 welcome, 1 main, 2..6 sdc/ecu/sensor/battery/inverter */
-
-static uint8_t screen_for(uint8_t index)
+static int8_t screen_for(uint8_t index)
 {
-    return (uint8_t)(index + GIF_FIRST_SCREEN_INDEX);
+    switch (index) {
+    case 0: return Nav_PageIndexOf(SCREEN_ID_DEBUG1);
+    case 1: return Nav_PageIndexOf(SCREEN_ID_DEBUG2);
+    case 2: return Nav_PageIndexOf(SCREEN_ID_DEBUG3);
+    default: return -1;
+    }
 }
 
 /*
@@ -259,7 +263,9 @@ void GifPages_SetVisiblePage(uint8_t screen_index)
             continue;
         }
 
-        if (screen_for(i) == screen_index) {
+        const int8_t page = screen_for(i);
+
+        if (page >= 0 && (uint8_t)page == screen_index) {
             lv_gif_resume(s_gif[i]);
         }
         else {

@@ -19,8 +19,23 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "screens.h"
+
 /** Button sampling period. Nav_Scan() assumes it is called this often. */
 #define NAV_SCAN_PERIOD_MS 5U
+
+/**
+ * Whether the three animation pages are built in.
+ *
+ * They are for looking at on a bench, not for a driver paging past them on the
+ * way to the battery screen, so whether they exist is a build decision rather
+ * than something to navigate around. Set to 0 and they leave the page cycle
+ * entirely - and the animations stop being created, since there is nowhere to
+ * put them.
+ */
+#ifndef NAV_DEBUG_PAGES
+#define NAV_DEBUG_PAGES 1
+#endif
 
 /**
  * Set up the page list and show the splash screen. Call after ui_init().
@@ -38,6 +53,15 @@ void Nav_ShowPage(uint8_t index);
 
 /** Index of the page currently on screen. */
 uint8_t Nav_CurrentPage(void);
+
+/**
+ * Where a screen sits in the page cycle, or -1 if it is not built in.
+ *
+ * Anything that needs to know a page's position should ask rather than count
+ * the list itself. The animation pages have moved three times as pages were
+ * added ahead of them, and each time a hard-coded index went quietly wrong.
+ */
+int8_t Nav_PageIndexOf(enum ScreensEnum id);
 
 /**
  * Sample the buttons and act on them. Call every NAV_SCAN_PERIOD_MS.

@@ -253,13 +253,15 @@ Two of the pages are outside the button cycle and are reached by a gesture:
 1. Hold **both buttons** for **three seconds or more**. The FPS overlay comes on
    at one second and goes off again at three - that second change is the only
    sign the gesture took.
-2. Let go.
-3. Within **two seconds**, tap twice on the same button: **right** for tetris on
-   GAME1, **left** for the racer on GAME2.
+2. Let go of **one** button: the **right** one for tetris on GAME1, the **left**
+   one for the racer on GAME2. The other stays down; which one comes up first
+   is the whole choice.
 
-Mixing the two taps abandons the attempt. Holding longer than three seconds
-costs nothing - the two second window starts when the buttons come up, not when
-the hold completes.
+There is no window to hit and holding longer costs nothing. Letting go of both
+inside the same 5 ms sample picks neither, which hands do not really do.
+
+The three animation pages are behind `NAV_DEBUG_PAGES` in `nav.h`. Set it to 0
+and they leave the page cycle entirely.
 
 Leaving either game is both buttons held for two seconds.
 

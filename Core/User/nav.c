@@ -17,26 +17,22 @@
 #define NAV_GAME_EXIT_MS      2000U   /* both held this long leaves the game */
 
 /*
- * Getting into a game: hold both buttons for three seconds or more, let go,
- * then within two seconds tap twice - right for tetris, left for the racer.
+ * Getting into a game: hold both buttons for three seconds or more, then let
+ * go of one - the right one for tetris, the left one for the racer.
  *
- * Holding longer than three seconds costs nothing: the window starts when the
- * buttons come up, not when the hold completes.
+ * Which button comes up first is the choice, so there is no window to hit and
+ * nothing to time. Holding longer than three seconds costs nothing.
  *
  * The hold does the work of keeping it hidden - nothing else on this dashboard
- * asks for three seconds - and the two taps afterwards mean an accidental long
- * squeeze cannot land on the game on its own.
+ * asks for three seconds - and it passes the one second mark that toggles the
+ * FPS overlay, so the overlay flips on at one second and back off at three.
+ * That blink is left in deliberately: it is the only feedback the gesture has,
+ * and it ends with the overlay where it started.
  *
- * Holding both also passes the one second mark that toggles the FPS overlay, so
- * the overlay flips on at one second and back off at three. That blink is left
- * in deliberately: it is the only feedback the arming gesture has, and it ends
- * with the overlay where it started.
- *
- * Counted in scans rather than milliseconds so nav.c stays free of the HAL, the
- * same way its debounce does.
+ * Letting go of both at once picks nothing. That needs both to come up inside
+ * one 5 ms sample, which hands do not really do, and retrying costs a hold.
  */
 #define NAV_EGG_ARM_MS        3000U   /* both buttons held this long arms it */
-#define NAV_EGG_WINDOW_MS     2000U   /* after letting go, this long to tap twice */
 
 /*
  * Page order. Index 0 is the splash screen shown at boot and is excluded from
@@ -53,11 +49,13 @@ static const enum ScreensEnum s_screens[] = {
     SCREEN_ID_SYSTEM_SENSOR, /* 4 */
     SCREEN_ID_BATTERY,   /* 5 */
     SCREEN_ID_INVERTER,  /* 6 */
-    SCREEN_ID_DEBUG1,    /* 7 */
-    SCREEN_ID_DEBUG2,    /* 8 */
-    SCREEN_ID_DEBUG3,    /* 9 */
-    SCREEN_ID_GAME1,     /* 10 */
-    SCREEN_ID_GAME2,     /* 11 */
+#if NAV_DEBUG_PAGES
+    SCREEN_ID_DEBUG1,
+    SCREEN_ID_DEBUG2,
+    SCREEN_ID_DEBUG3,
+#endif
+    SCREEN_ID_GAME1,     /* second from last - see NAV_GAME_PAGE */
+    SCREEN_ID_GAME2,     /* last */
 };
 
 #define NAV_PAGE_COUNT ((uint8_t)(sizeof(s_screens) / sizeof(s_screens[0])))
@@ -73,6 +71,17 @@ static const enum ScreensEnum s_screens[] = {
 #define NAV_MAX_PAGE   (NAV_PAGE_COUNT - 3U)
 
 static uint8_t s_page;
+
+int8_t Nav_PageIndexOf(enum ScreensEnum id)
+{
+    for (uint8_t i = 0; i < NAV_PAGE_COUNT; i++) {
+        if (s_screens[i] == id) {
+            return (int8_t)i;
+        }
+    }
+
+    return -1;
+}
 
 void Nav_Init(void)
 {
@@ -127,31 +136,18 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
 
     const bool pressed[2] = { button1_pressed, button2_pressed };
 
-    /*
-     * Armed by the three second hold, then waiting for two taps. egg_expires is
-     * zero until the window is running; otherwise it is the tick it closes on.
-     */
-    static bool     egg_armed = false;      /* hold done, buttons still down */
-    static uint32_t egg_expires = 0;        /* window running */
-    static uint8_t  egg_taps = 0;
-    static uint8_t  egg_tap_side = 0;
+    /* Set by the three second hold; the next button to come up is the choice. */
+    static bool egg_armed = false;
 
     /*
-     * The window starts when the buttons come up, not when the hold reaches
-     * three seconds. Nobody lets go on the exact second, and starting it early
-     * meant a hold of four or five seconds - which is what holding "about
-     * three" actually looks like - had spent most of its window before the
-     * first tap.
+     * A game opened this way leaves one button still down. Without this the
+     * piece would start rotating, or the car steering, the instant the page
+     * appeared - the press that chose the game would also be the first move.
      */
-    if (egg_armed && !button1_pressed && !button2_pressed) {
-        egg_armed = false;
-        egg_expires = now_ms + NAV_EGG_WINDOW_MS;
-        egg_taps = 0;
-    }
+    static bool swallow_until_release = false;
 
-    if (egg_expires != 0u && (int32_t)(now_ms - egg_expires) >= 0) {
-        egg_expires = 0;
-        egg_taps = 0;
+    if (!button1_pressed && !button2_pressed) {
+        swallow_until_release = false;
     }
 
     /*
@@ -189,7 +185,7 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
         }
         else if (held >= NAV_EGG_ARM_MS) {
             /* Put the overlay back where it was before this hold started, and
-             * arm the game. */
+             * wait to see which button comes up. */
             both_done = true;
             DebugOverlay_Toggle();
             egg_armed = true;
@@ -202,6 +198,34 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
         return;
     }
 
+    /*
+     * Out of the hold. If it armed, whichever button was released picks the
+     * game - the other one is still down, which is what tells them apart.
+     */
+    if (egg_armed) {
+        if (button1_pressed && !button2_pressed) {
+            egg_armed = false;
+            swallow_until_release = true;
+            both_since = 0;
+            both_done = false;
+            overlay_toggled = false;
+            Nav_ShowPage(NAV_GAME_PAGE);        /* let go of the right: tetris */
+            return;
+        }
+
+        if (button2_pressed && !button1_pressed) {
+            egg_armed = false;
+            swallow_until_release = true;
+            both_since = 0;
+            both_done = false;
+            overlay_toggled = false;
+            Nav_ShowPage(NAV_RACER_PAGE);       /* let go of the left: racer */
+            return;
+        }
+
+        egg_armed = false;      /* both came up together; nothing chosen */
+    }
+
     both_since = 0;
     both_done = false;
     overlay_toggled = false;
@@ -212,12 +236,14 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
      * than the debounced page steps below.
      */
     if (GameTetris_IsActive()) {
-        GameTetris_Buttons(button1_pressed, button2_pressed);
+        GameTetris_Buttons(button1_pressed && !swallow_until_release,
+                           button2_pressed && !swallow_until_release);
         return;
     }
 
     if (Racer_IsActive()) {
-        Racer_Buttons(button1_pressed, button2_pressed);
+        Racer_Buttons(button1_pressed && !swallow_until_release,
+                      button2_pressed && !swallow_until_release);
         return;
     }
 
@@ -233,28 +259,6 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
 
         if (++buttons[i].counter < NAV_DEBOUNCE_SCANS) {
             continue;                 /* still debouncing */
-        }
-
-        /*
-         * Two taps on the same button pick which game: right for tetris, left
-         * for the racer. Mixing them gives up the window, so a stray press
-         * cannot walk into either one.
-         */
-        if (egg_expires != 0u) {
-            if (egg_taps != 0u && i != egg_tap_side) {
-                egg_expires = 0;
-                egg_taps = 0;
-            }
-            else {
-                egg_tap_side = i;
-                egg_taps++;
-                if (egg_taps >= 2u) {
-                    egg_expires = 0;
-                    egg_taps = 0;
-                    Nav_ShowPage((i == 1u) ? NAV_GAME_PAGE : NAV_RACER_PAGE);
-                    return;
-                }
-            }
         }
 
         int8_t next = (int8_t)s_page + buttons[i].step;
