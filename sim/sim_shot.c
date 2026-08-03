@@ -26,6 +26,7 @@
 #include "sim_data.h"
 #include "sim_app.h"
 #include "nav.h"
+#include "nav.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -142,9 +143,34 @@ int main(int argc, char **argv)
      * samples per press that it would in the car. A coarser step silently
      * doubles the debounce and the hold gesture.
      */
+    uint8_t last_page = 255;
+
     for (uint32_t t = 0; t <= scene_ms; t += NAV_SCAN_PERIOD_MS) {
         s_virtual_tick = t;
+
+        bool b1 = false, b2 = false;
+        if (argc >= 5) {
+            const char *p = argv[4];
+            while (*p) {
+                unsigned st = 0, len = 0, mask = 0;
+                if (sscanf(p, "%u:%u:%u", &st, &len, &mask) == 3) {
+                    if (t >= st && t < (st + len)) {
+                        if (mask & 1u) b1 = true;
+                        if (mask & 2u) b2 = true;
+                    }
+                }
+                while (*p && *p != ',') p++;
+                if (*p == ',') p++;
+            }
+        }
+        SimApp_SetButtons(b1, b2);
+
         SimApp_Step(t);
+
+        if (Nav_CurrentPage() != last_page) {
+            last_page = Nav_CurrentPage();
+            fprintf(stderr, "t=%5u -> page %u\n", (unsigned)t, (unsigned)last_page);
+        }
     }
 
     /* One last refresh so the final state is definitely in the buffer. */

@@ -1342,6 +1342,16 @@ void create_screen_system_ecu() {
                 }
             }
         }
+        {
+            // buttonStateLabel
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.button_state_label = obj;
+            lv_obj_set_pos(obj, 8, 226);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
     }
     
     tick_screen_system_ecu();
@@ -1408,6 +1418,15 @@ void tick_screen_system_ecu() {
         if (new_val != cur_val) {
             tick_value_change_obj = objects.imu_bar;
             lv_bar_set_value(objects.imu_bar, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_button_state();
+        const char *cur_val = lv_label_get_text(objects.button_state_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.button_state_label;
+            lv_label_set_text(objects.button_state_label, new_val);
             tick_value_change_obj = NULL;
         }
     }

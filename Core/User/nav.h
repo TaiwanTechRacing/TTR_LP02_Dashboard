@@ -64,6 +64,16 @@ uint8_t Nav_CurrentPage(void);
 int8_t Nav_PageIndexOf(enum ScreensEnum id);
 
 /**
+ * The raw button states as of the last scan.
+ *
+ * Straight from the pins, before debounce, gestures or any page logic - so a
+ * readout of these separates "the button is not being read" from "the button
+ * is read and something above is swallowing it". That is the question worth
+ * answering first when a button appears dead.
+ */
+void Nav_ButtonState(bool *button1_pressed, bool *button2_pressed);
+
+/**
  * Sample the buttons and act on them. Call every NAV_SCAN_PERIOD_MS.
  *
  * @param now_ms           milliseconds, for the gestures that are held

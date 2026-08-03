@@ -24,6 +24,7 @@
 #include "vehicle_data.h"
 #include "screens.h"
 #include "game_tetris.h"
+#include "nav.h"
 #include "stm32h7xx_hal.h"
 #include <stddef.h>
 #include <string.h>
@@ -683,6 +684,24 @@ const char *get_var_bat_low_text(void)
              (unsigned)((lowest / VD_CELLS_PER_SEG) + 1u),
              (unsigned)(lowest % VD_CELLS_PER_SEG));
     return s_bat_text[3];
+}
+
+/**
+ * The two buttons, straight from the pins.
+ *
+ * For telling a button that is not being read from one that is read and then
+ * swallowed by a gesture or a page. Those look identical from the outside and
+ * the fix is completely different.
+ */
+const char *get_var_button_state(void)
+{
+    static char buf[16];
+
+    bool b1 = false, b2 = false;
+    Nav_ButtonState(&b1, &b2);
+
+    snprintf(buf, sizeof(buf), "BTN L:%d R:%d", (int)b1, (int)b2);
+    return buf;
 }
 
 /** Score on the game page. */

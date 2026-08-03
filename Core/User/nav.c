@@ -10,6 +10,8 @@
 #include "racer.h"
 
 #include "ui.h"
+
+#include <stddef.h>
 #include "screens.h"
 
 #define NAV_DEBOUNCE_SCANS       5U    /* consecutive samples to accept a press */
@@ -71,6 +73,19 @@ static const enum ScreensEnum s_screens[] = {
 #define NAV_MAX_PAGE   (NAV_PAGE_COUNT - 3U)
 
 static uint8_t s_page;
+
+static bool s_raw_b1;
+static bool s_raw_b2;
+
+void Nav_ButtonState(bool *button1_pressed, bool *button2_pressed)
+{
+    if (button1_pressed != NULL) {
+        *button1_pressed = s_raw_b1;
+    }
+    if (button2_pressed != NULL) {
+        *button2_pressed = s_raw_b2;
+    }
+}
 
 int8_t Nav_PageIndexOf(enum ScreensEnum id)
 {
@@ -135,6 +150,11 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
     };
 
     const bool pressed[2] = { button1_pressed, button2_pressed };
+
+    /* Recorded before anything can act on them, so the readout shows the pins
+     * rather than what the logic below decided to do about them. */
+    s_raw_b1 = button1_pressed;
+    s_raw_b2 = button2_pressed;
 
     /* Set by the three second hold; the next button to come up is the choice. */
     static bool egg_armed = false;

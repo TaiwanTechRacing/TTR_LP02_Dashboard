@@ -97,6 +97,7 @@ typedef struct _objects_t {
     lv_obj_t *mcu3_bar;
     lv_obj_t *obj25;
     lv_obj_t *imu_bar;
+    lv_obj_t *button_state_label;
     lv_obj_t *obj26;
     lv_obj_t *apps1_label;
     lv_obj_t *apps1_bar;
