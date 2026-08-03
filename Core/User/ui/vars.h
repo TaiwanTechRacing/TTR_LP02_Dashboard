@@ -61,8 +61,7 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_BAT_CELL_TEXT = 45,
     FLOW_GLOBAL_VARIABLE_BAT_SPREAD_TEXT = 46,
     FLOW_GLOBAL_VARIABLE_BAT_TEMP_TEXT = 47,
-    FLOW_GLOBAL_VARIABLE_BAT_LOW_TEXT = 48,
-    FLOW_GLOBAL_VARIABLE_BUTTON_STATE = 49
+    FLOW_GLOBAL_VARIABLE_BAT_LOW_TEXT = 48
 };
 
 // Native global variables
@@ -165,8 +164,6 @@ extern const char *get_var_bat_temp_text();
 extern void set_var_bat_temp_text(const char *value);
 extern const char *get_var_bat_low_text();
 extern void set_var_bat_low_text(const char *value);
-extern const char *get_var_button_state();
-extern void set_var_button_state(const char *value);
 
 #ifdef __cplusplus
 }

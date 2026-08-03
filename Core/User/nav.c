@@ -74,18 +74,10 @@ static const enum ScreensEnum s_screens[] = {
 
 static uint8_t s_page;
 
-static bool s_raw_b1;
-static bool s_raw_b2;
-
-void Nav_ButtonState(bool *button1_pressed, bool *button2_pressed)
-{
-    if (button1_pressed != NULL) {
-        *button1_pressed = s_raw_b1;
-    }
-    if (button2_pressed != NULL) {
-        *button2_pressed = s_raw_b2;
-    }
-}
+volatile bool     g_nav_btn1_level;
+volatile bool     g_nav_btn2_level;
+volatile uint32_t g_nav_btn1_presses;
+volatile uint32_t g_nav_btn2_presses;
 
 int8_t Nav_PageIndexOf(enum ScreensEnum id)
 {
@@ -151,10 +143,10 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
 
     const bool pressed[2] = { button1_pressed, button2_pressed };
 
-    /* Recorded before anything can act on them, so the readout shows the pins
-     * rather than what the logic below decided to do about them. */
-    s_raw_b1 = button1_pressed;
-    s_raw_b2 = button2_pressed;
+    /* Recorded before anything can act on them, so a watch window shows the
+     * pins rather than what the logic below decided to do about them. */
+    g_nav_btn1_level = button1_pressed;
+    g_nav_btn2_level = button2_pressed;
 
     /* Set by the three second hold; the next button to come up is the choice. */
     static bool egg_armed = false;
@@ -279,6 +271,15 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
 
         if (++buttons[i].counter < NAV_DEBOUNCE_SCANS) {
             continue;                 /* still debouncing */
+        }
+
+        /* Counted here, where a press has been accepted but before anything
+         * decides what to do with it. */
+        if (i == 0u) {
+            g_nav_btn1_presses++;
+        }
+        else {
+            g_nav_btn2_presses++;
         }
 
         int8_t next = (int8_t)s_page + buttons[i].step;

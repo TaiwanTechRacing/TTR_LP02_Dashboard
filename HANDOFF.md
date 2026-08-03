@@ -265,6 +265,22 @@ and they leave the page cycle entirely.
 
 Leaving either game is both buttons held for two seconds.
 
+### Diagnosing a dead button
+
+Four globals in `nav.c`, `volatile` so they survive optimisation, for a watch
+window. Nothing in the firmware reads them.
+
+| | |
+|---|---|
+| `g_nav_btn1_level`, `g_nav_btn2_level` | the pin as of the last scan, before debounce or page logic |
+| `g_nav_btn1_presses`, `g_nav_btn2_presses` | presses that survived debounce |
+
+The level not moving means the pin or the wiring, and nothing above it matters -
+note the buttons are configured `GPIO_NOPULL`, so they depend entirely on the
+board's pull-ups. The level moving but the count not means the contact is too
+noisy or too brief. Both moving with no page change means something above is
+swallowing it: a game page, or the both-buttons gesture.
+
 ### Open items
 
 1. **The speed readout is clamped to 199 km/h** for layout reasons, so a real

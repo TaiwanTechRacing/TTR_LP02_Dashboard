@@ -63,15 +63,31 @@ uint8_t Nav_CurrentPage(void);
  */
 int8_t Nav_PageIndexOf(enum ScreensEnum id);
 
-/**
- * The raw button states as of the last scan.
+/*
+ * Button diagnostics, for a debugger watch window.
  *
- * Straight from the pins, before debounce, gestures or any page logic - so a
- * readout of these separates "the button is not being read" from "the button
- * is read and something above is swallowing it". That is the question worth
- * answering first when a button appears dead.
+ * Nothing in the firmware reads these; they exist so a board on the bench can
+ * answer the only question worth asking first when a button appears dead -
+ * whether the pin is moving at all.
+ *
+ *   g_nav_btn1_level / g_nav_btn2_level
+ *       the pin as of the last scan, before debounce or any page logic. Press
+ *       the button with a watch window open: if this does not change, the
+ *       problem is the pin or the wiring and nothing above it matters.
+ *
+ *   g_nav_btn1_presses / g_nav_btn2_presses
+ *       how many presses have survived debounce. If the level moves but this
+ *       does not, the contact is too noisy or too brief to be accepted; if
+ *       both move and the page still does not change, it is being swallowed
+ *       above - by a game, or by the both-buttons gesture.
+ *
+ * volatile because the compiler can otherwise see that nothing reads them and
+ * throw the stores away, which is exactly the case here.
  */
-void Nav_ButtonState(bool *button1_pressed, bool *button2_pressed);
+extern volatile bool     g_nav_btn1_level;
+extern volatile bool     g_nav_btn2_level;
+extern volatile uint32_t g_nav_btn1_presses;
+extern volatile uint32_t g_nav_btn2_presses;
 
 /**
  * Sample the buttons and act on them. Call every NAV_SCAN_PERIOD_MS.
