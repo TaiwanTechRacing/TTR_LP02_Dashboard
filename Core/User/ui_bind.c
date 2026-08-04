@@ -147,22 +147,38 @@ void UIBind_ArmStartupSweep(void)
     s_sweep_state = SWEEP_ARMED;
 }
 
-/**
- * Ready-to-drive state.
+/*
+ * The main status indicator.
  *
- * "N-RDY" rather than "NOT READY": the label is content-sized, so the longer
- * string grew past the right edge of the 480 px panel.
+ * Six words, one per VCU state, and the colour is the first thing read at a
+ * glance:
  *
- * Colour is applied separately in UIBind_ApplyDynamicStyles() - a getter can
- * only return text.
+ *   green  RTD     driving - the pedal is live
+ *   green  READY   precharged; run the RTD sequence and it goes
+ *   yellow PRCHG   everything closed, waiting on precharge
+ *   yellow RESET   faulted, but the reset procedure will clear it
+ *   red    N-RDY   not ready and not resettable - wave for help
+ *   red    FAULT   faulted or something is missing - wave for help
+ *
+ * Yellow means "there is something you can do about it", red means "there is
+ * not". That is the distinction worth making at a glance from inside a helmet;
+ * the exact word is the second read, not the first.
+ *
+ * All six fit the 190 px slot at Orbitron bold 40 - PRCHG is the widest at
+ * 165 px, against READY's 163. Anything longer would need a smaller font,
+ * which is why they are abbreviations and not sentences.
  */
+static const char *const MAIN_STATUS_TEXT[VD_MAIN_STATUS_COUNT] = {
+    "RTD", "READY", "PRCHG", "N-RDY", "FAULT", "RESET"
+};
+
 const char *get_var_ready(void)
 {
-    if (VehicleData_IsStale(VD_GROUP_VCU_STATE, VD_DEFAULT_TIMEOUT_MS)) {
+    if (VehicleData_IsStale(VD_GROUP_VCU_DASH, VD_DEFAULT_TIMEOUT_MS)) {
         return STALE_TEXT;
     }
 
-    return g_vehicle.rtd_active ? "READY" : "N-RDY";
+    return MAIN_STATUS_TEXT[g_vehicle.main_status];
 }
 
 /** High voltage pack state of charge. */
@@ -876,12 +892,29 @@ void UIBind_ApplyDynamicStyles(void)
     static const lv_color_t red    = LV_COLOR_MAKE(0xff, 0x20, 0x20);
     static const lv_color_t white  = LV_COLOR_MAKE(0xff, 0xff, 0xff);
 
-    const bool ready = !VehicleData_IsStale(VD_GROUP_VCU_STATE, VD_DEFAULT_TIMEOUT_MS)
-                       && g_vehicle.rtd_active;
+    /*
+     * A silent VCU is red, not grey. The label already reads "---", and a
+     * neutral colour there would be the one state on this screen that does not
+     * say whether it is safe to get in.
+     */
+    {
+        static const lv_color_t status_colour[VD_MAIN_STATUS_COUNT] = {
+            LV_COLOR_MAKE(0x02, 0xff, 0x02),    /* RTD   */
+            LV_COLOR_MAKE(0x02, 0xff, 0x02),    /* READY */
+            LV_COLOR_MAKE(0xff, 0xd0, 0x00),    /* PRCHG */
+            LV_COLOR_MAKE(0xff, 0x20, 0x20),    /* N-RDY */
+            LV_COLOR_MAKE(0xff, 0x20, 0x20),    /* FAULT */
+            LV_COLOR_MAKE(0xff, 0xd0, 0x00),    /* RESET */
+        };
 
-    lv_obj_set_style_text_color(objects.ready_label,
-                                ready ? green : red,
-                                LV_PART_MAIN | LV_STATE_DEFAULT);
+        const bool live = !VehicleData_IsStale(VD_GROUP_VCU_DASH,
+                                               VD_DEFAULT_TIMEOUT_MS);
+
+        lv_obj_set_style_text_color(objects.ready_label,
+                                    live ? status_colour[g_vehicle.main_status]
+                                         : red,
+                                    LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
 
     /*
      * The state word carries the colour, not the name beside it - the word

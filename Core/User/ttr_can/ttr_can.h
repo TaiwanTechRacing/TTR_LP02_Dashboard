@@ -763,6 +763,22 @@ typedef struct {
 void ttr_vcu_vcu_system_status_unpack(ttr_vcu_vcu_system_status_t *dst, const ttr_can_frame_t *frame);
 void ttr_vcu_vcu_system_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_system_status_t *src);
 
+/* ===== VCU_VCU_DIAG  (100 ms) ===== */
+#define TTR_CAN_ID_VCU_VCU_DIAG   (0x427u)
+#define TTR_CAN_DLC_VCU_VCU_DIAG  (12u)
+
+typedef struct {
+    uint32_t RTD_EXIT_REASON;
+    uint8_t RTD_EXIT_COUNT;
+    uint8_t REGEN_BLOCK_REASON;
+    uint8_t REGEN_LOW_SPEED_FALLBACK;
+    uint8_t CONTROL_TIMEOUT_COUNT;
+    uint8_t CONTROL_TIMEOUT_MAX_AGE_MS;
+} ttr_vcu_vcu_diag_t;
+
+void ttr_vcu_vcu_diag_unpack(ttr_vcu_vcu_diag_t *dst, const ttr_can_frame_t *frame);
+void ttr_vcu_vcu_diag_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_diag_t *src);
+
 /* ===== VCU_VCU_MCU_CAN_STATUS  (100 ms) -- Reserved in current firmware; transmitted as zero-filled frame. ===== */
 #define TTR_CAN_ID_VCU_VCU_MCU_CAN_STATUS   (0x42Au)
 #define TTR_CAN_DLC_VCU_VCU_MCU_CAN_STATUS  (32u)
@@ -910,6 +926,25 @@ typedef struct {
 
 void ttr_vcu_vcu_sensor2_unpack(ttr_vcu_vcu_sensor2_t *dst, const ttr_can_frame_t *frame);
 void ttr_vcu_vcu_sensor2_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sensor2_t *src);
+
+/* ===== VCU_VCU_DASH  (100 ms) ===== */
+#define TTR_CAN_ID_VCU_VCU_DASH   (0x432u)
+#define TTR_CAN_DLC_VCU_VCU_DASH  (8u)
+
+/* MAIN_STATUS_INDICATOR enum values */
+#define TTR_VCU_VCU_DASH_MAIN_STATUS_INDICATOR_RTD (0u)
+#define TTR_VCU_VCU_DASH_MAIN_STATUS_INDICATOR_READY (1u)
+#define TTR_VCU_VCU_DASH_MAIN_STATUS_INDICATOR_PRCHG (2u)
+#define TTR_VCU_VCU_DASH_MAIN_STATUS_INDICATOR_N_RDY (3u)
+#define TTR_VCU_VCU_DASH_MAIN_STATUS_INDICATOR_FAULT (4u)
+#define TTR_VCU_VCU_DASH_MAIN_STATUS_INDICATOR_RESET (5u)
+
+typedef struct {
+    uint8_t MAIN_STATUS_INDICATOR;  /* see TTR_VCU_VCU_DASH_MAIN_STATUS_INDICATOR_* */
+} ttr_vcu_vcu_dash_t;
+
+void ttr_vcu_vcu_dash_unpack(ttr_vcu_vcu_dash_t *dst, const ttr_can_frame_t *frame);
+void ttr_vcu_vcu_dash_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dash_t *src);
 
 /* ===== VCU_VCU_IMU_Q  (6 ms) ===== */
 #define TTR_CAN_ID_VCU_VCU_IMU_Q   (0x435u)
@@ -2975,11 +3010,13 @@ typedef struct {
     ttr_vcu_vcu_io_t vcu_vcu_io;  /* TX, 50 ms */
     ttr_vcu_vcu_cpu_task_status_t vcu_vcu_cpu_task_status;  /* TX, 100 ms */
     ttr_vcu_vcu_system_status_t vcu_vcu_system_status;  /* TX, 10 ms */
+    ttr_vcu_vcu_diag_t vcu_vcu_diag;  /* TX, 100 ms */
     ttr_vcu_vcu_mcu_can_status_t vcu_vcu_mcu_can_status;  /* TX, 100 ms */
     ttr_vcu_vcu_dyc_status_t vcu_vcu_dyc_status;  /* TX, 10 ms */
     ttr_vcu_vcu_mcu_status_t vcu_vcu_mcu_status;  /* TX, 50 ms */
     ttr_vcu_vcu_sensor1_t vcu_vcu_sensor1;  /* TX, 6 ms */
     ttr_vcu_vcu_sensor2_t vcu_vcu_sensor2;  /* TX, 6 ms */
+    ttr_vcu_vcu_dash_t vcu_vcu_dash;  /* TX, 100 ms */
     ttr_vcu_vcu_imu_q_t vcu_vcu_imu_q;  /* TX, 6 ms */
     ttr_vcu_vcu_imu_acc_t vcu_vcu_imu_acc;  /* TX, 6 ms */
     ttr_vcu_vcu_imu_rot_t vcu_vcu_imu_rot;  /* TX, 6 ms */

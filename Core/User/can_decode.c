@@ -154,6 +154,21 @@ static void decode_one(const ttr_can_frame_t *frame)
         break;
     }
 
+    case TTR_CAN_ID_VCU_VCU_DASH: {
+        ttr_vcu_vcu_dash_t s;
+        ttr_vcu_vcu_dash_unpack(&s, frame);
+
+        /* Anything outside the enum is treated as a fault rather than dropped.
+         * A VCU sending a value this side does not recognise is itself a
+         * reason not to get in the car. */
+        g_vehicle.main_status = (s.MAIN_STATUS_INDICATOR < VD_MAIN_STATUS_COUNT)
+                                ? s.MAIN_STATUS_INDICATOR
+                                : (uint8_t)VD_MAIN_STATUS_FAULT;
+
+        VehicleData_MarkFresh(VD_GROUP_VCU_DASH);
+        break;
+    }
+
     case TTR_CAN_ID_VCU_VCU_MCU_STATUS: {
         ttr_vcu_vcu_mcu_status_t s;
         ttr_vcu_vcu_mcu_status_unpack(&s, frame);

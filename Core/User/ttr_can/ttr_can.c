@@ -1179,6 +1179,31 @@ void ttr_vcu_vcu_system_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sy
     { float _r = ((float)src->REGEN_TORQUE_LIMIT - (0.0f)) / (0.009768009768009768f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 12u, (uint64_t)_raw); }
 }
 
+/* ===== VCU_VCU_DIAG ===== */
+void ttr_vcu_vcu_diag_unpack(ttr_vcu_vcu_diag_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->RTD_EXIT_REASON = (uint32_t)ttr_get_bits(frame->data, 0u, 18u);
+    dst->RTD_EXIT_COUNT = (uint8_t)ttr_get_bits(frame->data, 24u, 8u);
+    dst->REGEN_BLOCK_REASON = (uint8_t)ttr_get_bits(frame->data, 32u, 8u);
+    dst->REGEN_LOW_SPEED_FALLBACK = (uint8_t)ttr_get_bits(frame->data, 40u, 1u);
+    dst->CONTROL_TIMEOUT_COUNT = (uint8_t)ttr_get_bits(frame->data, 48u, 8u);
+    dst->CONTROL_TIMEOUT_MAX_AGE_MS = (uint8_t)ttr_get_bits(frame->data, 56u, 8u);
+}
+
+void ttr_vcu_vcu_diag_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_diag_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_VCU_VCU_DIAG;
+    frame->dlc = TTR_CAN_DLC_VCU_VCU_DIAG;
+    for (i = 0; i < 12u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 18u, (uint64_t)src->RTD_EXIT_REASON);
+    ttr_set_bits(frame->data, 24u, 8u, (uint64_t)src->RTD_EXIT_COUNT);
+    ttr_set_bits(frame->data, 32u, 8u, (uint64_t)src->REGEN_BLOCK_REASON);
+    ttr_set_bits(frame->data, 40u, 1u, (uint64_t)src->REGEN_LOW_SPEED_FALLBACK);
+    ttr_set_bits(frame->data, 48u, 8u, (uint64_t)src->CONTROL_TIMEOUT_COUNT);
+    ttr_set_bits(frame->data, 56u, 8u, (uint64_t)src->CONTROL_TIMEOUT_MAX_AGE_MS);
+}
+
 /* ===== VCU_VCU_MCU_CAN_STATUS ===== */
 void ttr_vcu_vcu_mcu_can_status_unpack(ttr_vcu_vcu_mcu_can_status_t *dst, const ttr_can_frame_t *frame)
 {
@@ -1426,6 +1451,21 @@ void ttr_vcu_vcu_sensor2_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sensor2_
     { float _r = ((float)src->APPS2_PU - (0.0f)) / (0.0015259021896696422f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 16u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->STEERING_ANGLE - (-180.0f)) / (0.005493247882810712f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 16u, (uint64_t)_raw); }
     { float _r = ((float)src->CAR_SPEED - (0.0f)) / (0.004577706569008927f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 16u, (uint64_t)_raw); }
+}
+
+/* ===== VCU_VCU_DASH ===== */
+void ttr_vcu_vcu_dash_unpack(ttr_vcu_vcu_dash_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->MAIN_STATUS_INDICATOR = (uint8_t)ttr_get_bits(frame->data, 0u, 8u);
+}
+
+void ttr_vcu_vcu_dash_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dash_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_VCU_VCU_DASH;
+    frame->dlc = TTR_CAN_DLC_VCU_VCU_DASH;
+    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 8u, (uint64_t)src->MAIN_STATUS_INDICATOR);
 }
 
 /* ===== VCU_VCU_IMU_Q ===== */

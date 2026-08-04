@@ -39,6 +39,27 @@ typedef enum {
 } vd_drive_mode_t;
 
 /*
+ * The main status indicator, straight out of VCU_DASH.
+ *
+ * The VCU decides this, not the dashboard. It knows the precharge contactors,
+ * the fault latches and where the RTD sequence has got to; the dashboard sees
+ * none of that and would have to guess at it from SDC bits and RTD_ACTIVE. Two
+ * implementations of the same state machine that disagree is worse than no
+ * indicator at all, so this one is a display of someone else's decision.
+ *
+ * Values are fixed by the DBC (VAL_ 1074 MAIN_STATUS_INDICATOR).
+ */
+typedef enum {
+    VD_MAIN_STATUS_RTD = 0,   /* driving; the pedal works */
+    VD_MAIN_STATUS_READY,     /* precharged, waiting for the RTD sequence */
+    VD_MAIN_STATUS_PRCHG,     /* SDC closed, waiting on precharge */
+    VD_MAIN_STATUS_N_RDY,     /* not ready and not resettable */
+    VD_MAIN_STATUS_FAULT,     /* faulted or a node is missing */
+    VD_MAIN_STATUS_RESET,     /* faulted, but the reset procedure will clear it */
+    VD_MAIN_STATUS_COUNT
+} vd_main_status_t;
+
+/*
  * Bit positions of each shutdown circuit node within sdc_status.
  *
  * These used to be bare numbers scattered through the code (sdcStatus bits
@@ -125,6 +146,7 @@ typedef enum {
     VD_GROUP_VCU_ERROR,
     VD_GROUP_VCU_ONLINE,
     VD_GROUP_VCU_MCU_STATUS,
+    VD_GROUP_VCU_DASH,
     VD_GROUP_VCU_GPS,
     VD_GROUP_AMS_STATUS,
     VD_GROUP_AMS_CELLS,
@@ -141,6 +163,9 @@ typedef struct {
     bool     tebppc_active;
     bool     ams_ready;
     uint8_t  drive_mode;          /* vd_drive_mode_t */
+
+    /* --- VCU_DASH --- */
+    uint8_t  main_status;         /* vd_main_status_t */
 
     /* --- VCU_SDC --- */
     uint16_t sdc_status;          /* bit positions per vd_sdc_node_t */

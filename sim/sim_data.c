@@ -100,6 +100,18 @@ void SimData_Feed(uint32_t now)
     VehicleData_MarkFresh(VD_GROUP_VCU_STATE);
 
     /*
+     * The main indicator walks all six states, two seconds each, so a
+     * screenshot run sees every word and every colour rather than whichever
+     * one the car happened to be in.
+     *
+     * 1700 ms rather than a round number: at 2000 ms the sixth state landed
+     * inside the bus dropout on every single cycle - 2000*(6k+5) is always
+     * 10000 past a 12000 ms scene - and RESET could not be photographed at all.
+     */
+    g_vehicle.main_status = (uint8_t)((now / 1700u) % (uint32_t)VD_MAIN_STATUS_COUNT);
+    VehicleData_MarkFresh(VD_GROUP_VCU_DASH);
+
+    /*
      * Shutdown circuit: everything closed except one node, which walks the list
      * a step at a time.
      *
