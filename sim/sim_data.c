@@ -169,6 +169,11 @@ void SimData_Feed(uint32_t now)
         for (uint8_t p = 0; p < 3u; p++) {
             g_vehicle.gate_temp[i][p] = 35.0f + (wave * 50.0f) + ((float)p * 4.0f);
         }
+        /* One phase on INV3 running away from the other two, which is the
+         * case the range format exists to make visible. */
+        if (i == 2u) {
+            g_vehicle.gate_temp[i][1] += 22.0f;
+        }
     }
 
     const uint8_t fault_step = (uint8_t)((now / 4000u) % 5u);

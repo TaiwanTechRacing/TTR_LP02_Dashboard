@@ -749,21 +749,70 @@ static const char *inv_row_text(uint8_t inv)
         return s_inv_row[inv];
     }
 
-    float gate = g_vehicle.gate_temp[inv][0];
+    /*
+     * The gate phases as a range rather than just the hottest.
+     *
+     * All three sitting at 70 and one of them alone at 70 are different
+     * problems - the first is a hard-working inverter, the second is a phase
+     * with something wrong on it - and a single number cannot tell them apart.
+     * The spread between the ends is the whole reason the twelve phases are
+     * decoded instead of collapsed at arrival.
+     */
+    float lo = g_vehicle.gate_temp[inv][0];
+    float hi = lo;
     for (uint8_t p = 1; p < 3u; p++) {
-        if (g_vehicle.gate_temp[inv][p] > gate) {
-            gate = g_vehicle.gate_temp[inv][p];
+        const float t = g_vehicle.gate_temp[inv][p];
+        if (t < lo) {
+            lo = t;
+        }
+        if (t > hi) {
+            hi = t;
         }
     }
 
     const bool faulted =
         (g_vehicle.inv_faults & (uint16_t)(0x0Fu << (inv * VD_INV_KINDS))) != 0u;
 
-    snprintf(s_inv_row[inv], sizeof(s_inv_row[inv]), "INV%u  M%3.0f  G%3.0f  %s",
+    snprintf(s_inv_row[inv], sizeof(s_inv_row[inv]), "INV%u M%3.0f G%3.0f~%-3.0f %s",
              (unsigned)(inv + 1u), (double)g_vehicle.motor_temp[inv],
-             (double)gate, faulted ? "FAULT" : "OK");
+             (double)lo, (double)hi, faulted ? "FAULT" : "OK");
 
     return s_inv_row[inv];
+}
+
+/**
+ * The whole drivetrain in one line, the way the battery page summarises cells.
+ *
+ * Both ranges span all four inverters, so a single motor or a single phase out
+ * of step widens the range that contains it and shows up here before anyone
+ * reads the rows.
+ */
+const char *get_var_inv_summary_text(void)
+{
+    static char buf[40];
+
+    if (VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        return "MOTOR " STALE_TEXT "  GATE " STALE_TEXT;
+    }
+
+    float m_lo = g_vehicle.motor_temp[0], m_hi = m_lo;
+    float g_lo = g_vehicle.gate_temp[0][0], g_hi = g_lo;
+
+    for (uint8_t i = 0; i < VD_INV_COUNT; i++) {
+        const float m = g_vehicle.motor_temp[i];
+        if (m < m_lo) m_lo = m;
+        if (m > m_hi) m_hi = m;
+
+        for (uint8_t p = 0; p < 3u; p++) {
+            const float t = g_vehicle.gate_temp[i][p];
+            if (t < g_lo) g_lo = t;
+            if (t > g_hi) g_hi = t;
+        }
+    }
+
+    snprintf(buf, sizeof(buf), "MOTOR %.0f~%.0f  GATE %.0f~%.0f C",
+             (double)m_lo, (double)m_hi, (double)g_lo, (double)g_hi);
+    return buf;
 }
 
 const char *get_var_inv1_text(void) { return inv_row_text(0); }
@@ -820,6 +869,7 @@ void UIBind_ApplyDynamicStyles(void)
     static const lv_color_t green  = LV_COLOR_MAKE(0x02, 0xff, 0x02);
     static const lv_color_t yellow = LV_COLOR_MAKE(0xff, 0xd0, 0x00);
     static const lv_color_t red    = LV_COLOR_MAKE(0xff, 0x20, 0x20);
+    static const lv_color_t white  = LV_COLOR_MAKE(0xff, 0xff, 0xff);
 
     const bool ready = !VehicleData_IsStale(VD_GROUP_VCU_STATE, VD_DEFAULT_TIMEOUT_MS)
                        && g_vehicle.rtd_active;
@@ -827,6 +877,29 @@ void UIBind_ApplyDynamicStyles(void)
     lv_obj_set_style_text_color(objects.ready_label,
                                 ready ? green : red,
                                 LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    /*
+     * A faulted inverter's row goes red. The row already says FAULT, but on a
+     * page of four near-identical lines the word is easy to skim past and the
+     * colour is not.
+     */
+    {
+        lv_obj_t *const rows[VD_INV_COUNT] = {
+            objects.inv1_label, objects.inv2_label,
+            objects.inv3_label, objects.inv4_label,
+        };
+
+        const bool stale = VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS,
+                                               VD_DEFAULT_TIMEOUT_MS);
+
+        for (uint8_t i = 0; i < VD_INV_COUNT; i++) {
+            const bool faulted = !stale &&
+                ((g_vehicle.inv_faults & (uint16_t)(0x0Fu << (i * VD_INV_KINDS))) != 0u);
+
+            lv_obj_set_style_text_color(rows[i], faulted ? red : white,
+                                        LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
+    }
 
     /*
      * SOC bar: green down to 50%, yellow to 30%, red below that. A stale pack

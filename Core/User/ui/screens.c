@@ -2021,6 +2021,16 @@ void create_screen_inverter() {
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
+        {
+            // invSummaryLabel
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv_summary_label = obj;
+            lv_obj_set_pos(obj, 14, 200);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
     }
     
     tick_screen_inverter();
@@ -2069,6 +2079,15 @@ void tick_screen_inverter() {
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.inv_fault_label;
             lv_label_set_text(objects.inv_fault_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv_summary_text();
+        const char *cur_val = lv_label_get_text(objects.inv_summary_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv_summary_label;
+            lv_label_set_text(objects.inv_summary_label, new_val);
             tick_value_change_obj = NULL;
         }
     }
