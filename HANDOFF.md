@@ -213,6 +213,20 @@ STM32_Programmer_CLI -c port=SWD mode=UR -el W25Q64_TTR.stldr -w qspi.bin 0x9000
 normally when the QSPI is blank - it checks for a magic word rather than handing
 0xFF to the decoder.
 
+**The racer's car sprite carries a licence.** `Core/User/racer_sprites.c` is
+generated from `dashboard_layout/racer/spritesheet.high.png`, which is artwork by
+Selim Arsever from [RacerJS](https://github.com/onaluf/RacerJS). The code in that
+repository is MIT but **the art is CC BY-SA 3.0**, and that travels into the
+binary: attribution has to stay, and share-alike applies to the art. It is
+recorded in the tool, in the generated file, and here. Regenerate with:
+
+```powershell
+python tools\make_racer_sprites.py dashboard_layout\racer\spritesheet.high.png -o Core\User\racer_sprites.c
+```
+
+Swap in original art and the obligation goes away - it is 17 kB of flash, three
+frames at 69x38 and 77x38.
+
 ---
 
 ## Hardware facts, all confirmed on the board
