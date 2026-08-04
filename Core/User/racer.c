@@ -5,6 +5,7 @@
 #include "racer.h"
 
 #include "bsp_sdram.h"
+#include "racer_sprites.h"
 #include "screens.h"
 #include "vehicle_data.h"
 
@@ -158,6 +159,9 @@ static float s_player_x;      /* -1 to 1 across the road */
 static float s_speed;         /* world units per second */
 
 static bool s_btn_left, s_btn_right;
+
+/* Which way the wheel is turned, for choosing the car frame. */
+static int8_t s_car_steer;
 
 #define DEF_MAX_SPEED   (DEF_SEGMENT_LENGTH * 60.0f)
 #define DEF_ACCEL       (DEF_MAX_SPEED / 2.5f)
@@ -435,6 +439,58 @@ typedef struct {
 static projected_t s_proj[PROJECTED_MAX];
 static int         s_proj_count;
 
+/**
+ * The car, at the bottom of the screen where the camera sits behind it.
+ *
+ * Scaled up from the artwork's 77 px because at native size it is a quarter of
+ * the width RacerJS gives it - their canvas is 320 across and this panel is
+ * 480, so drawing it 1:1 would leave a toy car on a wide road.
+ *
+ * Which of the three frames is used follows the wheel rather than the car's
+ * position on the road: it is the driver's input that should show, and the
+ * position is already obvious from where the road is.
+ */
+#define CAR_SCALE_NUM   3
+#define CAR_SCALE_DEN   2
+#define CAR_BOTTOM_GAP  6
+
+static void draw_car(int steer_dir)
+{
+    const racer_sprite_t *sprite =
+        &racer_car[(steer_dir < 0) ? RACER_CAR_LEFT
+                 : (steer_dir > 0) ? RACER_CAR_RIGHT
+                                   : RACER_CAR_STRAIGHT];
+
+    const int dw = (sprite->w * CAR_SCALE_NUM) / CAR_SCALE_DEN;
+    const int dh = (sprite->h * CAR_SCALE_NUM) / CAR_SCALE_DEN;
+
+    const int x0 = (W - dw) / 2;
+    const int y0 = H - CAR_BOTTOM_GAP - dh;
+
+    for (int row = 0; row < dh; row++) {
+        const int y = y0 + row;
+        if (y < 0 || y >= H) {
+            continue;
+        }
+
+        const uint16_t *src = sprite->pixels +
+                              ((size_t)((row * sprite->h) / dh) * sprite->w);
+        uint16_t *dst = s_buf + ((size_t)y * W);
+
+        for (int col = 0; col < dw; col++) {
+            const int x = x0 + col;
+            if (x < 0 || x >= W) {
+                continue;
+            }
+
+            const uint16_t p = src[(col * sprite->w) / dw];
+            if (p != RACER_SPRITE_TRANSPARENT) {
+                dst[x] = p;
+            }
+        }
+    }
+}
+
 static void render(void)
 {
     const int base = (int)(s_position / s_tune.segment_length);
@@ -559,6 +615,9 @@ static void render(void)
             draw_cone(p->y, (int)(p->x + (p->w * seg->cone_x)), h, p->clip, CONE_ORANGE);
         }
     }
+
+    /* The car last: it is nearer than anything else on screen. */
+    draw_car(s_car_steer);
 }
 
 /* --- driving -------------------------------------------------------------- */
@@ -636,6 +695,8 @@ static void advance(float dt)
     if (s_speed > s_tune.max_speed) {
         s_speed = s_tune.max_speed;
     }
+
+    s_car_steer = (steer > 0.25f) ? 1 : (steer < -0.25f) ? -1 : 0;
 
     /* Steering authority falls away as the car slows, as it would. */
     s_player_x += steer * s_tune.steer_rate * speed_pu * dt;

@@ -48,6 +48,7 @@ set(SHARED_SOURCES
     ${REPO_ROOT}/Core/User/game_tetris.c
     ${REPO_ROOT}/Core/User/cell_map.c
     ${REPO_ROOT}/Core/User/racer.c
+    ${REPO_ROOT}/Core/User/racer_sprites.c
 
     # Compiles unmodified. It reaches the flash through
     # BSP_QSPI_GetMappedBase(), which sim_qspi.c answers with a file loaded
