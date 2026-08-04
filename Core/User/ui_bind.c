@@ -732,32 +732,45 @@ const char *get_var_inv_fault_text(void)
 }
 
 /*
- * One line per inverter: motor temperature, the hottest of its three gate
- * phases, and whether it is faulted.
+ * The inverter table, one getter per cell.
  *
- * The hottest phase rather than all three, because three numbers per row does
- * not fit and the worst one is what decides whether to keep driving. The
- * individual phases are in vehicle_data for anyone who needs them.
+ * A cell per label rather than a formatted line per row, because Orbitron's
+ * digits are not the same width - "1" is 7.8 px against 16.7 for "0" - so
+ * padding a single string with spaces cannot line the columns up. Fixed label
+ * positions can, and are the only thing that can.
  */
-static char s_inv_row[VD_INV_COUNT][32];
+static char s_inv_cell[VD_INV_COUNT][2][16];
 
-static const char *inv_row_text(uint8_t inv)
+static bool inv_stale(void)
 {
-    if (VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
-        snprintf(s_inv_row[inv], sizeof(s_inv_row[inv]), "INV%u  %s",
-                 (unsigned)(inv + 1u), STALE_TEXT);
-        return s_inv_row[inv];
+    return VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS, VD_DEFAULT_TIMEOUT_MS);
+}
+
+static const char *inv_motor_text(uint8_t inv)
+{
+    if (inv_stale()) {
+        return STALE_TEXT;
     }
 
-    /*
-     * The gate phases as a range rather than just the hottest.
-     *
-     * All three sitting at 70 and one of them alone at 70 are different
-     * problems - the first is a hard-working inverter, the second is a phase
-     * with something wrong on it - and a single number cannot tell them apart.
-     * The spread between the ends is the whole reason the twelve phases are
-     * decoded instead of collapsed at arrival.
-     */
+    snprintf(s_inv_cell[inv][0], sizeof(s_inv_cell[inv][0]), "%.0f",
+             (double)g_vehicle.motor_temp[inv]);
+    return s_inv_cell[inv][0];
+}
+
+/*
+ * The gate phases as a range rather than just the hottest.
+ *
+ * Three phases at 90 and one phase alone at 90 are different problems - a
+ * hard-working inverter against a phase with something wrong on it - and a
+ * single number cannot tell them apart. The spread is the whole reason the
+ * twelve phases are decoded instead of collapsed at arrival.
+ */
+static const char *inv_gate_text(uint8_t inv)
+{
+    if (inv_stale()) {
+        return STALE_TEXT;
+    }
+
     float lo = g_vehicle.gate_temp[inv][0];
     float hi = lo;
     for (uint8_t p = 1; p < 3u; p++) {
@@ -770,55 +783,20 @@ static const char *inv_row_text(uint8_t inv)
         }
     }
 
-    const bool faulted =
-        (g_vehicle.inv_faults & (uint16_t)(0x0Fu << (inv * VD_INV_KINDS))) != 0u;
-
-    snprintf(s_inv_row[inv], sizeof(s_inv_row[inv]), "INV%u M%3.0f G%3.0f~%-3.0f %s",
-             (unsigned)(inv + 1u), (double)g_vehicle.motor_temp[inv],
-             (double)lo, (double)hi, faulted ? "FAULT" : "OK");
-
-    return s_inv_row[inv];
+    snprintf(s_inv_cell[inv][1], sizeof(s_inv_cell[inv][1]), "%.0f~%.0f",
+             (double)lo, (double)hi);
+    return s_inv_cell[inv][1];
 }
 
-/**
- * The whole drivetrain in one line, the way the battery page summarises cells.
- *
- * Both ranges span all four inverters, so a single motor or a single phase out
- * of step widens the range that contains it and shows up here before anyone
- * reads the rows.
- */
-const char *get_var_inv_summary_text(void)
-{
-    static char buf[40];
+const char *get_var_inv1_motor(void) { return inv_motor_text(0); }
+const char *get_var_inv2_motor(void) { return inv_motor_text(1); }
+const char *get_var_inv3_motor(void) { return inv_motor_text(2); }
+const char *get_var_inv4_motor(void) { return inv_motor_text(3); }
 
-    if (VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
-        return "MOTOR " STALE_TEXT "  GATE " STALE_TEXT;
-    }
-
-    float m_lo = g_vehicle.motor_temp[0], m_hi = m_lo;
-    float g_lo = g_vehicle.gate_temp[0][0], g_hi = g_lo;
-
-    for (uint8_t i = 0; i < VD_INV_COUNT; i++) {
-        const float m = g_vehicle.motor_temp[i];
-        if (m < m_lo) m_lo = m;
-        if (m > m_hi) m_hi = m;
-
-        for (uint8_t p = 0; p < 3u; p++) {
-            const float t = g_vehicle.gate_temp[i][p];
-            if (t < g_lo) g_lo = t;
-            if (t > g_hi) g_hi = t;
-        }
-    }
-
-    snprintf(buf, sizeof(buf), "MOTOR %.0f~%.0f  GATE %.0f~%.0f C",
-             (double)m_lo, (double)m_hi, (double)g_lo, (double)g_hi);
-    return buf;
-}
-
-const char *get_var_inv1_text(void) { return inv_row_text(0); }
-const char *get_var_inv2_text(void) { return inv_row_text(1); }
-const char *get_var_inv3_text(void) { return inv_row_text(2); }
-const char *get_var_inv4_text(void) { return inv_row_text(3); }
+const char *get_var_inv1_gate(void) { return inv_gate_text(0); }
+const char *get_var_inv2_gate(void) { return inv_gate_text(1); }
+const char *get_var_inv3_gate(void) { return inv_gate_text(2); }
+const char *get_var_inv4_gate(void) { return inv_gate_text(3); }
 
 /**
  * One-time widget setup. See the note in the header.
@@ -879,14 +857,14 @@ void UIBind_ApplyDynamicStyles(void)
                                 LV_PART_MAIN | LV_STATE_DEFAULT);
 
     /*
-     * A faulted inverter's row goes red. The row already says FAULT, but on a
-     * page of four near-identical lines the word is easy to skim past and the
-     * colour is not.
+     * A faulted inverter's name goes red. The marquee below already names it,
+     * but that has to be waited for when several are scrolling, and the colour
+     * does not.
      */
     {
-        lv_obj_t *const rows[VD_INV_COUNT] = {
-            objects.inv1_label, objects.inv2_label,
-            objects.inv3_label, objects.inv4_label,
+        lv_obj_t *const names[VD_INV_COUNT] = {
+            objects.inv1_name, objects.inv2_name,
+            objects.inv3_name, objects.inv4_name,
         };
 
         const bool stale = VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS,
@@ -896,7 +874,7 @@ void UIBind_ApplyDynamicStyles(void)
             const bool faulted = !stale &&
                 ((g_vehicle.inv_faults & (uint16_t)(0x0Fu << (i * VD_INV_KINDS))) != 0u);
 
-            lv_obj_set_style_text_color(rows[i], faulted ? red : white,
+            lv_obj_set_style_text_color(names[i], faulted ? red : white,
                                         LV_PART_MAIN | LV_STATE_DEFAULT);
         }
     }

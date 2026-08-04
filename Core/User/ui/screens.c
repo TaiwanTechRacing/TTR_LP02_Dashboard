@@ -1972,60 +1972,150 @@ void create_screen_inverter() {
             lv_label_set_text_static(obj, "INVERTER");
         }
         {
-            // inv1Label
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.inv1_label = obj;
-            lv_obj_set_pos(obj, 14, 58);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            add_style_text(obj);
-            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "");
-        }
-        {
-            // inv2Label
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.inv2_label = obj;
-            lv_obj_set_pos(obj, 14, 96);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            add_style_text(obj);
-            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "");
-        }
-        {
-            // inv3Label
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.inv3_label = obj;
-            lv_obj_set_pos(obj, 14, 134);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            add_style_text(obj);
-            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "");
-        }
-        {
-            // inv4Label
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.inv4_label = obj;
-            lv_obj_set_pos(obj, 14, 172);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            add_style_text(obj);
-            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "");
-        }
-        {
             // invFaultLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv_fault_label = obj;
-            lv_obj_set_pos(obj, 8, 224);
+            lv_obj_set_pos(obj, 8, 226);
             lv_obj_set_size(obj, 464, 30);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
-            // invSummaryLabel
+            // invHdrMotor
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.inv_summary_label = obj;
-            lv_obj_set_pos(obj, 14, 200);
+            objects.inv_hdr_motor = obj;
+            lv_obj_set_pos(obj, 116, 50);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "MOTOR");
+        }
+        {
+            // invHdrGate
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv_hdr_gate = obj;
+            lv_obj_set_pos(obj, 210, 50);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "GATE");
+        }
+        {
+            // inv1Name
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv1_name = obj;
+            lv_obj_set_pos(obj, 14, 80);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "INV1");
+        }
+        {
+            // inv1Motor
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv1_motor = obj;
+            lv_obj_set_pos(obj, 116, 80);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv1Gate
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv1_gate = obj;
+            lv_obj_set_pos(obj, 210, 80);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv2Name
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv2_name = obj;
+            lv_obj_set_pos(obj, 14, 116);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "INV2");
+        }
+        {
+            // inv2Motor
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv2_motor = obj;
+            lv_obj_set_pos(obj, 116, 116);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv2Gate
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv2_gate = obj;
+            lv_obj_set_pos(obj, 210, 116);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv3Name
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv3_name = obj;
+            lv_obj_set_pos(obj, 14, 152);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "INV3");
+        }
+        {
+            // inv3Motor
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv3_motor = obj;
+            lv_obj_set_pos(obj, 116, 152);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv3Gate
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv3_gate = obj;
+            lv_obj_set_pos(obj, 210, 152);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv4Name
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv4_name = obj;
+            lv_obj_set_pos(obj, 14, 188);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_static(obj, "INV4");
+        }
+        {
+            // inv4Motor
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv4_motor = obj;
+            lv_obj_set_pos(obj, 116, 188);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv4Gate
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv4_gate = obj;
+            lv_obj_set_pos(obj, 210, 188);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -2038,42 +2128,6 @@ void create_screen_inverter() {
 
 void tick_screen_inverter() {
     {
-        const char *new_val = get_var_inv1_text();
-        const char *cur_val = lv_label_get_text(objects.inv1_label);
-        if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.inv1_label;
-            lv_label_set_text(objects.inv1_label, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        const char *new_val = get_var_inv2_text();
-        const char *cur_val = lv_label_get_text(objects.inv2_label);
-        if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.inv2_label;
-            lv_label_set_text(objects.inv2_label, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        const char *new_val = get_var_inv3_text();
-        const char *cur_val = lv_label_get_text(objects.inv3_label);
-        if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.inv3_label;
-            lv_label_set_text(objects.inv3_label, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        const char *new_val = get_var_inv4_text();
-        const char *cur_val = lv_label_get_text(objects.inv4_label);
-        if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.inv4_label;
-            lv_label_set_text(objects.inv4_label, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
         const char *new_val = get_var_inv_fault_text();
         const char *cur_val = lv_label_get_text(objects.inv_fault_label);
         if (strcmp(new_val, cur_val) != 0) {
@@ -2083,11 +2137,74 @@ void tick_screen_inverter() {
         }
     }
     {
-        const char *new_val = get_var_inv_summary_text();
-        const char *cur_val = lv_label_get_text(objects.inv_summary_label);
+        const char *new_val = get_var_inv1_motor();
+        const char *cur_val = lv_label_get_text(objects.inv1_motor);
         if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.inv_summary_label;
-            lv_label_set_text(objects.inv_summary_label, new_val);
+            tick_value_change_obj = objects.inv1_motor;
+            lv_label_set_text(objects.inv1_motor, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv1_gate();
+        const char *cur_val = lv_label_get_text(objects.inv1_gate);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv1_gate;
+            lv_label_set_text(objects.inv1_gate, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv2_motor();
+        const char *cur_val = lv_label_get_text(objects.inv2_motor);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv2_motor;
+            lv_label_set_text(objects.inv2_motor, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv2_gate();
+        const char *cur_val = lv_label_get_text(objects.inv2_gate);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv2_gate;
+            lv_label_set_text(objects.inv2_gate, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv3_motor();
+        const char *cur_val = lv_label_get_text(objects.inv3_motor);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv3_motor;
+            lv_label_set_text(objects.inv3_motor, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv3_gate();
+        const char *cur_val = lv_label_get_text(objects.inv3_gate);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv3_gate;
+            lv_label_set_text(objects.inv3_gate, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv4_motor();
+        const char *cur_val = lv_label_get_text(objects.inv4_motor);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv4_motor;
+            lv_label_set_text(objects.inv4_motor, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv4_gate();
+        const char *cur_val = lv_label_get_text(objects.inv4_gate);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv4_gate;
+            lv_label_set_text(objects.inv4_gate, new_val);
             tick_value_change_obj = NULL;
         }
     }
