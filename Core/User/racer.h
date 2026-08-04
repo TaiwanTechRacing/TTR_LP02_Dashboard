@@ -12,9 +12,11 @@
  *  Its buffer is a full screen, 261 KB, which is why it comes from SDRAM rather
  *  than the internal RAM the other two use.
  *
- *  Controls are the ones the dashboard already has: the wheel steers and the
- *  pedals drive when the car is talking, and the buttons stand in for the wheel
- *  when it is not.
+ *  The two dashboard buttons steer, and the car drives itself. The wheel and
+ *  the pedals still work and take over the moment they are touched, which is
+ *  what the tuning rig in sim/ drives - but the buttons win while they are
+ *  held, because the game is played sitting still with both hands off the
+ *  wheel.
  */
 
 #ifndef RACER_H
@@ -55,6 +57,9 @@ void Racer_Defaults(void);
 
 /** How many cones have been clipped since the run started. */
 uint32_t Racer_ConesHit(void);
+
+/** Distance earned, less the cone penalty. Drawn on the page as SCORE. */
+uint32_t Racer_Score(void);
 
 /** Restart the run without changing the tuning. */
 void Racer_Restart(void);

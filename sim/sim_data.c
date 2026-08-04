@@ -4,6 +4,7 @@
 
 #include "sim_data.h"
 #include "vehicle_data.h"
+#include "racer.h"
 
 #include <stdbool.h>
 
@@ -47,11 +48,21 @@ void SimData_Feed(uint32_t now)
 
     g_vehicle.car_speed_kph = (uint16_t)(wave * 250.0f);
     g_vehicle.apps1_pu      = wave * 100.0f;
+
+    /*
+     * The racer is played sitting still, so while it is up the pedals read
+     * what a parked car reads. Without this the sweep spends most of its cycle
+     * on the brake, the game's car never leaves the start line, and the
+     * simulator says nothing useful about it.
+     */
+    if (Racer_IsActive()) {
+        g_vehicle.apps1_pu = 0.0f;
+    }
     /* Channel 2 tracks channel 1 with a small offset, which is what a healthy
      * pair looks like - identical readings would hide a wiring mistake. */
     g_vehicle.apps2_pu      = wave * 100.0f * 0.97f;
-    g_vehicle.bse_rear_pu   = (1.0f - wave) * 100.0f;
-    g_vehicle.bse_front_pu  = (1.0f - wave) * 100.0f * 0.92f;
+    g_vehicle.bse_rear_pu   = Racer_IsActive() ? 0.0f : (1.0f - wave) * 100.0f;
+    g_vehicle.bse_front_pu  = Racer_IsActive() ? 0.0f : (1.0f - wave) * 100.0f * 0.92f;
     /* Rear runs a little higher than front on this car. */
     g_vehicle.bse_rear_bar  = (1.0f - wave) * 62.0f;
     g_vehicle.bse_front_bar = (1.0f - wave) * 55.0f;

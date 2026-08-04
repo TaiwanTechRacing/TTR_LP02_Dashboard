@@ -5,6 +5,8 @@
 #include "racer.h"
 
 #include "bsp_sdram.h"
+#include <string.h>
+
 #include "racer_sprites.h"
 #include "screens.h"
 #include "vehicle_data.h"
@@ -148,6 +150,22 @@ static const char CONE_ART[] =
 #define CONE_HIT_WIDTH   0.30f
 
 static uint32_t s_cones_hit;
+
+/*
+ * Distance is scored, not laps.
+ *
+ * Points accrue with distance, so going faster earns faster and there is a
+ * reason to take the racing line rather than trundle round in the middle.
+ * A cone costs both speed and points - the speed loss alone is easy to shrug
+ * off once the road is straight again.
+ *
+ * Tracked separately from s_position because that one wraps at the end of the
+ * loop, and a score that reset every lap would not be a score.
+ */
+#define SCORE_PER_UNIT    200.0f    /* one point per segment at the default length */
+#define SCORE_CONE_COST     50u      /* points; about a second of clean driving */
+
+static float s_distance;
 
 /* --- state ---------------------------------------------------------------- */
 
@@ -491,6 +509,134 @@ static void draw_car(int steer_dir)
     }
 }
 
+/* --- the score line ------------------------------------------------------- */
+
+/*
+ * A 5x7 font, drawn into the racer's own buffer.
+ *
+ * The GAME2 page is one full-screen canvas with nothing beside it, so there is
+ * no LVGL label to put a score in - and shrinking the canvas to make room
+ * would cost the thing the page exists for. Eighteen glyphs of pixel art is
+ * less code than that layout change, and it keeps the whole game in one file.
+ *
+ * Same text-art idea as CONE_ART above, and editable the same way: what you
+ * see is what gets drawn.
+ */
+#define HUD_GLYPH_W 5
+#define HUD_GLYPH_H 7
+#define HUD_SCALE   3
+#define HUD_MARGIN  8
+
+static const char HUD_CHARS[] = "0123456789CEHIORST ";
+
+static const char HUD_ART[] =
+    /* 0 */ ".###." "#...#" "#..##" "#.#.#" "##..#" "#...#" ".###."
+    /* 1 */ "..#.." ".##.." "..#.." "..#.." "..#.." "..#.." ".###."
+    /* 2 */ ".###." "#...#" "....#" "...#." "..#.." ".#..." "#####"
+    /* 3 */ "####." "....#" "....#" ".###." "....#" "....#" "####."
+    /* 4 */ "...#." "..##." ".#.#." "#..#." "#####" "...#." "...#."
+    /* 5 */ "#####" "#...." "####." "....#" "....#" "#...#" ".###."
+    /* 6 */ "..##." ".#..." "#...." "####." "#...#" "#...#" ".###."
+    /* 7 */ "#####" "....#" "...#." "..#.." ".#..." ".#..." ".#..."
+    /* 8 */ ".###." "#...#" "#...#" ".###." "#...#" "#...#" ".###."
+    /* 9 */ ".###." "#...#" "#...#" ".####" "....#" "...#." ".##.."
+    /* C */ ".###." "#...#" "#...." "#...." "#...." "#...#" ".###."
+    /* E */ "#####" "#...." "#...." "####." "#...." "#...." "#####"
+    /* H */ "#...#" "#...#" "#...#" "#####" "#...#" "#...#" "#...#"
+    /* I */ ".###." "..#.." "..#.." "..#.." "..#.." "..#.." ".###."
+    /* O */ ".###." "#...#" "#...#" "#...#" "#...#" "#...#" ".###."
+    /* R */ "####." "#...#" "#...#" "####." "#.#.." "#..#." "#...#"
+    /* S */ ".###." "#...#" "#...." ".###." "....#" "#...#" ".###."
+    /* T */ "#####" "..#.." "..#.." "..#.." "..#.." "..#.." "..#.."
+    /* ' ' */ "....." "....." "....." "....." "....." "....." ".....";
+
+/*
+ * Every glyph is drawn twice, black one pixel down-right and then the real
+ * colour. The HUD sits over sky, grass, asphalt and cones in turn, and there
+ * is no single colour that reads against all four - white vanishes into a
+ * white cone stripe exactly when a cone is worth looking at.
+ */
+static void draw_text(int x, int y, const char *text, uint16_t colour)
+{
+    for (int pass = 0; pass < 2; pass++) {
+        const uint16_t c = (pass == 0) ? 0x0000u : colour;
+        const int ox = x + ((pass == 0) ? HUD_SCALE : 0);
+        const int oy = y + ((pass == 0) ? HUD_SCALE : 0);
+
+        int pen = ox;
+        for (const char *p = text; *p != '\0'; p++) {
+            const char *at = strchr(HUD_CHARS, *p);
+            if (at == NULL) {
+                pen += (HUD_GLYPH_W + 1) * HUD_SCALE;
+                continue;
+            }
+
+            const char *glyph = &HUD_ART[(at - HUD_CHARS) * (HUD_GLYPH_W * HUD_GLYPH_H)];
+
+            for (int row = 0; row < HUD_GLYPH_H; row++) {
+                for (int col = 0; col < HUD_GLYPH_W; col++) {
+                    if (glyph[(row * HUD_GLYPH_W) + col] != '#') {
+                        continue;
+                    }
+
+                    for (int sy = 0; sy < HUD_SCALE; sy++) {
+                        const int py = oy + (row * HUD_SCALE) + sy;
+                        if (py < 0 || py >= H) {
+                            continue;
+                        }
+
+                        uint16_t *dst = s_buf + ((size_t)py * W);
+                        for (int sx = 0; sx < HUD_SCALE; sx++) {
+                            const int px = pen + (col * HUD_SCALE) + sx;
+                            if (px >= 0 && px < W) {
+                                dst[px] = c;
+                            }
+                        }
+                    }
+                }
+            }
+
+            pen += (HUD_GLYPH_W + 1) * HUD_SCALE;
+        }
+    }
+}
+
+static int text_width(const char *text)
+{
+    int n = 0;
+    while (text[n] != '\0') {
+        n++;
+    }
+    return (n * (HUD_GLYPH_W + 1) * HUD_SCALE) - HUD_SCALE;
+}
+
+/** Unsigned to a zero-padded string, without pulling in snprintf. */
+static void number(char *out, uint32_t value, uint8_t digits)
+{
+    out[digits] = '\0';
+    while (digits-- > 0u) {
+        out[digits] = (char)('0' + (value % 10u));
+        value /= 10u;
+    }
+}
+
+static void draw_hud(void)
+{
+    char buf[16];
+
+    /* SCORE on the left, HIT on the right - the two never collide because both
+     * are fixed width, which is the point of padding them. */
+    buf[0] = 'S'; buf[1] = 'C'; buf[2] = 'O'; buf[3] = 'R'; buf[4] = 'E';
+    buf[5] = ' ';
+    number(&buf[6], Racer_Score(), 5u);
+    draw_text(HUD_MARGIN, HUD_MARGIN, buf, 0xFFFFu);
+
+    buf[0] = 'H'; buf[1] = 'I'; buf[2] = 'T'; buf[3] = ' ';
+    number(&buf[4], (s_cones_hit > 99u) ? 99u : s_cones_hit, 2u);
+    draw_text(W - HUD_MARGIN - text_width(buf), HUD_MARGIN, buf,
+              (s_cones_hit == 0u) ? 0xFFFFu : 0xFC00u);
+}
+
 static void render(void)
 {
     const int base = (int)(s_position / s_tune.segment_length);
@@ -616,8 +762,9 @@ static void render(void)
         }
     }
 
-    /* The car last: it is nearer than anything else on screen. */
+    /* The car, then the score over the top of everything. */
     draw_car(s_car_steer);
+    draw_hud();
 }
 
 /* --- driving -------------------------------------------------------------- */
@@ -631,17 +778,30 @@ static void controls(float dt, float *steer, float *throttle, float *brake)
 
     (void)dt;
 
+    /*
+     * The buttons are the controls; the wheel only gets a say when neither is
+     * down.
+     *
+     * It used to be the other way round - the wheel steered and the buttons
+     * were added on top - which meant that with a live bus and the wheel off
+     * centre, one of the two buttons did nothing at all. Whichever way the
+     * wheel was already turned, that side was saturated and pressing it
+     * changed nothing. The game is played sitting still with both hands off
+     * the wheel, so the buttons have to be the authority.
+     */
+    const bool button_steering = s_btn_left || s_btn_right;
+
+    if (button_steering) {
+        *steer = (s_btn_left ? -1.0f : 0.0f) + (s_btn_right ? 1.0f : 0.0f);
+    }
+
     if (!VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)) {
         /* Positive steering angle is anticlockwise, so left. Same inversion as
          * the tetris page, and for the same reason. */
-        *steer = -g_vehicle.steering_deg / 90.0f;
-        if (*steer > 1.0f) {
-            *steer = 1.0f;
+        const float wheel = -g_vehicle.steering_deg / 90.0f;
+        if (!button_steering) {
+            *steer = wheel;
         }
-        if (*steer < -1.0f) {
-            *steer = -1.0f;
-        }
-
         *throttle = g_vehicle.apps1_pu / 100.0f;
 
         if (!VehicleData_IsStale(VD_GROUP_VCU_SENSOR1, VD_DEFAULT_TIMEOUT_MS)) {
@@ -652,18 +812,22 @@ static void controls(float dt, float *steer, float *throttle, float *brake)
     }
 
     /*
-     * The buttons steer whatever the bus is doing, and drive on their own when
-     * it is quiet - otherwise the page would be a static picture on a bench.
+     * The car drives itself unless someone is actually on the pedal.
+     *
+     * Steering with the buttons means both hands are off everything else, and
+     * a game that needs a third input to move at all would be a still picture
+     * for anyone playing it that way. A real push on the accelerator still
+     * takes over, which is what the tuning rig needs.
      */
-    if (s_btn_left) {
-        *steer -= 1.0f;
-    }
-    if (s_btn_right) {
-        *steer += 1.0f;
+    if (*throttle < 0.05f && *brake < 0.05f) {
+        *throttle = 1.0f;
     }
 
-    if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)) {
-        *throttle = 1.0f;
+    if (*steer > 1.0f) {
+        *steer = 1.0f;
+    }
+    if (*steer < -1.0f) {
+        *steer = -1.0f;
     }
 }
 
@@ -737,6 +901,7 @@ static void advance(float dt)
     }
 
     s_position += s_speed * dt;
+    s_distance += s_speed * dt;
 
     const float track_length = (float)SEGMENT_COUNT * s_tune.segment_length;
     while (s_position >= track_length) {
@@ -773,6 +938,16 @@ uint32_t Racer_ConesHit(void)
     return s_cones_hit;
 }
 
+uint32_t Racer_Score(void)
+{
+    const uint32_t earned = (uint32_t)(s_distance / SCORE_PER_UNIT);
+    const uint32_t lost = s_cones_hit * SCORE_CONE_COST;
+
+    /* Floored rather than allowed to go negative: a driver who is far enough
+     * behind to owe points has already had the message. */
+    return (earned > lost) ? (earned - lost) : 0u;
+}
+
 void Racer_Restart(void)
 {
     s_cones_hit = 0;
@@ -782,6 +957,7 @@ void Racer_Restart(void)
     }
 
     s_position = 0.0f;
+    s_distance = 0.0f;
     s_player_x = 0.0f;
     s_speed = 0.0f;
     s_last = 0;
