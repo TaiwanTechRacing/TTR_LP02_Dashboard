@@ -70,7 +70,11 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_INV3_MOTOR = 54,
     FLOW_GLOBAL_VARIABLE_INV3_GATE = 55,
     FLOW_GLOBAL_VARIABLE_INV4_MOTOR = 56,
-    FLOW_GLOBAL_VARIABLE_INV4_GATE = 57
+    FLOW_GLOBAL_VARIABLE_INV4_GATE = 57,
+    FLOW_GLOBAL_VARIABLE_INV1_STATE = 58,
+    FLOW_GLOBAL_VARIABLE_INV2_STATE = 59,
+    FLOW_GLOBAL_VARIABLE_INV3_STATE = 60,
+    FLOW_GLOBAL_VARIABLE_INV4_STATE = 61
 };
 
 // Native global variables
@@ -191,6 +195,14 @@ extern const char *get_var_inv4_motor();
 extern void set_var_inv4_motor(const char *value);
 extern const char *get_var_inv4_gate();
 extern void set_var_inv4_gate(const char *value);
+extern const char *get_var_inv1_state();
+extern void set_var_inv1_state(const char *value);
+extern const char *get_var_inv2_state();
+extern void set_var_inv2_state(const char *value);
+extern const char *get_var_inv3_state();
+extern void set_var_inv3_state(const char *value);
+extern const char *get_var_inv4_state();
+extern void set_var_inv4_state(const char *value);
 
 #ifdef __cplusplus
 }

@@ -793,6 +793,33 @@ const char *get_var_inv2_motor(void) { return inv_motor_text(1); }
 const char *get_var_inv3_motor(void) { return inv_motor_text(2); }
 const char *get_var_inv4_motor(void) { return inv_motor_text(3); }
 
+/*
+ * The word that says whether an inverter is happy.
+ *
+ * The marquee below names every faulted one, but it has to be waited for when
+ * several are scrolling, and a per-row word does not - and "OK" on all four is
+ * a reading in its own right, which a marquee that simply says nothing is not.
+ */
+static bool inv_faulted(uint8_t inv)
+{
+    return (g_vehicle.inv_faults &
+            (uint16_t)(0x0Fu << (inv * VD_INV_KINDS))) != 0u;
+}
+
+static const char *inv_state_text(uint8_t inv)
+{
+    if (inv_stale()) {
+        return STALE_TEXT;
+    }
+
+    return inv_faulted(inv) ? "FAULT" : "OK";
+}
+
+const char *get_var_inv1_state(void) { return inv_state_text(0); }
+const char *get_var_inv2_state(void) { return inv_state_text(1); }
+const char *get_var_inv3_state(void) { return inv_state_text(2); }
+const char *get_var_inv4_state(void) { return inv_state_text(3); }
+
 const char *get_var_inv1_gate(void) { return inv_gate_text(0); }
 const char *get_var_inv2_gate(void) { return inv_gate_text(1); }
 const char *get_var_inv3_gate(void) { return inv_gate_text(2); }
@@ -857,24 +884,29 @@ void UIBind_ApplyDynamicStyles(void)
                                 LV_PART_MAIN | LV_STATE_DEFAULT);
 
     /*
-     * A faulted inverter's name goes red. The marquee below already names it,
-     * but that has to be waited for when several are scrolling, and the colour
-     * does not.
+     * The state word carries the colour, not the name beside it - the word
+     * that says OK or FAULT is the one worth colouring, and green for OK is a
+     * reading rather than just the absence of red.
      */
     {
-        lv_obj_t *const names[VD_INV_COUNT] = {
-            objects.inv1_name, objects.inv2_name,
-            objects.inv3_name, objects.inv4_name,
+        lv_obj_t *const states[VD_INV_COUNT] = {
+            objects.inv1_state, objects.inv2_state,
+            objects.inv3_state, objects.inv4_state,
         };
 
         const bool stale = VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS,
                                                VD_DEFAULT_TIMEOUT_MS);
 
         for (uint8_t i = 0; i < VD_INV_COUNT; i++) {
-            const bool faulted = !stale &&
-                ((g_vehicle.inv_faults & (uint16_t)(0x0Fu << (i * VD_INV_KINDS))) != 0u);
+            lv_color_t colour = white;      /* stale: neither claim is honest */
 
-            lv_obj_set_style_text_color(names[i], faulted ? red : white,
+            if (!stale) {
+                colour = ((g_vehicle.inv_faults &
+                           (uint16_t)(0x0Fu << (i * VD_INV_KINDS))) != 0u)
+                         ? red : green;
+            }
+
+            lv_obj_set_style_text_color(states[i], colour,
                                         LV_PART_MAIN | LV_STATE_DEFAULT);
         }
     }

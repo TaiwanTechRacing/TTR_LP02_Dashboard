@@ -136,6 +136,11 @@ typedef struct _objects_t {
     lv_obj_t *inv4_name;
     lv_obj_t *inv4_motor;
     lv_obj_t *inv4_gate;
+    lv_obj_t *inv_hdr_state;
+    lv_obj_t *inv1_state;
+    lv_obj_t *inv2_state;
+    lv_obj_t *inv3_state;
+    lv_obj_t *inv4_state;
     lv_obj_t *gif;
     lv_obj_t *gif_1;
     lv_obj_t *gif_2;
