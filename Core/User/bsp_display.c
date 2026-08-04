@@ -13,7 +13,6 @@
  */
 
 #include "bsp_display.h"
-#include "bsp_mpu.h"
 #include "bsp_sdram.h"
 #include "stm32h7xx_hal.h"
 
@@ -87,23 +86,10 @@ static void lcd_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_
         return;
     }
 
-#if BSP_FB_WRITE_BACK
     /*
-     * Push the frame out of the D-cache before LTDC is told to read it. Under
-     * write-back the pixels can still be sitting dirty in cache, and LTDC would
-     * scan out whatever SDRAM happened to hold - a frame of garbage or a mix of
-     * two frames.
+     * The framebuffer region is write-through in the MPU, so the pixels are
+     * already in SDRAM and no SCB_CleanDCache_by_Addr is needed.
      *
-     * The whole cache rather than SCB_CleanDCache_by_Addr over the buffer: the
-     * range is 255 KB against a 16 KB D-cache, so cleaning by address would
-     * walk eight thousand lines to clean at most five hundred. Set/way is both
-     * cheaper and simpler here. This is the one place it is needed, and it is
-     * on the same code path as the flip so it cannot be forgotten.
-     */
-    SCB_CleanDCache();
-#endif
-
-    /*
      * Point LTDC at the buffer just rendered and ask for the change to take
      * effect at the next vertical blanking. Until then the old buffer stays on
      * screen, so a half-drawn frame is never visible.

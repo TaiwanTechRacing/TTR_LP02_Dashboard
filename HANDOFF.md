@@ -229,57 +229,6 @@ frames at 69x38 and 77x38.
 
 ---
 
-## Rendering performance
-
-Measured on the board before any of this: ~60 fps, LVGL sysmon reporting ~70% CPU.
-
-The numbers that bound it:
-
-| | |
-|---|---|
-| SYSCLK / HCLK | 480 / 240 MHz |
-| SDCLK | HCLK3/2 = 120 MHz, 16-bit bus |
-| SDRAM peak / realistic | 240 / ~150 MB/s |
-| LTDC timing | 534x295 total, ~73 Hz, pixel clock ~11.5 MHz |
-| LTDC fetch | 480x272x2x73 = **19 MB/s**, about 8% of peak |
-
-**Bandwidth is not the limit and never has been.** Even 800x480 at 60 Hz asks
-for 46 MB/s. What limits this board is the CPU writing pixels, and that scales
-with the pixel count - which is what makes a bigger panel expensive.
-
-Two things were left on the table and are now taken:
-
-**DMA2D is on** (`LV_USE_DRAW_DMA2D`, off for the simulator). One caveat worth
-knowing before trusting a measurement: on a Cortex-M7 LVGL's backend cleans and
-invalidates the **whole** D-cache around each transfer - see
-`LV_DRAW_DMA2D_CACHE` in `lv_draw_dma2d_private.h` - because it cannot know the
-framebuffer's memory attributes. That is a fixed cost per operation, so DMA2D
-is a large win on full-screen fills and can be a net loss on small ones.
-
-**The framebuffers are write-back** (`BSP_FB_WRITE_BACK` in `bsp_mpu.h`, default
-1). They used to be write-through, which put every pixel store on the FMC by
-itself; write-back lets the cache gather them into 32-byte bursts. The price is
-that `lcd_flush_cb()` must clean the cache before pointing LTDC at the buffer,
-which it now does. It uses `SCB_CleanDCache()` rather than the by-address
-variant on purpose: the buffer is 255 KB against a 16 KB cache, so cleaning by
-address walks eight thousand lines to clean at most five hundred.
-
-Set `-DBSP_FB_WRITE_BACK=0` to get the old policy back. Which one actually wins
-is a question about access patterns; compare the sysmon CPU figure on the racer
-page, which is the only page that redraws every pixel every frame.
-
-Not done, and the next thing to try if more is needed: `LV_DISPLAY_RENDER_MODE_DIRECT`
-with two buffers makes LVGL redraw each dirty area into both. PARTIAL mode with
-a draw buffer in DTCM or RAM_D1 (0% and 39% used) plus a DMA2D flush renders
-into fast RAM and DMAs the result out, which is usually faster on an H7.
-
-`MX_DMA2D_Init()` in main.c is CubeMX's and is vestigial - nothing calls
-`HAL_DMA2D_Start`, and LVGL's backend writes the registers itself for every
-transfer. It is harmless (no NVIC entry is enabled) and left alone so the next
-.ioc regeneration does not fight it.
-
----
-
 ## Hardware facts, all confirmed on the board
 
 | | |

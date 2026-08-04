@@ -7,24 +7,6 @@
 #ifndef BSP_MPU_H
 #define BSP_MPU_H
 
-/*
- * Framebuffer cache policy. 1 = write-back with write-allocate, 0 = the
- * write-through it used to be.
- *
- * Write-back lets the D-cache gather pixel stores into 32-byte bursts before
- * they reach SDRAM, which is what the software renderers (racer, tetris, cell
- * map) spend their frame doing - under write-through every store crossed the
- * FMC on its own. The cost is that the buffer must be cleaned out of the cache
- * before LTDC is pointed at it, which bsp_display.c does once per flip.
- *
- * Kept as a switch rather than just changed, because which one wins is a
- * question about access patterns and can only be settled by measuring on the
- * bench. Build both and compare the sysmon CPU figure on the racer page.
- */
-#ifndef BSP_FB_WRITE_BACK
-#define BSP_FB_WRITE_BACK 1
-#endif
-
 #include <stdint.h>
 
 /**

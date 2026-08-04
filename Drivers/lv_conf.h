@@ -380,24 +380,8 @@
     #endif /*LV_USE_VG_LITE_THORVG*/
 #endif
 
-/*
- * Accelerate blends, fills, etc. with STM32 DMA2D.
- *
- * Off for the simulator, which has no such peripheral - the backend is written
- * against the STM32 registers directly.
- *
- * Note for anyone measuring this: on a Cortex-M7 the backend cleans and
- * invalidates the WHOLE D-cache around each transfer (LV_DRAW_DMA2D_CACHE in
- * lv_draw_dma2d_private.h), because it has no way to know the framebuffer's
- * memory attributes. That is a fixed cost per operation, so DMA2D is a large
- * win on big fills and can be a loss on tiny ones. It is enabled here because
- * this dashboard's expensive frames are full-screen fills.
- */
-#ifdef LV_SIMULATOR
-#define LV_USE_DRAW_DMA2D 0
-#else
-#define LV_USE_DRAW_DMA2D 1
-#endif
+/** Accelerate blends, fills, etc. with STM32 DMA2D */
+#define LV_USE_DRAW_DMA2D 0 //CC
 #if LV_USE_DRAW_DMA2D
     #define LV_DRAW_DMA2D_HAL_INCLUDE "stm32h7xx_hal.h"
 
