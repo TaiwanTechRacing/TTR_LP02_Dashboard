@@ -15,7 +15,6 @@
 #include "screens.h"
 
 #define NAV_DEBOUNCE_SCANS       5U    /* consecutive samples to accept a press */
-#define NAV_DEBUG_TOGGLE_MS   1000U   /* both held this long toggles the overlay */
 #define NAV_GAME_EXIT_MS      2000U   /* both held this long leaves the game */
 
 /*
@@ -170,7 +169,6 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
      */
     static uint32_t both_since = 0;   /* 0 while they are not both down */
     static bool     both_done = false;
-    static bool     overlay_toggled = false;
 
     if (button1_pressed && button2_pressed) {
         if (both_since == 0u) {
@@ -185,9 +183,9 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
         const uint32_t held = now_ms - both_since;
 
         /*
-         * Leaving the game takes a longer hold than the overlay toggle. Both
-         * buttons are in constant use while playing, so a second is easy to
-         * reach by accident mid-piece; two is not.
+         * Leaving a game takes a shorter hold than getting into one. Both
+         * buttons are in constant use while playing, so three seconds of
+         * holding them is easy to reach by accident mid-piece.
          */
         if (GameTetris_IsActive() || Racer_IsActive()) {
             if (held >= NAV_GAME_EXIT_MS) {
@@ -196,15 +194,9 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
             }
         }
         else if (held >= NAV_EGG_ARM_MS) {
-            /* Put the overlay back where it was before this hold started, and
-             * wait to see which button comes up. */
+            /* Armed. Wait to see which button comes up. */
             both_done = true;
-            DebugOverlay_Toggle();
             egg_armed = true;
-        }
-        else if (held >= NAV_DEBUG_TOGGLE_MS && !overlay_toggled) {
-            overlay_toggled = true;
-            DebugOverlay_Toggle();
         }
 
         return;
@@ -220,7 +212,6 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
             swallow_until_release = true;
             both_since = 0;
             both_done = false;
-            overlay_toggled = false;
             Nav_ShowPage(NAV_GAME_PAGE);        /* let go of the right: tetris */
             return;
         }
@@ -230,7 +221,6 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
             swallow_until_release = true;
             both_since = 0;
             both_done = false;
-            overlay_toggled = false;
             Nav_ShowPage(NAV_RACER_PAGE);       /* let go of the left: racer */
             return;
         }
@@ -240,7 +230,6 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
 
     both_since = 0;
     both_done = false;
-    overlay_toggled = false;
 
     /*
      * The game owns the buttons while it is on screen. It does its own edge

@@ -17,25 +17,17 @@ void DebugOverlay_Init(void)
 {
     /*
      * LVGL shows the performance label as soon as the display is created, so
-     * hide it explicitly. Off by default is deliberate: during a race the
-     * driver wants a clean instrument display.
+     * the hidden case has to be asked for explicitly - it is not the default.
      */
-    lv_sysmon_hide_performance(lv_display_get_default());
-    s_visible = false;
-}
-
-void DebugOverlay_Toggle(void)
-{
     lv_display_t *disp = lv_display_get_default();
 
-    if (s_visible) {
-        lv_sysmon_hide_performance(disp);
-    }
-    else {
-        lv_sysmon_show_performance(disp);
-    }
-
-    s_visible = !s_visible;
+#if DEBUG_OVERLAY_VISIBLE
+    lv_sysmon_show_performance(disp);
+    s_visible = true;
+#else
+    lv_sysmon_hide_performance(disp);
+    s_visible = false;
+#endif
 }
 
 bool DebugOverlay_IsVisible(void)
@@ -46,7 +38,6 @@ bool DebugOverlay_IsVisible(void)
 #else /* overlay compiled out */
 
 void DebugOverlay_Init(void) { }
-void DebugOverlay_Toggle(void) { }
 bool DebugOverlay_IsVisible(void) { return false; }
 
 #endif
