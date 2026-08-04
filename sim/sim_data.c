@@ -110,6 +110,9 @@ void SimData_Feed(uint32_t now)
     /* Warm up for the first fifth of the scene, so the red WARM mode label and
      * the normal one both appear in a screenshot run. */
     g_vehicle.warmup_ready   = (phase > 0.2f);
+    /* 30 seconds counting down across the warm-up stretch of the scene. */
+    g_vehicle.warmup_countdown_s =
+        (uint8_t)((phase < 0.2f) ? ((0.2f - phase) * 150.0f) : 0.0f);
     /* Cycle the drive mode so the label is exercised, not just one value. */
     g_vehicle.drive_mode     = (uint8_t)((now / 3000u) % 4u);
     VehicleData_MarkFresh(VD_GROUP_VCU_STATE);

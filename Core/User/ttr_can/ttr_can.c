@@ -1461,6 +1461,7 @@ void ttr_vcu_vcu_sensor2_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sensor2_
 void ttr_vcu_vcu_dash_unpack(ttr_vcu_vcu_dash_t *dst, const ttr_can_frame_t *frame)
 {
     dst->MAIN_STATUS_INDICATOR = (uint8_t)ttr_get_bits(frame->data, 0u, 8u);
+    dst->WARMUP_COUNTDOWN_S = (uint8_t)ttr_get_bits(frame->data, 8u, 8u);
 }
 
 void ttr_vcu_vcu_dash_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dash_t *src)
@@ -1470,6 +1471,7 @@ void ttr_vcu_vcu_dash_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dash_t *src
     frame->dlc = TTR_CAN_DLC_VCU_VCU_DASH;
     for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
     ttr_set_bits(frame->data, 0u, 8u, (uint64_t)src->MAIN_STATUS_INDICATOR);
+    ttr_set_bits(frame->data, 8u, 8u, (uint64_t)src->WARMUP_COUNTDOWN_S);
 }
 
 /* ===== VCU_VCU_IMU_Q ===== */

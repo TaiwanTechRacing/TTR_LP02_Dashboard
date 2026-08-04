@@ -167,6 +167,8 @@ static void decode_one(const ttr_can_frame_t *frame)
                                 ? s.MAIN_STATUS_INDICATOR
                                 : (uint8_t)VD_MAIN_STATUS_FAULT;
 
+        g_vehicle.warmup_countdown_s = s.WARMUP_COUNTDOWN_S;
+
         VehicleData_MarkFresh(VD_GROUP_VCU_DASH);
         break;
     }

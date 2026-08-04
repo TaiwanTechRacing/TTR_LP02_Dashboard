@@ -943,6 +943,7 @@ void ttr_vcu_vcu_sensor2_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_sensor2_
 
 typedef struct {
     uint8_t MAIN_STATUS_INDICATOR;  /* see TTR_VCU_VCU_DASH_MAIN_STATUS_INDICATOR_* */
+    uint8_t WARMUP_COUNTDOWN_S;  /* s */
 } ttr_vcu_vcu_dash_t;
 
 void ttr_vcu_vcu_dash_unpack(ttr_vcu_vcu_dash_t *dst, const ttr_can_frame_t *frame);

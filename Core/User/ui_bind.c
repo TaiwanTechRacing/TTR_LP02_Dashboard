@@ -73,6 +73,7 @@ static char s_soc_buf[12];
 static char s_lv_buf[16];
 static char s_hv_buf[16];
 static char s_bat_pack_buf[16];
+static char s_mode_buf[8];
 
 /*
  * Upper bound on what the speed readout will show.
@@ -377,12 +378,24 @@ const char *get_var_mode(void)
      * is not what the car will actually do. Showing RATIO while the car will
      * not deliver it is worse than showing nothing about the mode at all.
      *
-     * "WARM" rather than "WARMUP": at Orbitron bold 40 the full word is 215 px
-     * against a 190 px box and would print over the border. Same reason the
-     * state indicator says N-RDY.
+     * The countdown rather than a word: waiting is easier when the wait has a
+     * number on it, and the number is the only thing here that answers the
+     * question actually being asked. The seconds come from VCU_DASH while the
+     * ready flag comes from VCU_STATE, so when the first has gone quiet and the
+     * second has not, fall back to the word - we still know it is warming, just
+     * not for how much longer.
+     *
+     * Nothing longer than that fits: at Orbitron bold 40 "WARM 45" is 225 px
+     * against a 190 px box. "188s" is 128 and leaves room to spare.
      */
     if (!g_vehicle.warmup_ready) {
-        return "WARM";
+        if (VehicleData_IsStale(VD_GROUP_VCU_DASH, VD_DEFAULT_TIMEOUT_MS)) {
+            return "WARM";
+        }
+
+        snprintf(s_mode_buf, sizeof(s_mode_buf), "%us",
+                 (unsigned)g_vehicle.warmup_countdown_s);
+        return s_mode_buf;
     }
 
     switch (g_vehicle.drive_mode) {

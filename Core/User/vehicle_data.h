@@ -167,6 +167,7 @@ typedef struct {
 
     /* --- VCU_DASH --- */
     uint8_t  main_status;         /* vd_main_status_t */
+    uint8_t  warmup_countdown_s;  /* seconds left of the warm-up timer */
 
     /* --- VCU_SDC --- */
     uint16_t sdc_status;          /* bit positions per vd_sdc_node_t */
