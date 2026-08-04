@@ -7342,7 +7342,7 @@
               "objID": "5196ec35-b547-4be0-b067-2f70868e1873",
               "type": "LVGLLabelWidget",
               "left": 8,
-              "top": 226,
+              "top": 228,
               "width": 464,
               "height": 30,
               "customInputs": [],
@@ -7395,9 +7395,9 @@
             {
               "objID": "d7e64591-e877-4ee0-ac58-b9797eb5ac95",
               "type": "LVGLLabelWidget",
-              "left": 116,
-              "top": 50,
-              "width": 44,
+              "left": 128,
+              "top": 48,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7414,7 +7414,7 @@
               "identifier": "invHdrMotor",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7433,7 +7433,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7449,9 +7450,9 @@
             {
               "objID": "4ec37aa3-c130-4ece-bfd5-7ff3e115fa0a",
               "type": "LVGLLabelWidget",
-              "left": 210,
-              "top": 50,
-              "width": 44,
+              "left": 240,
+              "top": 48,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7468,7 +7469,7 @@
               "identifier": "invHdrGate",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7487,7 +7488,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7503,9 +7505,9 @@
             {
               "objID": "d57aa786-d275-4435-8986-17893880c6c8",
               "type": "LVGLLabelWidget",
-              "left": 14,
-              "top": 80,
-              "width": 44,
+              "left": 16,
+              "top": 84,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7522,7 +7524,7 @@
               "identifier": "inv1Name",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7541,7 +7543,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7557,9 +7560,9 @@
             {
               "objID": "67ac591a-6486-4884-b554-7d6af98384da",
               "type": "LVGLLabelWidget",
-              "left": 116,
-              "top": 80,
-              "width": 44,
+              "left": 128,
+              "top": 84,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7576,7 +7579,7 @@
               "identifier": "inv1Motor",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7595,7 +7598,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7611,9 +7615,9 @@
             {
               "objID": "7643289d-5e58-4ec7-80a1-5693c33eb03a",
               "type": "LVGLLabelWidget",
-              "left": 210,
-              "top": 80,
-              "width": 44,
+              "left": 240,
+              "top": 84,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7630,7 +7634,7 @@
               "identifier": "inv1Gate",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7649,7 +7653,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7665,9 +7670,9 @@
             {
               "objID": "7d98eeb2-0517-44f8-99f7-87de3e1fb263",
               "type": "LVGLLabelWidget",
-              "left": 14,
-              "top": 116,
-              "width": 44,
+              "left": 16,
+              "top": 120,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7684,7 +7689,7 @@
               "identifier": "inv2Name",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7703,7 +7708,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7719,9 +7725,9 @@
             {
               "objID": "7621c5d2-d6d6-418c-8085-ebe9e094aa88",
               "type": "LVGLLabelWidget",
-              "left": 116,
-              "top": 116,
-              "width": 44,
+              "left": 128,
+              "top": 120,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7738,7 +7744,7 @@
               "identifier": "inv2Motor",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7757,7 +7763,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7773,9 +7780,9 @@
             {
               "objID": "cb8cf178-98c2-49a5-b0d1-5d4611c049ec",
               "type": "LVGLLabelWidget",
-              "left": 210,
-              "top": 116,
-              "width": 44,
+              "left": 240,
+              "top": 120,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7792,7 +7799,7 @@
               "identifier": "inv2Gate",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7811,7 +7818,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7827,9 +7835,9 @@
             {
               "objID": "0f9a1bfc-a32b-4ec1-a352-994cf77e1e5c",
               "type": "LVGLLabelWidget",
-              "left": 14,
-              "top": 152,
-              "width": 44,
+              "left": 16,
+              "top": 156,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7846,7 +7854,7 @@
               "identifier": "inv3Name",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7865,7 +7873,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7881,9 +7890,9 @@
             {
               "objID": "418809c7-b546-43a2-a1e9-4d5c74b7fd7e",
               "type": "LVGLLabelWidget",
-              "left": 116,
-              "top": 152,
-              "width": 44,
+              "left": 128,
+              "top": 156,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7900,7 +7909,7 @@
               "identifier": "inv3Motor",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7919,7 +7928,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7935,9 +7945,9 @@
             {
               "objID": "42da05f1-a052-4acb-a9b8-5c136eca68a7",
               "type": "LVGLLabelWidget",
-              "left": 210,
-              "top": 152,
-              "width": 44,
+              "left": 240,
+              "top": 156,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -7954,7 +7964,7 @@
               "identifier": "inv3Gate",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -7973,7 +7983,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -7989,9 +8000,9 @@
             {
               "objID": "015ef927-4752-4c24-a421-64e206ac5eaa",
               "type": "LVGLLabelWidget",
-              "left": 14,
-              "top": 188,
-              "width": 44,
+              "left": 16,
+              "top": 192,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -8008,7 +8019,7 @@
               "identifier": "inv4Name",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -8027,7 +8038,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -8043,9 +8055,9 @@
             {
               "objID": "d81644e1-b609-4e2a-88b4-d8be56c716d9",
               "type": "LVGLLabelWidget",
-              "left": 116,
-              "top": 188,
-              "width": 44,
+              "left": 128,
+              "top": 192,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -8062,7 +8074,7 @@
               "identifier": "inv4Motor",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -8081,7 +8093,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -8097,9 +8110,9 @@
             {
               "objID": "610115cb-e924-4713-97e1-f745fc3fa05c",
               "type": "LVGLLabelWidget",
-              "left": 210,
-              "top": 188,
-              "width": 44,
+              "left": 240,
+              "top": 192,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -8116,7 +8129,7 @@
               "identifier": "inv4Gate",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -8135,7 +8148,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -8151,9 +8165,9 @@
             {
               "objID": "2675b452-4fb5-4b18-8556-a25487f4f29e",
               "type": "LVGLLabelWidget",
-              "left": 344,
-              "top": 50,
-              "width": 44,
+              "left": 352,
+              "top": 48,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -8170,7 +8184,7 @@
               "identifier": "invHdrState",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -8189,7 +8203,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -8205,9 +8220,9 @@
             {
               "objID": "29917174-fa93-4fa0-b82e-64c650df1a90",
               "type": "LVGLLabelWidget",
-              "left": 344,
-              "top": 80,
-              "width": 44,
+              "left": 352,
+              "top": 84,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -8224,7 +8239,7 @@
               "identifier": "inv1State",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -8243,7 +8258,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -8259,9 +8275,9 @@
             {
               "objID": "3dafa6b6-eba8-497d-b2d7-afff81b41989",
               "type": "LVGLLabelWidget",
-              "left": 344,
-              "top": 116,
-              "width": 44,
+              "left": 352,
+              "top": 120,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -8278,7 +8294,7 @@
               "identifier": "inv2State",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -8297,7 +8313,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -8313,9 +8330,9 @@
             {
               "objID": "838e746d-8382-4800-9c3a-b5d259a93622",
               "type": "LVGLLabelWidget",
-              "left": 344,
-              "top": 152,
-              "width": 44,
+              "left": 352,
+              "top": 156,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -8332,7 +8349,7 @@
               "identifier": "inv3State",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -8351,7 +8368,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }
@@ -8367,9 +8385,9 @@
             {
               "objID": "84065207-124e-4053-9d34-b553c0a5ad09",
               "type": "LVGLLabelWidget",
-              "left": 344,
-              "top": 188,
-              "width": 44,
+              "left": 352,
+              "top": 192,
+              "width": 112,
               "height": 23,
               "customInputs": [],
               "customOutputs": [],
@@ -8386,7 +8404,7 @@
               "identifier": "inv4State",
               "leftUnit": "px",
               "topUnit": "px",
-              "widthUnit": "content",
+              "widthUnit": "px",
               "heightUnit": "content",
               "children": [],
               "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
@@ -8405,7 +8423,8 @@
                 "definition": {
                   "MAIN": {
                     "DEFAULT": {
-                      "text_font": "orbitron_bold_20"
+                      "text_font": "orbitron_bold_20",
+                      "text_align": "CENTER"
                     }
                   }
                 }

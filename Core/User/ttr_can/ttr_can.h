@@ -32,7 +32,7 @@ typedef struct {
     uint8_t  data[TTR_CAN_MAX_DLC];
 } ttr_can_frame_t;
 
-/* ===== VCU_MCU_ALL_CONTROL  (2 ms) ===== */
+/* ===== VCU_MCU_ALL_CONTROL  (4 ms) ===== */
 #define TTR_CAN_ID_VCU_MCU_ALL_CONTROL   (0x20u)
 #define TTR_CAN_DLC_VCU_MCU_ALL_CONTROL  (12u)
 
@@ -51,50 +51,6 @@ typedef struct {
 void ttr_vcu_mcu_all_control_unpack(ttr_vcu_mcu_all_control_t *dst, const ttr_can_frame_t *frame);
 void ttr_vcu_mcu_all_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu_all_control_t *src);
 
-/* ===== VCU_MCU1_STATUS_CONTROL  (100 ms) ===== */
-#define TTR_CAN_ID_VCU_MCU1_STATUS_CONTROL   (0x2Au)
-#define TTR_CAN_DLC_VCU_MCU1_STATUS_CONTROL  (8u)
-
-typedef struct {
-    bool RECV_MODE_CMD;  /* false="STANDALONE", true="BROADCAST" */
-} ttr_vcu_mcu1_status_control_t;
-
-void ttr_vcu_mcu1_status_control_unpack(ttr_vcu_mcu1_status_control_t *dst, const ttr_can_frame_t *frame);
-void ttr_vcu_mcu1_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu1_status_control_t *src);
-
-/* ===== VCU_MCU2_STATUS_CONTROL  (100 ms) ===== */
-#define TTR_CAN_ID_VCU_MCU2_STATUS_CONTROL   (0x2Bu)
-#define TTR_CAN_DLC_VCU_MCU2_STATUS_CONTROL  (8u)
-
-typedef struct {
-    bool RECV_MODE_CMD;  /* false="STANDALONE", true="BROADCAST" */
-} ttr_vcu_mcu2_status_control_t;
-
-void ttr_vcu_mcu2_status_control_unpack(ttr_vcu_mcu2_status_control_t *dst, const ttr_can_frame_t *frame);
-void ttr_vcu_mcu2_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu2_status_control_t *src);
-
-/* ===== VCU_MCU3_STATUS_CONTROL  (100 ms) ===== */
-#define TTR_CAN_ID_VCU_MCU3_STATUS_CONTROL   (0x2Cu)
-#define TTR_CAN_DLC_VCU_MCU3_STATUS_CONTROL  (8u)
-
-typedef struct {
-    bool RECV_MODE_CMD;  /* false="STANDALONE", true="BROADCAST" */
-} ttr_vcu_mcu3_status_control_t;
-
-void ttr_vcu_mcu3_status_control_unpack(ttr_vcu_mcu3_status_control_t *dst, const ttr_can_frame_t *frame);
-void ttr_vcu_mcu3_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu3_status_control_t *src);
-
-/* ===== VCU_MCU4_STATUS_CONTROL  (100 ms) ===== */
-#define TTR_CAN_ID_VCU_MCU4_STATUS_CONTROL   (0x2Du)
-#define TTR_CAN_DLC_VCU_MCU4_STATUS_CONTROL  (8u)
-
-typedef struct {
-    bool RECV_MODE_CMD;  /* false="STANDALONE", true="BROADCAST" */
-} ttr_vcu_mcu4_status_control_t;
-
-void ttr_vcu_mcu4_status_control_unpack(ttr_vcu_mcu4_status_control_t *dst, const ttr_can_frame_t *frame);
-void ttr_vcu_mcu4_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu4_status_control_t *src);
-
 /* ===== CHARGER_AMS_CONTROL  (event-based) ===== */
 #define TTR_CAN_ID_CHARGER_AMS_CONTROL   (0x60u)
 #define TTR_CAN_DLC_CHARGER_AMS_CONTROL  (8u)
@@ -106,7 +62,7 @@ typedef struct {
 void ttr_charger_ams_control_unpack(ttr_charger_ams_control_t *dst, const ttr_can_frame_t *frame);
 void ttr_charger_ams_control_pack(ttr_can_frame_t *frame, const ttr_charger_ams_control_t *src);
 
-/* ===== MCU1_STATUS_CORE  (2 ms) ===== */
+/* ===== MCU1_STATUS_CORE  (4 ms) ===== */
 #define TTR_CAN_ID_MCU1_STATUS_CORE   (0xC0u)
 #define TTR_CAN_DLC_MCU1_STATUS_CORE  (8u)
 
@@ -134,7 +90,7 @@ typedef struct {
 void ttr_mcu1_status_core_unpack(ttr_mcu1_status_core_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu1_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_core_t *src);
 
-/* ===== MCU2_STATUS_CORE  (2 ms) ===== */
+/* ===== MCU2_STATUS_CORE  (4 ms) ===== */
 #define TTR_CAN_ID_MCU2_STATUS_CORE   (0xE0u)
 #define TTR_CAN_DLC_MCU2_STATUS_CORE  (8u)
 
@@ -162,7 +118,7 @@ typedef struct {
 void ttr_mcu2_status_core_unpack(ttr_mcu2_status_core_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu2_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_core_t *src);
 
-/* ===== MCU3_STATUS_CORE  (2 ms) ===== */
+/* ===== MCU3_STATUS_CORE  (4 ms) ===== */
 #define TTR_CAN_ID_MCU3_STATUS_CORE   (0x100u)
 #define TTR_CAN_DLC_MCU3_STATUS_CORE  (8u)
 
@@ -190,7 +146,7 @@ typedef struct {
 void ttr_mcu3_status_core_unpack(ttr_mcu3_status_core_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu3_status_core_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_core_t *src);
 
-/* ===== MCU4_STATUS_CORE  (2 ms) ===== */
+/* ===== MCU4_STATUS_CORE  (4 ms) ===== */
 #define TTR_CAN_ID_MCU4_STATUS_CORE   (0x120u)
 #define TTR_CAN_DLC_MCU4_STATUS_CORE  (8u)
 
@@ -1009,6 +965,50 @@ typedef struct {
 
 void ttr_vcu_vcu_gps_unpack(ttr_vcu_vcu_gps_t *dst, const ttr_can_frame_t *frame);
 void ttr_vcu_vcu_gps_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_gps_t *src);
+
+/* ===== VCU_MCU1_STATUS_CONTROL  (100 ms) ===== */
+#define TTR_CAN_ID_VCU_MCU1_STATUS_CONTROL   (0x43Cu)
+#define TTR_CAN_DLC_VCU_MCU1_STATUS_CONTROL  (8u)
+
+typedef struct {
+    bool RECV_MODE_CMD;  /* false="STANDALONE", true="BROADCAST" */
+} ttr_vcu_mcu1_status_control_t;
+
+void ttr_vcu_mcu1_status_control_unpack(ttr_vcu_mcu1_status_control_t *dst, const ttr_can_frame_t *frame);
+void ttr_vcu_mcu1_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu1_status_control_t *src);
+
+/* ===== VCU_MCU2_STATUS_CONTROL  (100 ms) ===== */
+#define TTR_CAN_ID_VCU_MCU2_STATUS_CONTROL   (0x43Du)
+#define TTR_CAN_DLC_VCU_MCU2_STATUS_CONTROL  (8u)
+
+typedef struct {
+    bool RECV_MODE_CMD;  /* false="STANDALONE", true="BROADCAST" */
+} ttr_vcu_mcu2_status_control_t;
+
+void ttr_vcu_mcu2_status_control_unpack(ttr_vcu_mcu2_status_control_t *dst, const ttr_can_frame_t *frame);
+void ttr_vcu_mcu2_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu2_status_control_t *src);
+
+/* ===== VCU_MCU3_STATUS_CONTROL  (100 ms) ===== */
+#define TTR_CAN_ID_VCU_MCU3_STATUS_CONTROL   (0x43Eu)
+#define TTR_CAN_DLC_VCU_MCU3_STATUS_CONTROL  (8u)
+
+typedef struct {
+    bool RECV_MODE_CMD;  /* false="STANDALONE", true="BROADCAST" */
+} ttr_vcu_mcu3_status_control_t;
+
+void ttr_vcu_mcu3_status_control_unpack(ttr_vcu_mcu3_status_control_t *dst, const ttr_can_frame_t *frame);
+void ttr_vcu_mcu3_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu3_status_control_t *src);
+
+/* ===== VCU_MCU4_STATUS_CONTROL  (100 ms) ===== */
+#define TTR_CAN_ID_VCU_MCU4_STATUS_CONTROL   (0x43Fu)
+#define TTR_CAN_DLC_VCU_MCU4_STATUS_CONTROL  (8u)
+
+typedef struct {
+    bool RECV_MODE_CMD;  /* false="STANDALONE", true="BROADCAST" */
+} ttr_vcu_mcu4_status_control_t;
+
+void ttr_vcu_mcu4_status_control_unpack(ttr_vcu_mcu4_status_control_t *dst, const ttr_can_frame_t *frame);
+void ttr_vcu_mcu4_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu4_status_control_t *src);
 
 /* ===== AMS_AMS_STATUS_BASIC  (20 ms) ===== */
 #define TTR_CAN_ID_AMS_AMS_STATUS_BASIC   (0x440u)
@@ -2846,9 +2846,8 @@ bool ttr_ecu_imu_front_dispatch(ttr_ecu_imu_front_t *ecu, const ttr_can_frame_t 
 
 /* ===== ECU MCU1 -- every message it sends (TX) or receives (RX) ===== */
 typedef struct {
-    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 2 ms */
-    ttr_vcu_mcu1_status_control_t vcu_mcu1_status_control;  /* RX, 100 ms */
-    ttr_mcu1_status_core_t mcu1_status_core;  /* TX, 2 ms */
+    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 4 ms */
+    ttr_mcu1_status_core_t mcu1_status_core;  /* TX, 4 ms */
     ttr_debug_mcu1_ctrl_t debug_mcu1_ctrl;  /* RX, event-based */
     ttr_debug_mcu1_parameter_control_t debug_mcu1_parameter_control;  /* RX, event-based */
     ttr_debug_mcu1_parameter_limit_t debug_mcu1_parameter_limit;  /* RX, event-based */
@@ -2876,9 +2875,8 @@ bool ttr_ecu_mcu1_dispatch(ttr_ecu_mcu1_t *ecu, const ttr_can_frame_t *frame);
 
 /* ===== ECU MCU2 -- every message it sends (TX) or receives (RX) ===== */
 typedef struct {
-    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 2 ms */
-    ttr_vcu_mcu2_status_control_t vcu_mcu2_status_control;  /* RX, 100 ms */
-    ttr_mcu2_status_core_t mcu2_status_core;  /* TX, 2 ms */
+    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 4 ms */
+    ttr_mcu2_status_core_t mcu2_status_core;  /* TX, 4 ms */
     ttr_debug_mcu2_ctrl_t debug_mcu2_ctrl;  /* RX, event-based */
     ttr_debug_mcu2_parameter_control_t debug_mcu2_parameter_control;  /* RX, event-based */
     ttr_debug_mcu2_parameter_limit_t debug_mcu2_parameter_limit;  /* RX, event-based */
@@ -2906,9 +2904,8 @@ bool ttr_ecu_mcu2_dispatch(ttr_ecu_mcu2_t *ecu, const ttr_can_frame_t *frame);
 
 /* ===== ECU MCU3 -- every message it sends (TX) or receives (RX) ===== */
 typedef struct {
-    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 2 ms */
-    ttr_vcu_mcu3_status_control_t vcu_mcu3_status_control;  /* RX, 100 ms */
-    ttr_mcu3_status_core_t mcu3_status_core;  /* TX, 2 ms */
+    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 4 ms */
+    ttr_mcu3_status_core_t mcu3_status_core;  /* TX, 4 ms */
     ttr_debug_mcu3_ctrl_t debug_mcu3_ctrl;  /* RX, event-based */
     ttr_debug_mcu3_parameter_control_t debug_mcu3_parameter_control;  /* RX, event-based */
     ttr_debug_mcu3_parameter_limit_t debug_mcu3_parameter_limit;  /* RX, event-based */
@@ -2936,9 +2933,8 @@ bool ttr_ecu_mcu3_dispatch(ttr_ecu_mcu3_t *ecu, const ttr_can_frame_t *frame);
 
 /* ===== ECU MCU4 -- every message it sends (TX) or receives (RX) ===== */
 typedef struct {
-    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 2 ms */
-    ttr_vcu_mcu4_status_control_t vcu_mcu4_status_control;  /* RX, 100 ms */
-    ttr_mcu4_status_core_t mcu4_status_core;  /* TX, 2 ms */
+    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* RX, 4 ms */
+    ttr_mcu4_status_core_t mcu4_status_core;  /* TX, 4 ms */
     ttr_debug_mcu4_ctrl_t debug_mcu4_ctrl;  /* RX, event-based */
     ttr_debug_mcu4_parameter_control_t debug_mcu4_parameter_control;  /* RX, event-based */
     ttr_debug_mcu4_parameter_limit_t debug_mcu4_parameter_limit;  /* RX, event-based */
@@ -2966,15 +2962,11 @@ bool ttr_ecu_mcu4_dispatch(ttr_ecu_mcu4_t *ecu, const ttr_can_frame_t *frame);
 
 /* ===== ECU VCU -- every message it sends (TX) or receives (RX) ===== */
 typedef struct {
-    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* TX, 2 ms */
-    ttr_vcu_mcu1_status_control_t vcu_mcu1_status_control;  /* TX, 100 ms */
-    ttr_vcu_mcu2_status_control_t vcu_mcu2_status_control;  /* TX, 100 ms */
-    ttr_vcu_mcu3_status_control_t vcu_mcu3_status_control;  /* TX, 100 ms */
-    ttr_vcu_mcu4_status_control_t vcu_mcu4_status_control;  /* TX, 100 ms */
-    ttr_mcu1_status_core_t mcu1_status_core;  /* RX, 2 ms */
-    ttr_mcu2_status_core_t mcu2_status_core;  /* RX, 2 ms */
-    ttr_mcu3_status_core_t mcu3_status_core;  /* RX, 2 ms */
-    ttr_mcu4_status_core_t mcu4_status_core;  /* RX, 2 ms */
+    ttr_vcu_mcu_all_control_t vcu_mcu_all_control;  /* TX, 4 ms */
+    ttr_mcu1_status_core_t mcu1_status_core;  /* RX, 4 ms */
+    ttr_mcu2_status_core_t mcu2_status_core;  /* RX, 4 ms */
+    ttr_mcu3_status_core_t mcu3_status_core;  /* RX, 4 ms */
+    ttr_mcu4_status_core_t mcu4_status_core;  /* RX, 4 ms */
     ttr_debug_dtu_control_t debug_dtu_control;  /* RX, event-based */
     ttr_vcu_vcu_state_t vcu_vcu_state;  /* TX, 10 ms */
     ttr_vcu_vcu_error_t vcu_vcu_error;  /* TX, 10 ms */
@@ -2992,6 +2984,10 @@ typedef struct {
     ttr_vcu_vcu_imu_acc_t vcu_vcu_imu_acc;  /* TX, 6 ms */
     ttr_vcu_vcu_imu_rot_t vcu_vcu_imu_rot;  /* TX, 6 ms */
     ttr_vcu_vcu_gps_t vcu_vcu_gps;  /* TX, 100 ms */
+    ttr_vcu_mcu1_status_control_t vcu_mcu1_status_control;  /* TX, 100 ms */
+    ttr_vcu_mcu2_status_control_t vcu_mcu2_status_control;  /* TX, 100 ms */
+    ttr_vcu_mcu3_status_control_t vcu_mcu3_status_control;  /* TX, 100 ms */
+    ttr_vcu_mcu4_status_control_t vcu_mcu4_status_control;  /* TX, 100 ms */
 } ttr_ecu_vcu_t;
 
 extern ttr_ecu_vcu_t ttr_ecu_vcu;   /* ready-to-use, zero-initialised */

@@ -66,66 +66,6 @@ void ttr_vcu_mcu_all_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu_all_
     ttr_set_bits(frame->data, 80u, 16u, (uint64_t)src->CMD_COUNTER);
 }
 
-/* ===== VCU_MCU1_STATUS_CONTROL ===== */
-void ttr_vcu_mcu1_status_control_unpack(ttr_vcu_mcu1_status_control_t *dst, const ttr_can_frame_t *frame)
-{
-    dst->RECV_MODE_CMD = ttr_get_bits(frame->data, 0u, 1u) != 0u;
-}
-
-void ttr_vcu_mcu1_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu1_status_control_t *src)
-{
-    uint16_t i;
-    frame->id = TTR_CAN_ID_VCU_MCU1_STATUS_CONTROL;
-    frame->dlc = TTR_CAN_DLC_VCU_MCU1_STATUS_CONTROL;
-    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
-    ttr_set_bits(frame->data, 0u, 1u, src->RECV_MODE_CMD ? 1u : 0u);
-}
-
-/* ===== VCU_MCU2_STATUS_CONTROL ===== */
-void ttr_vcu_mcu2_status_control_unpack(ttr_vcu_mcu2_status_control_t *dst, const ttr_can_frame_t *frame)
-{
-    dst->RECV_MODE_CMD = ttr_get_bits(frame->data, 0u, 1u) != 0u;
-}
-
-void ttr_vcu_mcu2_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu2_status_control_t *src)
-{
-    uint16_t i;
-    frame->id = TTR_CAN_ID_VCU_MCU2_STATUS_CONTROL;
-    frame->dlc = TTR_CAN_DLC_VCU_MCU2_STATUS_CONTROL;
-    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
-    ttr_set_bits(frame->data, 0u, 1u, src->RECV_MODE_CMD ? 1u : 0u);
-}
-
-/* ===== VCU_MCU3_STATUS_CONTROL ===== */
-void ttr_vcu_mcu3_status_control_unpack(ttr_vcu_mcu3_status_control_t *dst, const ttr_can_frame_t *frame)
-{
-    dst->RECV_MODE_CMD = ttr_get_bits(frame->data, 0u, 1u) != 0u;
-}
-
-void ttr_vcu_mcu3_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu3_status_control_t *src)
-{
-    uint16_t i;
-    frame->id = TTR_CAN_ID_VCU_MCU3_STATUS_CONTROL;
-    frame->dlc = TTR_CAN_DLC_VCU_MCU3_STATUS_CONTROL;
-    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
-    ttr_set_bits(frame->data, 0u, 1u, src->RECV_MODE_CMD ? 1u : 0u);
-}
-
-/* ===== VCU_MCU4_STATUS_CONTROL ===== */
-void ttr_vcu_mcu4_status_control_unpack(ttr_vcu_mcu4_status_control_t *dst, const ttr_can_frame_t *frame)
-{
-    dst->RECV_MODE_CMD = ttr_get_bits(frame->data, 0u, 1u) != 0u;
-}
-
-void ttr_vcu_mcu4_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu4_status_control_t *src)
-{
-    uint16_t i;
-    frame->id = TTR_CAN_ID_VCU_MCU4_STATUS_CONTROL;
-    frame->dlc = TTR_CAN_DLC_VCU_MCU4_STATUS_CONTROL;
-    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
-    ttr_set_bits(frame->data, 0u, 1u, src->RECV_MODE_CMD ? 1u : 0u);
-}
-
 /* ===== CHARGER_AMS_CONTROL ===== */
 void ttr_charger_ams_control_unpack(ttr_charger_ams_control_t *dst, const ttr_can_frame_t *frame)
 {
@@ -1568,6 +1508,66 @@ void ttr_vcu_vcu_gps_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_gps_t *src)
     { uint32_t _u; memcpy(&_u, &src->LATITUDE, sizeof(_u)); ttr_set_bits(frame->data, 8u, 32u, _u); }
     { uint32_t _u; memcpy(&_u, &src->LONGTITUDE, sizeof(_u)); ttr_set_bits(frame->data, 40u, 32u, _u); }
     ttr_set_bits(frame->data, 72u, 56u, (uint64_t)src->TIME);
+}
+
+/* ===== VCU_MCU1_STATUS_CONTROL ===== */
+void ttr_vcu_mcu1_status_control_unpack(ttr_vcu_mcu1_status_control_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->RECV_MODE_CMD = ttr_get_bits(frame->data, 0u, 1u) != 0u;
+}
+
+void ttr_vcu_mcu1_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu1_status_control_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_VCU_MCU1_STATUS_CONTROL;
+    frame->dlc = TTR_CAN_DLC_VCU_MCU1_STATUS_CONTROL;
+    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 1u, src->RECV_MODE_CMD ? 1u : 0u);
+}
+
+/* ===== VCU_MCU2_STATUS_CONTROL ===== */
+void ttr_vcu_mcu2_status_control_unpack(ttr_vcu_mcu2_status_control_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->RECV_MODE_CMD = ttr_get_bits(frame->data, 0u, 1u) != 0u;
+}
+
+void ttr_vcu_mcu2_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu2_status_control_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_VCU_MCU2_STATUS_CONTROL;
+    frame->dlc = TTR_CAN_DLC_VCU_MCU2_STATUS_CONTROL;
+    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 1u, src->RECV_MODE_CMD ? 1u : 0u);
+}
+
+/* ===== VCU_MCU3_STATUS_CONTROL ===== */
+void ttr_vcu_mcu3_status_control_unpack(ttr_vcu_mcu3_status_control_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->RECV_MODE_CMD = ttr_get_bits(frame->data, 0u, 1u) != 0u;
+}
+
+void ttr_vcu_mcu3_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu3_status_control_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_VCU_MCU3_STATUS_CONTROL;
+    frame->dlc = TTR_CAN_DLC_VCU_MCU3_STATUS_CONTROL;
+    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 1u, src->RECV_MODE_CMD ? 1u : 0u);
+}
+
+/* ===== VCU_MCU4_STATUS_CONTROL ===== */
+void ttr_vcu_mcu4_status_control_unpack(ttr_vcu_mcu4_status_control_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->RECV_MODE_CMD = ttr_get_bits(frame->data, 0u, 1u) != 0u;
+}
+
+void ttr_vcu_mcu4_status_control_pack(ttr_can_frame_t *frame, const ttr_vcu_mcu4_status_control_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_VCU_MCU4_STATUS_CONTROL;
+    frame->dlc = TTR_CAN_DLC_VCU_MCU4_STATUS_CONTROL;
+    for (i = 0; i < 8u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 1u, src->RECV_MODE_CMD ? 1u : 0u);
 }
 
 /* ===== AMS_AMS_STATUS_BASIC ===== */
@@ -4454,9 +4454,6 @@ bool ttr_ecu_mcu1_dispatch(ttr_ecu_mcu1_t *ecu, const ttr_can_frame_t *frame)
     case TTR_CAN_ID_VCU_MCU_ALL_CONTROL:
         ttr_vcu_mcu_all_control_unpack(&ecu->vcu_mcu_all_control, frame);
         return true;
-    case TTR_CAN_ID_VCU_MCU1_STATUS_CONTROL:
-        ttr_vcu_mcu1_status_control_unpack(&ecu->vcu_mcu1_status_control, frame);
-        return true;
     case TTR_CAN_ID_DEBUG_MCU1_CTRL:
         ttr_debug_mcu1_ctrl_unpack(&ecu->debug_mcu1_ctrl, frame);
         return true;
@@ -4488,9 +4485,6 @@ bool ttr_ecu_mcu2_dispatch(ttr_ecu_mcu2_t *ecu, const ttr_can_frame_t *frame)
     switch (frame->id) {
     case TTR_CAN_ID_VCU_MCU_ALL_CONTROL:
         ttr_vcu_mcu_all_control_unpack(&ecu->vcu_mcu_all_control, frame);
-        return true;
-    case TTR_CAN_ID_VCU_MCU2_STATUS_CONTROL:
-        ttr_vcu_mcu2_status_control_unpack(&ecu->vcu_mcu2_status_control, frame);
         return true;
     case TTR_CAN_ID_DEBUG_MCU2_CTRL:
         ttr_debug_mcu2_ctrl_unpack(&ecu->debug_mcu2_ctrl, frame);
@@ -4524,9 +4518,6 @@ bool ttr_ecu_mcu3_dispatch(ttr_ecu_mcu3_t *ecu, const ttr_can_frame_t *frame)
     case TTR_CAN_ID_VCU_MCU_ALL_CONTROL:
         ttr_vcu_mcu_all_control_unpack(&ecu->vcu_mcu_all_control, frame);
         return true;
-    case TTR_CAN_ID_VCU_MCU3_STATUS_CONTROL:
-        ttr_vcu_mcu3_status_control_unpack(&ecu->vcu_mcu3_status_control, frame);
-        return true;
     case TTR_CAN_ID_DEBUG_MCU3_CTRL:
         ttr_debug_mcu3_ctrl_unpack(&ecu->debug_mcu3_ctrl, frame);
         return true;
@@ -4558,9 +4549,6 @@ bool ttr_ecu_mcu4_dispatch(ttr_ecu_mcu4_t *ecu, const ttr_can_frame_t *frame)
     switch (frame->id) {
     case TTR_CAN_ID_VCU_MCU_ALL_CONTROL:
         ttr_vcu_mcu_all_control_unpack(&ecu->vcu_mcu_all_control, frame);
-        return true;
-    case TTR_CAN_ID_VCU_MCU4_STATUS_CONTROL:
-        ttr_vcu_mcu4_status_control_unpack(&ecu->vcu_mcu4_status_control, frame);
         return true;
     case TTR_CAN_ID_DEBUG_MCU4_CTRL:
         ttr_debug_mcu4_ctrl_unpack(&ecu->debug_mcu4_ctrl, frame);

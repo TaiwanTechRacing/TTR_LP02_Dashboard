@@ -25,18 +25,6 @@ BO_ 32 VCU_MCU_ALL_CONTROL: 12 VCU
  SG_ TE_CMD_MCU4_CMD : 64|16@1+ (0.0488759,-25) [-25|25] "Nm" MCU1,MCU2,MCU3,MCU4
  SG_ CMD_COUNTER : 80|16@1+ (1,0) [0|0] "" MCU1,MCU2,MCU3,MCU4
 
-BO_ 42 VCU_MCU1_STATUS_CONTROL: 8 VCU
- SG_ RECV_MODE_CMD : 0|1@1+ (1,0) [0|0] "" MCU1
-
-BO_ 43 VCU_MCU2_STATUS_CONTROL: 8 VCU
- SG_ RECV_MODE_CMD : 0|1@1+ (1,0) [0|0] "" MCU2
-
-BO_ 44 VCU_MCU3_STATUS_CONTROL: 8 VCU
- SG_ RECV_MODE_CMD : 0|1@1+ (1,0) [0|0] "" MCU3
-
-BO_ 45 VCU_MCU4_STATUS_CONTROL: 8 VCU
- SG_ RECV_MODE_CMD : 0|1@1+ (1,0) [0|0] "" MCU4
-
 BO_ 96 CHARGER_AMS_CONTROL: 8 CHARGER
  SG_ BALANCE_EN : 0|1@1+ (1,0) [0|0] "" AMS
 
@@ -551,6 +539,18 @@ BO_ 1082 VCU_VCU_GPS: 16 VCU
  SG_ LATITUDE : 8|32@1- (1,0) [0|0] "" Vector__XXX
  SG_ LONGTITUDE : 40|32@1- (1,0) [0|0] "" Vector__XXX
  SG_ TIME : 72|56@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1084 VCU_MCU1_STATUS_CONTROL: 8 VCU
+ SG_ RECV_MODE_CMD : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1085 VCU_MCU2_STATUS_CONTROL: 8 VCU
+ SG_ RECV_MODE_CMD : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1086 VCU_MCU3_STATUS_CONTROL: 8 VCU
+ SG_ RECV_MODE_CMD : 0|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1087 VCU_MCU4_STATUS_CONTROL: 8 VCU
+ SG_ RECV_MODE_CMD : 0|1@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1088 AMS_AMS_STATUS_BASIC: 32 AMS
  SG_ AMS_STATE : 0|2@1+ (1,0) [0|0] "" Vector__XXX
@@ -1744,24 +1744,16 @@ BA_DEF_DEF_ "BusType" "CAN FD";
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_DEF_DEF_ "VFrameFormat" "StandardCAN";
 BA_ "BusType" "CAN FD";
-BA_ "GenMsgCycleTime" BO_ 32 2;
+BA_ "GenMsgCycleTime" BO_ 32 4;
 BA_ "VFrameFormat" BO_ 32 14;
-BA_ "GenMsgCycleTime" BO_ 42 100;
-BA_ "VFrameFormat" BO_ 42 14;
-BA_ "GenMsgCycleTime" BO_ 43 100;
-BA_ "VFrameFormat" BO_ 43 14;
-BA_ "GenMsgCycleTime" BO_ 44 100;
-BA_ "VFrameFormat" BO_ 44 14;
-BA_ "GenMsgCycleTime" BO_ 45 100;
-BA_ "VFrameFormat" BO_ 45 14;
 BA_ "VFrameFormat" BO_ 96 14;
-BA_ "GenMsgCycleTime" BO_ 192 2;
+BA_ "GenMsgCycleTime" BO_ 192 4;
 BA_ "VFrameFormat" BO_ 192 14;
-BA_ "GenMsgCycleTime" BO_ 224 2;
+BA_ "GenMsgCycleTime" BO_ 224 4;
 BA_ "VFrameFormat" BO_ 224 14;
-BA_ "GenMsgCycleTime" BO_ 256 2;
+BA_ "GenMsgCycleTime" BO_ 256 4;
 BA_ "VFrameFormat" BO_ 256 14;
-BA_ "GenMsgCycleTime" BO_ 288 2;
+BA_ "GenMsgCycleTime" BO_ 288 4;
 BA_ "VFrameFormat" BO_ 288 14;
 BA_ "VFrameFormat" BO_ 640 14;
 BA_ "VFrameFormat" BO_ 641 14;
@@ -1824,6 +1816,14 @@ BA_ "GenMsgCycleTime" BO_ 1080 6;
 BA_ "VFrameFormat" BO_ 1080 14;
 BA_ "GenMsgCycleTime" BO_ 1082 100;
 BA_ "VFrameFormat" BO_ 1082 14;
+BA_ "GenMsgCycleTime" BO_ 1084 100;
+BA_ "VFrameFormat" BO_ 1084 14;
+BA_ "GenMsgCycleTime" BO_ 1085 100;
+BA_ "VFrameFormat" BO_ 1085 14;
+BA_ "GenMsgCycleTime" BO_ 1086 100;
+BA_ "VFrameFormat" BO_ 1086 14;
+BA_ "GenMsgCycleTime" BO_ 1087 100;
+BA_ "VFrameFormat" BO_ 1087 14;
 BA_ "GenMsgCycleTime" BO_ 1088 20;
 BA_ "VFrameFormat" BO_ 1088 14;
 BA_ "GenMsgCycleTime" BO_ 1089 20;
@@ -1950,10 +1950,6 @@ VAL_ 32 SYS_EN_CMD 0 "False" 1 "True";
 VAL_ 32 SYS_RESET_CMD 0 "False" 1 "True";
 VAL_ 32 FW_EN_CMD 0 "False" 1 "True";
 VAL_ 32 MTPA_EN_CMD 0 "False" 1 "True";
-VAL_ 42 RECV_MODE_CMD 0 "STANDALONE" 1 "BROADCAST";
-VAL_ 43 RECV_MODE_CMD 0 "STANDALONE" 1 "BROADCAST";
-VAL_ 44 RECV_MODE_CMD 0 "STANDALONE" 1 "BROADCAST";
-VAL_ 45 RECV_MODE_CMD 0 "STANDALONE" 1 "BROADCAST";
 VAL_ 96 BALANCE_EN 0 "False" 1 "True";
 VAL_ 192 SYS_READY_ACTIVE 0 "False" 1 "True";
 VAL_ 192 SYS_ENABLE_ACTIVE 0 "False" 1 "True";
@@ -2135,6 +2131,10 @@ VAL_ 1071 INV4_OTP_FAULT 0 "False" 1 "True";
 VAL_ 1071 INV4_OCP_FAULT 0 "False" 1 "True";
 VAL_ 1082 GPS_MODULE_ACTIVE 0 "False" 1 "True";
 VAL_ 1082 GPS_NO_SIGNAL_STATE 0 "False" 1 "True";
+VAL_ 1084 RECV_MODE_CMD 0 "STANDALONE" 1 "BROADCAST";
+VAL_ 1085 RECV_MODE_CMD 0 "STANDALONE" 1 "BROADCAST";
+VAL_ 1086 RECV_MODE_CMD 0 "STANDALONE" 1 "BROADCAST";
+VAL_ 1087 RECV_MODE_CMD 0 "STANDALONE" 1 "BROADCAST";
 VAL_ 1088 AMS_STATE 0 "IDLE" 1 "MEASURE" 2 "BALANCING" 3 "CHARGING";
 VAL_ 1088 BUS_OVER_CURRENT_ERR 0 "False" 1 "True";
 VAL_ 1088 LTC_CONNECTION_LOSS 0 "False" 1 "True";

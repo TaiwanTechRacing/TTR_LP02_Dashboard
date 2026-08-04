@@ -1975,7 +1975,7 @@ void create_screen_inverter() {
             // invFaultLabel
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv_fault_label = obj;
-            lv_obj_set_pos(obj, 8, 226);
+            lv_obj_set_pos(obj, 8, 228);
             lv_obj_set_size(obj, 464, 30);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -1985,190 +1985,209 @@ void create_screen_inverter() {
             // invHdrMotor
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv_hdr_motor = obj;
-            lv_obj_set_pos(obj, 116, 50);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 128, 48);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "MOTOR");
         }
         {
             // invHdrGate
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv_hdr_gate = obj;
-            lv_obj_set_pos(obj, 210, 50);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 240, 48);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "GATE");
         }
         {
             // inv1Name
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv1_name = obj;
-            lv_obj_set_pos(obj, 14, 80);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 16, 84);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "INV1");
         }
         {
             // inv1Motor
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv1_motor = obj;
-            lv_obj_set_pos(obj, 116, 80);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 128, 84);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv1Gate
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv1_gate = obj;
-            lv_obj_set_pos(obj, 210, 80);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 240, 84);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv2Name
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv2_name = obj;
-            lv_obj_set_pos(obj, 14, 116);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 16, 120);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "INV2");
         }
         {
             // inv2Motor
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv2_motor = obj;
-            lv_obj_set_pos(obj, 116, 116);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 128, 120);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv2Gate
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv2_gate = obj;
-            lv_obj_set_pos(obj, 210, 116);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 240, 120);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv3Name
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv3_name = obj;
-            lv_obj_set_pos(obj, 14, 152);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 16, 156);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "INV3");
         }
         {
             // inv3Motor
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv3_motor = obj;
-            lv_obj_set_pos(obj, 116, 152);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 128, 156);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv3Gate
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv3_gate = obj;
-            lv_obj_set_pos(obj, 210, 152);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 240, 156);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv4Name
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv4_name = obj;
-            lv_obj_set_pos(obj, 14, 188);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 16, 192);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "INV4");
         }
         {
             // inv4Motor
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv4_motor = obj;
-            lv_obj_set_pos(obj, 116, 188);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 128, 192);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv4Gate
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv4_gate = obj;
-            lv_obj_set_pos(obj, 210, 188);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 240, 192);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // invHdrState
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv_hdr_state = obj;
-            lv_obj_set_pos(obj, 344, 50);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 352, 48);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "STATE");
         }
         {
             // inv1State
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv1_state = obj;
-            lv_obj_set_pos(obj, 344, 80);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 352, 84);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv2State
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv2_state = obj;
-            lv_obj_set_pos(obj, 344, 116);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 352, 120);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv3State
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv3_state = obj;
-            lv_obj_set_pos(obj, 344, 152);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 352, 156);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // inv4State
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.inv4_state = obj;
-            lv_obj_set_pos(obj, 344, 188);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_pos(obj, 352, 192);
+            lv_obj_set_size(obj, 112, LV_SIZE_CONTENT);
             add_style_text(obj);
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
     }
