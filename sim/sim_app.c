@@ -34,6 +34,7 @@ void SimApp_Reset(void)
 
     /* LVGL shows the performance label as soon as a display exists; the
      * firmware hides it at boot and so does this. */
+    UIBind_Init();
     DebugOverlay_Init();
     Nav_Init();
 

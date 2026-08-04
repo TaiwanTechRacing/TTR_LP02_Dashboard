@@ -158,4 +158,24 @@ void SimData_Feed(uint32_t now)
 
     VehicleData_MarkFresh(VD_GROUP_VCU_ONLINE);
     VehicleData_MarkFresh(VD_GROUP_VCU_ERROR);
+
+    /*
+     * Inverters. Temperatures climb with the same wave as everything else, and
+     * the fault set walks so the marquee is exercised at every length - one
+     * fault sits still, several scroll, and that difference is the feature.
+     */
+    for (uint8_t i = 0; i < VD_INV_COUNT; i++) {
+        g_vehicle.motor_temp[i] = 40.0f + (wave * 45.0f) + ((float)i * 3.0f);
+        for (uint8_t p = 0; p < 3u; p++) {
+            g_vehicle.gate_temp[i][p] = 35.0f + (wave * 50.0f) + ((float)p * 4.0f);
+        }
+    }
+
+    const uint8_t fault_step = (uint8_t)((now / 4000u) % 5u);
+    g_vehicle.inv_faults = 0;
+    for (uint8_t n = 0; n < fault_step; n++) {
+        g_vehicle.inv_faults |= VD_INV_FAULT(n % VD_INV_COUNT, n % VD_INV_KINDS);
+    }
+
+    VehicleData_MarkFresh(VD_GROUP_VCU_MCU_STATUS);
 }

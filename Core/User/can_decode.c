@@ -154,6 +154,54 @@ static void decode_one(const ttr_can_frame_t *frame)
         break;
     }
 
+    case TTR_CAN_ID_VCU_VCU_MCU_STATUS: {
+        ttr_vcu_vcu_mcu_status_t s;
+        ttr_vcu_vcu_mcu_status_unpack(&s, frame);
+
+        g_vehicle.motor_temp[0] = s.M1_TEMPERATURE;
+        g_vehicle.motor_temp[1] = s.M2_TEMPERATURE;
+        g_vehicle.motor_temp[2] = s.M3_TEMPERATURE;
+        g_vehicle.motor_temp[3] = s.M4_TEMPERATURE;
+
+        /* All twelve phases kept, not just the hottest. The page only shows the
+         * worst of each three, but one phase running away from the other two is
+         * a different fault from all three being hot, and that is invisible
+         * once they are collapsed. */
+        g_vehicle.gate_temp[0][0] = s.INV1_GATE_U_TEMPERATURE;
+        g_vehicle.gate_temp[0][1] = s.INV1_GATE_V_TEMPERATURE;
+        g_vehicle.gate_temp[0][2] = s.INV1_GATE_W_TEMPERATURE;
+        g_vehicle.gate_temp[1][0] = s.INV2_GATE_U_TEMPERATURE;
+        g_vehicle.gate_temp[1][1] = s.INV2_GATE_V_TEMPERATURE;
+        g_vehicle.gate_temp[1][2] = s.INV2_GATE_W_TEMPERATURE;
+        g_vehicle.gate_temp[2][0] = s.INV3_GATE_U_TEMPERATURE;
+        g_vehicle.gate_temp[2][1] = s.INV3_GATE_V_TEMPERATURE;
+        g_vehicle.gate_temp[2][2] = s.INV3_GATE_W_TEMPERATURE;
+        g_vehicle.gate_temp[3][0] = s.INV4_GATE_U_TEMPERATURE;
+        g_vehicle.gate_temp[3][1] = s.INV4_GATE_V_TEMPERATURE;
+        g_vehicle.gate_temp[3][2] = s.INV4_GATE_W_TEMPERATURE;
+
+        g_vehicle.inv_faults = (uint16_t)(
+              (s.INV1_GATE_FAULT ? VD_INV_FAULT(0, VD_INV_GATE) : 0)
+            | (s.INV1_ENC_FAULT  ? VD_INV_FAULT(0, VD_INV_ENC)  : 0)
+            | (s.INV1_OTP_FAULT  ? VD_INV_FAULT(0, VD_INV_OTP)  : 0)
+            | (s.INV1_OCP_FAULT  ? VD_INV_FAULT(0, VD_INV_OCP)  : 0)
+            | (s.INV2_GATE_FAULT ? VD_INV_FAULT(1, VD_INV_GATE) : 0)
+            | (s.INV2_ENC_FAULT  ? VD_INV_FAULT(1, VD_INV_ENC)  : 0)
+            | (s.INV2_OTP_FAULT  ? VD_INV_FAULT(1, VD_INV_OTP)  : 0)
+            | (s.INV2_OCP_FAULT  ? VD_INV_FAULT(1, VD_INV_OCP)  : 0)
+            | (s.INV3_GATE_FAULT ? VD_INV_FAULT(2, VD_INV_GATE) : 0)
+            | (s.INV3_ENC_FAULT  ? VD_INV_FAULT(2, VD_INV_ENC)  : 0)
+            | (s.INV3_OTP_FAULT  ? VD_INV_FAULT(2, VD_INV_OTP)  : 0)
+            | (s.INV3_OCP_FAULT  ? VD_INV_FAULT(2, VD_INV_OCP)  : 0)
+            | (s.INV4_GATE_FAULT ? VD_INV_FAULT(3, VD_INV_GATE) : 0)
+            | (s.INV4_ENC_FAULT  ? VD_INV_FAULT(3, VD_INV_ENC)  : 0)
+            | (s.INV4_OTP_FAULT  ? VD_INV_FAULT(3, VD_INV_OTP)  : 0)
+            | (s.INV4_OCP_FAULT  ? VD_INV_FAULT(3, VD_INV_OCP)  : 0));
+
+        VehicleData_MarkFresh(VD_GROUP_VCU_MCU_STATUS);
+        break;
+    }
+
     case TTR_CAN_ID_VCU_VCU_ONLINE: {
         ttr_vcu_vcu_online_t s;
         ttr_vcu_vcu_online_unpack(&s, frame);

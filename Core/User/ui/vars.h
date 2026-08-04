@@ -61,7 +61,12 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_BAT_CELL_TEXT = 45,
     FLOW_GLOBAL_VARIABLE_BAT_SPREAD_TEXT = 46,
     FLOW_GLOBAL_VARIABLE_BAT_TEMP_TEXT = 47,
-    FLOW_GLOBAL_VARIABLE_BAT_LOW_TEXT = 48
+    FLOW_GLOBAL_VARIABLE_BAT_LOW_TEXT = 48,
+    FLOW_GLOBAL_VARIABLE_INV1_TEXT = 49,
+    FLOW_GLOBAL_VARIABLE_INV2_TEXT = 50,
+    FLOW_GLOBAL_VARIABLE_INV3_TEXT = 51,
+    FLOW_GLOBAL_VARIABLE_INV4_TEXT = 52,
+    FLOW_GLOBAL_VARIABLE_INV_FAULT_TEXT = 53
 };
 
 // Native global variables
@@ -164,6 +169,16 @@ extern const char *get_var_bat_temp_text();
 extern void set_var_bat_temp_text(const char *value);
 extern const char *get_var_bat_low_text();
 extern void set_var_bat_low_text(const char *value);
+extern const char *get_var_inv1_text();
+extern void set_var_inv1_text(const char *value);
+extern const char *get_var_inv2_text();
+extern void set_var_inv2_text(const char *value);
+extern const char *get_var_inv3_text();
+extern void set_var_inv3_text(const char *value);
+extern const char *get_var_inv4_text();
+extern void set_var_inv4_text(const char *value);
+extern const char *get_var_inv_fault_text();
+extern void set_var_inv_fault_text(const char *value);
 
 #ifdef __cplusplus
 }

@@ -74,6 +74,19 @@ typedef enum {
 #define VD_ERR_IMU   (1u << 5)
 
 /*
+ * Inverter faults, four kinds for each of the four inverters, packed into one
+ * word. VD_INV_FAULT(inv, kind) with inv 0..3.
+ */
+#define VD_INV_COUNT     4u
+#define VD_INV_GATE      0u   /* gate driver */
+#define VD_INV_ENC       1u   /* encoder */
+#define VD_INV_OTP       2u   /* over temperature */
+#define VD_INV_OCP       3u   /* over current */
+#define VD_INV_KINDS     4u
+
+#define VD_INV_FAULT(inv, kind) ((uint16_t)(1u << (((inv) * VD_INV_KINDS) + (kind))))
+
+/*
  * Bits of online_flags, from VCU_ONLINE.
  *
  * The VCU reports which nodes it can currently hear. This is not the same as
@@ -111,6 +124,7 @@ typedef enum {
     VD_GROUP_VCU_SYSTEM,
     VD_GROUP_VCU_ERROR,
     VD_GROUP_VCU_ONLINE,
+    VD_GROUP_VCU_MCU_STATUS,
     VD_GROUP_VCU_GPS,
     VD_GROUP_AMS_STATUS,
     VD_GROUP_AMS_CELLS,
@@ -153,6 +167,11 @@ typedef struct {
 
     /* --- VCU_ONLINE --- */
     uint8_t  online_flags;        /* VD_ONLINE_* */
+
+    /* --- VCU_MCU_STATUS --- */
+    float    motor_temp[VD_INV_COUNT];      /* C */
+    float    gate_temp[VD_INV_COUNT][3];    /* C, phases U V W */
+    uint16_t inv_faults;                    /* VD_INV_FAULT(inv, kind) */
 
     /* --- VCU_GPS --- */
     uint8_t  latitude;

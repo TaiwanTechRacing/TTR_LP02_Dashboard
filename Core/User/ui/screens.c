@@ -1971,12 +1971,107 @@ void create_screen_inverter() {
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text_static(obj, "INVERTER");
         }
+        {
+            // inv1Label
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv1_label = obj;
+            lv_obj_set_pos(obj, 14, 58);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv2Label
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv2_label = obj;
+            lv_obj_set_pos(obj, 14, 96);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv3Label
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv3_label = obj;
+            lv_obj_set_pos(obj, 14, 134);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // inv4Label
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv4_label = obj;
+            lv_obj_set_pos(obj, 14, 172);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // invFaultLabel
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.inv_fault_label = obj;
+            lv_obj_set_pos(obj, 8, 224);
+            lv_obj_set_size(obj, 464, 30);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
     }
     
     tick_screen_inverter();
 }
 
 void tick_screen_inverter() {
+    {
+        const char *new_val = get_var_inv1_text();
+        const char *cur_val = lv_label_get_text(objects.inv1_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv1_label;
+            lv_label_set_text(objects.inv1_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv2_text();
+        const char *cur_val = lv_label_get_text(objects.inv2_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv2_label;
+            lv_label_set_text(objects.inv2_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv3_text();
+        const char *cur_val = lv_label_get_text(objects.inv3_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv3_label;
+            lv_label_set_text(objects.inv3_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv4_text();
+        const char *cur_val = lv_label_get_text(objects.inv4_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv4_label;
+            lv_label_set_text(objects.inv4_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_inv_fault_text();
+        const char *cur_val = lv_label_get_text(objects.inv_fault_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.inv_fault_label;
+            lv_label_set_text(objects.inv_fault_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
 }
 
 void create_screen_debug1() {

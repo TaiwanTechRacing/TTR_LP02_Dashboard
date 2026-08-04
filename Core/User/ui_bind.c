@@ -685,6 +685,105 @@ const char *get_var_bat_low_text(void)
     return s_bat_text[3];
 }
 
+/*
+ * Inverter faults, as one line for the marquee on the inverter page.
+ *
+ * Every active fault is listed, and the label scrolls when they do not fit -
+ * which is the whole reason for a marquee here. Sixteen faults can be active
+ * at once and no sensible font shows sixteen labels on a 480 px screen, so the
+ * choice is between scrolling them and hiding all but the first.
+ *
+ * Ordered by inverter and then by kind, so the same fault always appears in
+ * the same place in the sequence. Sorting by arrival time would read as more
+ * urgent but makes it impossible to tell at a glance whether the list changed.
+ */
+static const char *const INV_FAULT_KIND[VD_INV_KINDS] = {
+    "GATE", "ENC", "OTP", "OCP"
+};
+
+const char *get_var_inv_fault_text(void)
+{
+    static char buf[224];
+
+    if (VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        return "INVERTER " STALE_TEXT;
+    }
+
+    size_t at = 0;
+    buf[0] = '\0';
+
+    for (uint8_t inv = 0; inv < VD_INV_COUNT; inv++) {
+        for (uint8_t kind = 0; kind < VD_INV_KINDS; kind++) {
+            if ((g_vehicle.inv_faults & VD_INV_FAULT(inv, kind)) == 0u) {
+                continue;
+            }
+
+            const int n = snprintf(&buf[at], sizeof(buf) - at, "%sINV%u %s",
+                                   (at == 0u) ? "" : "     ",
+                                   (unsigned)(inv + 1u), INV_FAULT_KIND[kind]);
+            if (n <= 0 || (size_t)n >= (sizeof(buf) - at)) {
+                break;      /* out of room; what is already there still reads */
+            }
+            at += (size_t)n;
+        }
+    }
+
+    return (at == 0u) ? "NO FAULT" : buf;
+}
+
+/*
+ * One line per inverter: motor temperature, the hottest of its three gate
+ * phases, and whether it is faulted.
+ *
+ * The hottest phase rather than all three, because three numbers per row does
+ * not fit and the worst one is what decides whether to keep driving. The
+ * individual phases are in vehicle_data for anyone who needs them.
+ */
+static char s_inv_row[VD_INV_COUNT][32];
+
+static const char *inv_row_text(uint8_t inv)
+{
+    if (VehicleData_IsStale(VD_GROUP_VCU_MCU_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        snprintf(s_inv_row[inv], sizeof(s_inv_row[inv]), "INV%u  %s",
+                 (unsigned)(inv + 1u), STALE_TEXT);
+        return s_inv_row[inv];
+    }
+
+    float gate = g_vehicle.gate_temp[inv][0];
+    for (uint8_t p = 1; p < 3u; p++) {
+        if (g_vehicle.gate_temp[inv][p] > gate) {
+            gate = g_vehicle.gate_temp[inv][p];
+        }
+    }
+
+    const bool faulted =
+        (g_vehicle.inv_faults & (uint16_t)(0x0Fu << (inv * VD_INV_KINDS))) != 0u;
+
+    snprintf(s_inv_row[inv], sizeof(s_inv_row[inv]), "INV%u  M%3.0f  G%3.0f  %s",
+             (unsigned)(inv + 1u), (double)g_vehicle.motor_temp[inv],
+             (double)gate, faulted ? "FAULT" : "OK");
+
+    return s_inv_row[inv];
+}
+
+const char *get_var_inv1_text(void) { return inv_row_text(0); }
+const char *get_var_inv2_text(void) { return inv_row_text(1); }
+const char *get_var_inv3_text(void) { return inv_row_text(2); }
+const char *get_var_inv4_text(void) { return inv_row_text(3); }
+
+/**
+ * One-time widget setup. See the note in the header.
+ */
+void UIBind_Init(void)
+{
+    /*
+     * The fault line scrolls when its text is wider than the label, and sits
+     * still when it fits. LVGL does the scrolling; all this does is ask for it,
+     * because EEZ has no way to.
+     */
+    lv_label_set_long_mode(objects.inv_fault_label, LV_LABEL_LONG_MODE_SCROLL_CIRCULAR);
+}
+
 /** Score on the game page. */
 const char *get_var_tetris_score(void)
 {

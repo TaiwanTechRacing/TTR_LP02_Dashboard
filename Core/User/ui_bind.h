@@ -17,6 +17,15 @@
 void UIBind_ApplyDynamicStyles(void);
 
 /**
+ * One-time widget setup that EEZ cannot express.
+ *
+ * Call once after ui_init(). At the moment that is the inverter page's fault
+ * line, which has to be told to scroll - EEZ never emits
+ * lv_label_set_long_mode(), so a marquee cannot be set up from the editor.
+ */
+void UIBind_Init(void);
+
+/**
  * Arm the one-shot 0 -> 150 -> 0 sweep of the speed readout.
  *
  * Call when the main screen is first shown. The sweep does not start until a

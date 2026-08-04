@@ -885,6 +885,48 @@ typedef struct {
 void ttr_vcu_vcu_dyc_status_unpack(ttr_vcu_vcu_dyc_status_t *dst, const ttr_can_frame_t *frame);
 void ttr_vcu_vcu_dyc_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dyc_status_t *src);
 
+/* ===== VCU_VCU_MCU_STATUS  (50 ms) ===== */
+#define TTR_CAN_ID_VCU_VCU_MCU_STATUS   (0x42Fu)
+#define TTR_CAN_DLC_VCU_VCU_MCU_STATUS  (32u)
+
+typedef struct {
+    float M1_TEMPERATURE;  /* C */
+    float M2_TEMPERATURE;  /* C */
+    float M3_TEMPERATURE;  /* C */
+    float M4_TEMPERATURE;  /* C */
+    float INV1_GATE_U_TEMPERATURE;  /* C */
+    float INV1_GATE_V_TEMPERATURE;  /* C */
+    float INV1_GATE_W_TEMPERATURE;  /* C */
+    float INV2_GATE_U_TEMPERATURE;  /* C */
+    float INV2_GATE_V_TEMPERATURE;  /* C */
+    float INV2_GATE_W_TEMPERATURE;  /* C */
+    float INV3_GATE_U_TEMPERATURE;  /* C */
+    float INV3_GATE_V_TEMPERATURE;  /* C */
+    float INV3_GATE_W_TEMPERATURE;  /* C */
+    float INV4_GATE_U_TEMPERATURE;  /* C */
+    float INV4_GATE_V_TEMPERATURE;  /* C */
+    float INV4_GATE_W_TEMPERATURE;  /* C */
+    bool INV1_GATE_FAULT;  /* false="False", true="True" */
+    bool INV1_ENC_FAULT;  /* false="False", true="True" */
+    bool INV1_OTP_FAULT;  /* false="False", true="True" */
+    bool INV1_OCP_FAULT;  /* false="False", true="True" */
+    bool INV2_GATE_FAULT;  /* false="False", true="True" */
+    bool INV2_ENC_FAULT;  /* false="False", true="True" */
+    bool INV2_OTP_FAULT;  /* false="False", true="True" */
+    bool INV2_OCP_FAULT;  /* false="False", true="True" */
+    bool INV3_GATE_FAULT;  /* false="False", true="True" */
+    bool INV3_ENC_FAULT;  /* false="False", true="True" */
+    bool INV3_OTP_FAULT;  /* false="False", true="True" */
+    bool INV3_OCP_FAULT;  /* false="False", true="True" */
+    bool INV4_GATE_FAULT;  /* false="False", true="True" */
+    bool INV4_ENC_FAULT;  /* false="False", true="True" */
+    bool INV4_OTP_FAULT;  /* false="False", true="True" */
+    bool INV4_OCP_FAULT;  /* false="False", true="True" */
+} ttr_vcu_vcu_mcu_status_t;
+
+void ttr_vcu_vcu_mcu_status_unpack(ttr_vcu_vcu_mcu_status_t *dst, const ttr_can_frame_t *frame);
+void ttr_vcu_vcu_mcu_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_mcu_status_t *src);
+
 /* ===== VCU_VCU_SENSOR1  (6 ms) ===== */
 #define TTR_CAN_ID_VCU_VCU_SENSOR1   (0x430u)
 #define TTR_CAN_DLC_VCU_VCU_SENSOR1  (8u)
@@ -1593,7 +1635,7 @@ void ttr_mcu1_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_g
 
 /* ===== MCU1_STATUS_COMM  (100 ms) ===== */
 #define TTR_CAN_ID_MCU1_STATUS_COMM   (0x4C7u)
-#define TTR_CAN_DLC_MCU1_STATUS_COMM  (16u)
+#define TTR_CAN_DLC_MCU1_STATUS_COMM  (32u)
 
 typedef struct {
     float CMD_MISS_CONSEC_AVG;
@@ -1604,6 +1646,15 @@ typedef struct {
     uint16_t BUS_OFF_COUNT;
     uint16_t TEC;
     uint16_t REC;
+    uint32_t TX_FRAME_COUNT;
+    uint16_t TX_DROP_COUNT;
+    uint16_t TX_STALL_MAX_MS;
+    uint16_t CEL_TOTAL;
+    uint16_t RX_DEAF_MAX_MS;
+    uint8_t TEC_MAX;
+    uint8_t REC_MAX;
+    uint8_t LEC_SEEN;
+    uint8_t ERR_PASSIVE_COUNT;
 } ttr_mcu1_status_comm_t;
 
 void ttr_mcu1_status_comm_unpack(ttr_mcu1_status_comm_t *dst, const ttr_can_frame_t *frame);
@@ -1913,7 +1964,7 @@ void ttr_mcu2_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_g
 
 /* ===== MCU2_STATUS_COMM  (100 ms) ===== */
 #define TTR_CAN_ID_MCU2_STATUS_COMM   (0x4E7u)
-#define TTR_CAN_DLC_MCU2_STATUS_COMM  (16u)
+#define TTR_CAN_DLC_MCU2_STATUS_COMM  (32u)
 
 typedef struct {
     float CMD_MISS_CONSEC_AVG;
@@ -1924,6 +1975,15 @@ typedef struct {
     uint16_t BUS_OFF_COUNT;
     uint16_t TEC;
     uint16_t REC;
+    uint32_t TX_FRAME_COUNT;
+    uint16_t TX_DROP_COUNT;
+    uint16_t TX_STALL_MAX_MS;
+    uint16_t CEL_TOTAL;
+    uint16_t RX_DEAF_MAX_MS;
+    uint8_t TEC_MAX;
+    uint8_t REC_MAX;
+    uint8_t LEC_SEEN;
+    uint8_t ERR_PASSIVE_COUNT;
 } ttr_mcu2_status_comm_t;
 
 void ttr_mcu2_status_comm_unpack(ttr_mcu2_status_comm_t *dst, const ttr_can_frame_t *frame);
@@ -2233,7 +2293,7 @@ void ttr_mcu3_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_g
 
 /* ===== MCU3_STATUS_COMM  (100 ms) ===== */
 #define TTR_CAN_ID_MCU3_STATUS_COMM   (0x507u)
-#define TTR_CAN_DLC_MCU3_STATUS_COMM  (16u)
+#define TTR_CAN_DLC_MCU3_STATUS_COMM  (32u)
 
 typedef struct {
     float CMD_MISS_CONSEC_AVG;
@@ -2244,6 +2304,15 @@ typedef struct {
     uint16_t BUS_OFF_COUNT;
     uint16_t TEC;
     uint16_t REC;
+    uint32_t TX_FRAME_COUNT;
+    uint16_t TX_DROP_COUNT;
+    uint16_t TX_STALL_MAX_MS;
+    uint16_t CEL_TOTAL;
+    uint16_t RX_DEAF_MAX_MS;
+    uint8_t TEC_MAX;
+    uint8_t REC_MAX;
+    uint8_t LEC_SEEN;
+    uint8_t ERR_PASSIVE_COUNT;
 } ttr_mcu3_status_comm_t;
 
 void ttr_mcu3_status_comm_unpack(ttr_mcu3_status_comm_t *dst, const ttr_can_frame_t *frame);
@@ -2553,7 +2622,7 @@ void ttr_mcu4_status_gate_w_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_g
 
 /* ===== MCU4_STATUS_COMM  (100 ms) ===== */
 #define TTR_CAN_ID_MCU4_STATUS_COMM   (0x527u)
-#define TTR_CAN_DLC_MCU4_STATUS_COMM  (16u)
+#define TTR_CAN_DLC_MCU4_STATUS_COMM  (32u)
 
 typedef struct {
     float CMD_MISS_CONSEC_AVG;
@@ -2564,6 +2633,15 @@ typedef struct {
     uint16_t BUS_OFF_COUNT;
     uint16_t TEC;
     uint16_t REC;
+    uint32_t TX_FRAME_COUNT;
+    uint16_t TX_DROP_COUNT;
+    uint16_t TX_STALL_MAX_MS;
+    uint16_t CEL_TOTAL;
+    uint16_t RX_DEAF_MAX_MS;
+    uint8_t TEC_MAX;
+    uint8_t REC_MAX;
+    uint8_t LEC_SEEN;
+    uint8_t ERR_PASSIVE_COUNT;
 } ttr_mcu4_status_comm_t;
 
 void ttr_mcu4_status_comm_unpack(ttr_mcu4_status_comm_t *dst, const ttr_can_frame_t *frame);
@@ -2907,6 +2985,7 @@ typedef struct {
     ttr_vcu_vcu_system_status_t vcu_vcu_system_status;  /* TX, 10 ms */
     ttr_vcu_vcu_mcu_can_status_t vcu_vcu_mcu_can_status;  /* TX, 100 ms */
     ttr_vcu_vcu_dyc_status_t vcu_vcu_dyc_status;  /* TX, 10 ms */
+    ttr_vcu_vcu_mcu_status_t vcu_vcu_mcu_status;  /* TX, 50 ms */
     ttr_vcu_vcu_sensor1_t vcu_vcu_sensor1;  /* TX, 6 ms */
     ttr_vcu_vcu_sensor2_t vcu_vcu_sensor2;  /* TX, 6 ms */
     ttr_vcu_vcu_imu_q_t vcu_vcu_imu_q;  /* TX, 6 ms */

@@ -1369,6 +1369,83 @@ void ttr_vcu_vcu_dyc_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_dyc_s
     { float _r = ((float)src->DYC_TORQUE_RR_NM - (-40.0f)) / (0.0012207217517357137f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 336u, 16u, (uint64_t)_raw); }
 }
 
+/* ===== VCU_VCU_MCU_STATUS ===== */
+void ttr_vcu_vcu_mcu_status_unpack(ttr_vcu_vcu_mcu_status_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->M1_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 0u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->M2_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 12u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->M3_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 24u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->M4_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 36u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV1_GATE_U_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 48u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV1_GATE_V_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 60u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV1_GATE_W_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 72u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV2_GATE_U_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 84u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV2_GATE_V_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 96u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV2_GATE_W_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 108u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV3_GATE_U_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 120u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV3_GATE_V_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 132u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV3_GATE_W_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 144u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV4_GATE_U_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 156u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV4_GATE_V_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 168u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV4_GATE_W_TEMPERATURE = (float)((float)ttr_get_bits(frame->data, 180u, 12u) * (0.05372405372405373f) + (-20.0f));
+    dst->INV1_GATE_FAULT = ttr_get_bits(frame->data, 192u, 1u) != 0u;
+    dst->INV1_ENC_FAULT = ttr_get_bits(frame->data, 193u, 1u) != 0u;
+    dst->INV1_OTP_FAULT = ttr_get_bits(frame->data, 194u, 1u) != 0u;
+    dst->INV1_OCP_FAULT = ttr_get_bits(frame->data, 195u, 1u) != 0u;
+    dst->INV2_GATE_FAULT = ttr_get_bits(frame->data, 200u, 1u) != 0u;
+    dst->INV2_ENC_FAULT = ttr_get_bits(frame->data, 201u, 1u) != 0u;
+    dst->INV2_OTP_FAULT = ttr_get_bits(frame->data, 202u, 1u) != 0u;
+    dst->INV2_OCP_FAULT = ttr_get_bits(frame->data, 203u, 1u) != 0u;
+    dst->INV3_GATE_FAULT = ttr_get_bits(frame->data, 208u, 1u) != 0u;
+    dst->INV3_ENC_FAULT = ttr_get_bits(frame->data, 209u, 1u) != 0u;
+    dst->INV3_OTP_FAULT = ttr_get_bits(frame->data, 210u, 1u) != 0u;
+    dst->INV3_OCP_FAULT = ttr_get_bits(frame->data, 211u, 1u) != 0u;
+    dst->INV4_GATE_FAULT = ttr_get_bits(frame->data, 216u, 1u) != 0u;
+    dst->INV4_ENC_FAULT = ttr_get_bits(frame->data, 217u, 1u) != 0u;
+    dst->INV4_OTP_FAULT = ttr_get_bits(frame->data, 218u, 1u) != 0u;
+    dst->INV4_OCP_FAULT = ttr_get_bits(frame->data, 219u, 1u) != 0u;
+}
+
+void ttr_vcu_vcu_mcu_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_mcu_status_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_VCU_VCU_MCU_STATUS;
+    frame->dlc = TTR_CAN_DLC_VCU_VCU_MCU_STATUS;
+    for (i = 0; i < 32u; ++i) { frame->data[i] = 0u; }
+    { float _r = ((float)src->M1_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->M2_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 12u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->M3_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 24u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->M4_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 36u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV1_GATE_U_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 48u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV1_GATE_V_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 60u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV1_GATE_W_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 72u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV2_GATE_U_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 84u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV2_GATE_V_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 96u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV2_GATE_W_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 108u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV3_GATE_U_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 120u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV3_GATE_V_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 132u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV3_GATE_W_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 144u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV4_GATE_U_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 156u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV4_GATE_V_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 168u, 12u, (uint64_t)_raw); }
+    { float _r = ((float)src->INV4_GATE_W_TEMPERATURE - (-20.0f)) / (0.05372405372405373f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 180u, 12u, (uint64_t)_raw); }
+    ttr_set_bits(frame->data, 192u, 1u, src->INV1_GATE_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 193u, 1u, src->INV1_ENC_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 194u, 1u, src->INV1_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 195u, 1u, src->INV1_OCP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 200u, 1u, src->INV2_GATE_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 201u, 1u, src->INV2_ENC_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 202u, 1u, src->INV2_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 203u, 1u, src->INV2_OCP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 208u, 1u, src->INV3_GATE_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 209u, 1u, src->INV3_ENC_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 210u, 1u, src->INV3_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 211u, 1u, src->INV3_OCP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 216u, 1u, src->INV4_GATE_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 217u, 1u, src->INV4_ENC_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 218u, 1u, src->INV4_OTP_FAULT ? 1u : 0u);
+    ttr_set_bits(frame->data, 219u, 1u, src->INV4_OCP_FAULT ? 1u : 0u);
+}
+
 /* ===== VCU_VCU_SENSOR1 ===== */
 void ttr_vcu_vcu_sensor1_unpack(ttr_vcu_vcu_sensor1_t *dst, const ttr_can_frame_t *frame)
 {
@@ -2574,6 +2651,15 @@ void ttr_mcu1_status_comm_unpack(ttr_mcu1_status_comm_t *dst, const ttr_can_fram
     dst->BUS_OFF_COUNT = (uint16_t)ttr_get_bits(frame->data, 80u, 16u);
     dst->TEC = (uint16_t)ttr_get_bits(frame->data, 96u, 16u);
     dst->REC = (uint16_t)ttr_get_bits(frame->data, 112u, 16u);
+    dst->TX_FRAME_COUNT = (uint32_t)ttr_get_bits(frame->data, 128u, 32u);
+    dst->TX_DROP_COUNT = (uint16_t)ttr_get_bits(frame->data, 160u, 16u);
+    dst->TX_STALL_MAX_MS = (uint16_t)ttr_get_bits(frame->data, 176u, 16u);
+    dst->CEL_TOTAL = (uint16_t)ttr_get_bits(frame->data, 192u, 16u);
+    dst->RX_DEAF_MAX_MS = (uint16_t)ttr_get_bits(frame->data, 208u, 16u);
+    dst->TEC_MAX = (uint8_t)ttr_get_bits(frame->data, 224u, 8u);
+    dst->REC_MAX = (uint8_t)ttr_get_bits(frame->data, 232u, 8u);
+    dst->LEC_SEEN = (uint8_t)ttr_get_bits(frame->data, 240u, 8u);
+    dst->ERR_PASSIVE_COUNT = (uint8_t)ttr_get_bits(frame->data, 248u, 8u);
 }
 
 void ttr_mcu1_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_comm_t *src)
@@ -2581,7 +2667,7 @@ void ttr_mcu1_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_com
     uint16_t i;
     frame->id = TTR_CAN_ID_MCU1_STATUS_COMM;
     frame->dlc = TTR_CAN_DLC_MCU1_STATUS_COMM;
-    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    for (i = 0; i < 32u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->CMD_MISS_CONSEC_AVG - (0.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->CMD_MISS_CONSEC_MAX);
     { float _r = ((float)src->CMD_GAP_MS_AVG - (0.0f)) / (0.0015259021896696422f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 16u, (uint64_t)_raw); }
@@ -2590,6 +2676,15 @@ void ttr_mcu1_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_com
     ttr_set_bits(frame->data, 80u, 16u, (uint64_t)src->BUS_OFF_COUNT);
     ttr_set_bits(frame->data, 96u, 16u, (uint64_t)src->TEC);
     ttr_set_bits(frame->data, 112u, 16u, (uint64_t)src->REC);
+    ttr_set_bits(frame->data, 128u, 32u, (uint64_t)src->TX_FRAME_COUNT);
+    ttr_set_bits(frame->data, 160u, 16u, (uint64_t)src->TX_DROP_COUNT);
+    ttr_set_bits(frame->data, 176u, 16u, (uint64_t)src->TX_STALL_MAX_MS);
+    ttr_set_bits(frame->data, 192u, 16u, (uint64_t)src->CEL_TOTAL);
+    ttr_set_bits(frame->data, 208u, 16u, (uint64_t)src->RX_DEAF_MAX_MS);
+    ttr_set_bits(frame->data, 224u, 8u, (uint64_t)src->TEC_MAX);
+    ttr_set_bits(frame->data, 232u, 8u, (uint64_t)src->REC_MAX);
+    ttr_set_bits(frame->data, 240u, 8u, (uint64_t)src->LEC_SEEN);
+    ttr_set_bits(frame->data, 248u, 8u, (uint64_t)src->ERR_PASSIVE_COUNT);
 }
 
 /* ===== MCU1_INFO ===== */
@@ -3068,6 +3163,15 @@ void ttr_mcu2_status_comm_unpack(ttr_mcu2_status_comm_t *dst, const ttr_can_fram
     dst->BUS_OFF_COUNT = (uint16_t)ttr_get_bits(frame->data, 80u, 16u);
     dst->TEC = (uint16_t)ttr_get_bits(frame->data, 96u, 16u);
     dst->REC = (uint16_t)ttr_get_bits(frame->data, 112u, 16u);
+    dst->TX_FRAME_COUNT = (uint32_t)ttr_get_bits(frame->data, 128u, 32u);
+    dst->TX_DROP_COUNT = (uint16_t)ttr_get_bits(frame->data, 160u, 16u);
+    dst->TX_STALL_MAX_MS = (uint16_t)ttr_get_bits(frame->data, 176u, 16u);
+    dst->CEL_TOTAL = (uint16_t)ttr_get_bits(frame->data, 192u, 16u);
+    dst->RX_DEAF_MAX_MS = (uint16_t)ttr_get_bits(frame->data, 208u, 16u);
+    dst->TEC_MAX = (uint8_t)ttr_get_bits(frame->data, 224u, 8u);
+    dst->REC_MAX = (uint8_t)ttr_get_bits(frame->data, 232u, 8u);
+    dst->LEC_SEEN = (uint8_t)ttr_get_bits(frame->data, 240u, 8u);
+    dst->ERR_PASSIVE_COUNT = (uint8_t)ttr_get_bits(frame->data, 248u, 8u);
 }
 
 void ttr_mcu2_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_comm_t *src)
@@ -3075,7 +3179,7 @@ void ttr_mcu2_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_com
     uint16_t i;
     frame->id = TTR_CAN_ID_MCU2_STATUS_COMM;
     frame->dlc = TTR_CAN_DLC_MCU2_STATUS_COMM;
-    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    for (i = 0; i < 32u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->CMD_MISS_CONSEC_AVG - (0.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->CMD_MISS_CONSEC_MAX);
     { float _r = ((float)src->CMD_GAP_MS_AVG - (0.0f)) / (0.0015259021896696422f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 16u, (uint64_t)_raw); }
@@ -3084,6 +3188,15 @@ void ttr_mcu2_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_com
     ttr_set_bits(frame->data, 80u, 16u, (uint64_t)src->BUS_OFF_COUNT);
     ttr_set_bits(frame->data, 96u, 16u, (uint64_t)src->TEC);
     ttr_set_bits(frame->data, 112u, 16u, (uint64_t)src->REC);
+    ttr_set_bits(frame->data, 128u, 32u, (uint64_t)src->TX_FRAME_COUNT);
+    ttr_set_bits(frame->data, 160u, 16u, (uint64_t)src->TX_DROP_COUNT);
+    ttr_set_bits(frame->data, 176u, 16u, (uint64_t)src->TX_STALL_MAX_MS);
+    ttr_set_bits(frame->data, 192u, 16u, (uint64_t)src->CEL_TOTAL);
+    ttr_set_bits(frame->data, 208u, 16u, (uint64_t)src->RX_DEAF_MAX_MS);
+    ttr_set_bits(frame->data, 224u, 8u, (uint64_t)src->TEC_MAX);
+    ttr_set_bits(frame->data, 232u, 8u, (uint64_t)src->REC_MAX);
+    ttr_set_bits(frame->data, 240u, 8u, (uint64_t)src->LEC_SEEN);
+    ttr_set_bits(frame->data, 248u, 8u, (uint64_t)src->ERR_PASSIVE_COUNT);
 }
 
 /* ===== MCU2_INFO ===== */
@@ -3562,6 +3675,15 @@ void ttr_mcu3_status_comm_unpack(ttr_mcu3_status_comm_t *dst, const ttr_can_fram
     dst->BUS_OFF_COUNT = (uint16_t)ttr_get_bits(frame->data, 80u, 16u);
     dst->TEC = (uint16_t)ttr_get_bits(frame->data, 96u, 16u);
     dst->REC = (uint16_t)ttr_get_bits(frame->data, 112u, 16u);
+    dst->TX_FRAME_COUNT = (uint32_t)ttr_get_bits(frame->data, 128u, 32u);
+    dst->TX_DROP_COUNT = (uint16_t)ttr_get_bits(frame->data, 160u, 16u);
+    dst->TX_STALL_MAX_MS = (uint16_t)ttr_get_bits(frame->data, 176u, 16u);
+    dst->CEL_TOTAL = (uint16_t)ttr_get_bits(frame->data, 192u, 16u);
+    dst->RX_DEAF_MAX_MS = (uint16_t)ttr_get_bits(frame->data, 208u, 16u);
+    dst->TEC_MAX = (uint8_t)ttr_get_bits(frame->data, 224u, 8u);
+    dst->REC_MAX = (uint8_t)ttr_get_bits(frame->data, 232u, 8u);
+    dst->LEC_SEEN = (uint8_t)ttr_get_bits(frame->data, 240u, 8u);
+    dst->ERR_PASSIVE_COUNT = (uint8_t)ttr_get_bits(frame->data, 248u, 8u);
 }
 
 void ttr_mcu3_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_comm_t *src)
@@ -3569,7 +3691,7 @@ void ttr_mcu3_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_com
     uint16_t i;
     frame->id = TTR_CAN_ID_MCU3_STATUS_COMM;
     frame->dlc = TTR_CAN_DLC_MCU3_STATUS_COMM;
-    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    for (i = 0; i < 32u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->CMD_MISS_CONSEC_AVG - (0.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->CMD_MISS_CONSEC_MAX);
     { float _r = ((float)src->CMD_GAP_MS_AVG - (0.0f)) / (0.0015259021896696422f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 16u, (uint64_t)_raw); }
@@ -3578,6 +3700,15 @@ void ttr_mcu3_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_com
     ttr_set_bits(frame->data, 80u, 16u, (uint64_t)src->BUS_OFF_COUNT);
     ttr_set_bits(frame->data, 96u, 16u, (uint64_t)src->TEC);
     ttr_set_bits(frame->data, 112u, 16u, (uint64_t)src->REC);
+    ttr_set_bits(frame->data, 128u, 32u, (uint64_t)src->TX_FRAME_COUNT);
+    ttr_set_bits(frame->data, 160u, 16u, (uint64_t)src->TX_DROP_COUNT);
+    ttr_set_bits(frame->data, 176u, 16u, (uint64_t)src->TX_STALL_MAX_MS);
+    ttr_set_bits(frame->data, 192u, 16u, (uint64_t)src->CEL_TOTAL);
+    ttr_set_bits(frame->data, 208u, 16u, (uint64_t)src->RX_DEAF_MAX_MS);
+    ttr_set_bits(frame->data, 224u, 8u, (uint64_t)src->TEC_MAX);
+    ttr_set_bits(frame->data, 232u, 8u, (uint64_t)src->REC_MAX);
+    ttr_set_bits(frame->data, 240u, 8u, (uint64_t)src->LEC_SEEN);
+    ttr_set_bits(frame->data, 248u, 8u, (uint64_t)src->ERR_PASSIVE_COUNT);
 }
 
 /* ===== MCU3_INFO ===== */
@@ -4056,6 +4187,15 @@ void ttr_mcu4_status_comm_unpack(ttr_mcu4_status_comm_t *dst, const ttr_can_fram
     dst->BUS_OFF_COUNT = (uint16_t)ttr_get_bits(frame->data, 80u, 16u);
     dst->TEC = (uint16_t)ttr_get_bits(frame->data, 96u, 16u);
     dst->REC = (uint16_t)ttr_get_bits(frame->data, 112u, 16u);
+    dst->TX_FRAME_COUNT = (uint32_t)ttr_get_bits(frame->data, 128u, 32u);
+    dst->TX_DROP_COUNT = (uint16_t)ttr_get_bits(frame->data, 160u, 16u);
+    dst->TX_STALL_MAX_MS = (uint16_t)ttr_get_bits(frame->data, 176u, 16u);
+    dst->CEL_TOTAL = (uint16_t)ttr_get_bits(frame->data, 192u, 16u);
+    dst->RX_DEAF_MAX_MS = (uint16_t)ttr_get_bits(frame->data, 208u, 16u);
+    dst->TEC_MAX = (uint8_t)ttr_get_bits(frame->data, 224u, 8u);
+    dst->REC_MAX = (uint8_t)ttr_get_bits(frame->data, 232u, 8u);
+    dst->LEC_SEEN = (uint8_t)ttr_get_bits(frame->data, 240u, 8u);
+    dst->ERR_PASSIVE_COUNT = (uint8_t)ttr_get_bits(frame->data, 248u, 8u);
 }
 
 void ttr_mcu4_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_comm_t *src)
@@ -4063,7 +4203,7 @@ void ttr_mcu4_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_com
     uint16_t i;
     frame->id = TTR_CAN_ID_MCU4_STATUS_COMM;
     frame->dlc = TTR_CAN_DLC_MCU4_STATUS_COMM;
-    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    for (i = 0; i < 32u; ++i) { frame->data[i] = 0u; }
     { float _r = ((float)src->CMD_MISS_CONSEC_AVG - (0.0f)) / (0.0007629510948348211f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 0u, 16u, (uint64_t)_raw); }
     ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->CMD_MISS_CONSEC_MAX);
     { float _r = ((float)src->CMD_GAP_MS_AVG - (0.0f)) / (0.0015259021896696422f); int64_t _raw = (int64_t)(_r >= 0.0f ? (_r + 0.5f) : (_r - 0.5f)); ttr_set_bits(frame->data, 32u, 16u, (uint64_t)_raw); }
@@ -4072,6 +4212,15 @@ void ttr_mcu4_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_com
     ttr_set_bits(frame->data, 80u, 16u, (uint64_t)src->BUS_OFF_COUNT);
     ttr_set_bits(frame->data, 96u, 16u, (uint64_t)src->TEC);
     ttr_set_bits(frame->data, 112u, 16u, (uint64_t)src->REC);
+    ttr_set_bits(frame->data, 128u, 32u, (uint64_t)src->TX_FRAME_COUNT);
+    ttr_set_bits(frame->data, 160u, 16u, (uint64_t)src->TX_DROP_COUNT);
+    ttr_set_bits(frame->data, 176u, 16u, (uint64_t)src->TX_STALL_MAX_MS);
+    ttr_set_bits(frame->data, 192u, 16u, (uint64_t)src->CEL_TOTAL);
+    ttr_set_bits(frame->data, 208u, 16u, (uint64_t)src->RX_DEAF_MAX_MS);
+    ttr_set_bits(frame->data, 224u, 8u, (uint64_t)src->TEC_MAX);
+    ttr_set_bits(frame->data, 232u, 8u, (uint64_t)src->REC_MAX);
+    ttr_set_bits(frame->data, 240u, 8u, (uint64_t)src->LEC_SEEN);
+    ttr_set_bits(frame->data, 248u, 8u, (uint64_t)src->ERR_PASSIVE_COUNT);
 }
 
 /* ===== MCU4_INFO ===== */
