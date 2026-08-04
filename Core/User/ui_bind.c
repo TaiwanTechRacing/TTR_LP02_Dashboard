@@ -72,6 +72,7 @@ static char s_speed_buf[8];
 static char s_soc_buf[12];
 static char s_lv_buf[16];
 static char s_hv_buf[16];
+static char s_bat_pack_buf[16];
 
 /*
  * Upper bound on what the speed readout will show.
@@ -203,15 +204,35 @@ const char *get_var_label_lv_value(void)
     return s_lv_buf;
 }
 
-/** High voltage pack. */
-const char *get_var_label_hv_value(void)
+/*
+ * Low voltage battery charge, beside its voltage.
+ *
+ * This slot used to carry the HV pack voltage, which has moved to the battery
+ * page. Voltage alone is a poor read on a lithium pack - flat for most of the
+ * discharge and then falling off a cliff - and the pack already has its own
+ * SOC bar on the right of this screen. What was missing was any warning that
+ * the GLV battery is going down, which is the one that ends a session quietly.
+ */
+const char *get_var_label_glv_soc(void)
 {
-    if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
-        return "HV:" STALE_TEXT;
+    if (VehicleData_IsStale(VD_GROUP_VCU_SYSTEM, VD_DEFAULT_TIMEOUT_MS)) {
+        return "SOC:" STALE_TEXT;
     }
 
-    snprintf(s_hv_buf, sizeof(s_hv_buf), "HV:%.0fV", (double)g_vehicle.pack_voltage);
+    snprintf(s_hv_buf, sizeof(s_hv_buf), "SOC:%.0f%%", (double)g_vehicle.glv_soc);
     return s_hv_buf;
+}
+
+/** High voltage pack total, on the battery page. */
+const char *get_var_bat_pack_text(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        return "PACK " STALE_TEXT;
+    }
+
+    snprintf(s_bat_pack_buf, sizeof(s_bat_pack_buf), "PACK %.0fV",
+             (double)g_vehicle.pack_voltage);
+    return s_bat_pack_buf;
 }
 
 /*
@@ -349,6 +370,19 @@ const char *get_var_mode(void)
 {
     if (VehicleData_IsStale(VD_GROUP_VCU_STATE, VD_DEFAULT_TIMEOUT_MS)) {
         return STALE_TEXT;
+    }
+
+    /*
+     * Warm-up outranks the drive mode, because until the timer is out the mode
+     * is not what the car will actually do. Showing RATIO while the car will
+     * not deliver it is worse than showing nothing about the mode at all.
+     *
+     * "WARM" rather than "WARMUP": at Orbitron bold 40 the full word is 215 px
+     * against a 190 px box and would print over the border. Same reason the
+     * state indicator says N-RDY.
+     */
+    if (!g_vehicle.warmup_ready) {
+        return "WARM";
     }
 
     switch (g_vehicle.drive_mode) {
@@ -913,6 +947,24 @@ void UIBind_ApplyDynamicStyles(void)
         lv_obj_set_style_text_color(objects.ready_label,
                                     live ? status_colour[g_vehicle.main_status]
                                          : red,
+                                    LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+
+    /*
+     * Warm-up turns the mode label red; anything else puts it back to the
+     * colour EEZ gave it. Both branches are written every frame rather than
+     * only on the change, because a colour set once and never restored is the
+     * kind of thing that survives until someone sees a red RATIO.
+     */
+    {
+        static const lv_color_t mode_normal = LV_COLOR_MAKE(0xd0, 0xff, 0x00);
+
+        const bool warming = !VehicleData_IsStale(VD_GROUP_VCU_STATE,
+                                                  VD_DEFAULT_TIMEOUT_MS)
+                             && !g_vehicle.warmup_ready;
+
+        lv_obj_set_style_text_color(objects.mode_label,
+                                    warming ? red : mode_normal,
                                     LV_PART_MAIN | LV_STATE_DEFAULT);
     }
 

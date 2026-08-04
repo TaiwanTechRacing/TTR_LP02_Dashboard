@@ -335,10 +335,11 @@ BO_ 1056 VCU_VCU_STATE: 8 VCU
  SG_ IMU_RDY : 4|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ GPS_RDY : 5|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ SENSOR_RDY : 6|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ WARMUP_TMR_RDY : 7|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ TEBPPC_ACTIVE : 8|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ COOLING_SYSTEM_ACTIVE : 9|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ SYS_DRIVE_MODE : 16|8@1+ (1,0) [0|0] "" Vector__XXX
- SG_ VCU_HEARTBEAT : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VCU_HEARTBEAT : 56|8@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1057 VCU_VCU_ERROR: 8 VCU
  SG_ APPS1_ERR : 0|1@1+ (1,0) [0|0] "" Vector__XXX
@@ -413,7 +414,8 @@ BO_ 1061 VCU_VCU_CPU_TASK_STATUS: 16 VCU
 BO_ 1062 VCU_VCU_SYSTEM_STATUS: 16 VCU
  SG_ GLV_VOLTAGE : 0|16@1+ (0.000457666,0) [0|0] "V" Vector__XXX
  SG_ GLV_CURRENT : 16|16@1+ (0.000457666,0) [0|0] "A" Vector__XXX
- SG_ REGEN_TORQUE_LIMIT : 32|12@1+ (0.00976801,0) [0|40] "" Vector__XXX
+ SG_ GLV_SOC : 48|16@1+ (0.0015259,0) [0|100] "A" Vector__XXX
+ SG_ REGEN_TORQUE_LIMIT : 64|12@1+ (0.00976801,0) [0|40] "" Vector__XXX
 
 BO_ 1063 VCU_VCU_DIAG: 12 VCU
  SG_ RTD_EXIT_REASON : 0|18@1+ (1,0) [0|0] "" Vector__XXX
@@ -884,6 +886,22 @@ BO_ 1105 AMS_AMS_MODULE_8: 48 AMS
  SG_ C12_BALANCE_STATE : 348|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ C13_BALANCE_STATE : 349|1@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 1108 AMS_AMS_STATUS_DEBUG: 32 AMS
+ SG_ FW_GIT_SHA : 0|32@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ FW_BUILD_UNIX : 32|32@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ HAL_TICK_MS : 64|32@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ LOOP_TIME_US : 96|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ LOOP_TIME_MAX_US : 112|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TICK_OVERRUN : 128|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ CURRENT_ZERO_TRIM : 144|16@1- (1,0) [0|0] "" Vector__XXX
+ SG_ CURRENT_OFFSET_RESID : 160|16@1- (1,0) [0|0] "" Vector__XXX
+ SG_ CURRENT_REF : 176|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ SOC_SETTLE_DRIFT : 192|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ SOC_REST_ELAPSED_S : 208|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ CPL_REASON : 224|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ DCL_REASON : 232|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ BAL_CELL_COUNT : 248|8@1+ (1,0) [0|0] "" Vector__XXX
+
 BO_ 1217 MCU1_STATUS_SYSTEM: 16 MCU1
  SG_ ENCODER_FAULT : 0|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ OVP_FAULT : 1|1@1+ (1,0) [0|0] "" Vector__XXX
@@ -929,6 +947,7 @@ BO_ 1219 MCU1_STATUS_DEBUG: 16 MCU1
  SG_ SOFT_STOP_REASON : 84|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ UPTIME_S : 88|16@1+ (1,0) [0|65535] "s" Vector__XXX
  SG_ ENCODER_THETA : 104|12@1+ (0.0879121,0) [0|360] "deg" Vector__XXX
+ SG_ ENC_MAX_ACCL : 116|12@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1220 MCU1_STATUS_GATE_U: 8 MCU1
  SG_ H_NLSE : 0|1@1+ (1,0) [0|0] "" Vector__XXX
@@ -1131,6 +1150,7 @@ BO_ 1251 MCU2_STATUS_DEBUG: 16 MCU2
  SG_ SOFT_STOP_REASON : 84|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ UPTIME_S : 88|16@1+ (1,0) [0|65535] "s" Vector__XXX
  SG_ ENCODER_THETA : 104|12@1+ (0.0879121,0) [0|360] "deg" Vector__XXX
+ SG_ ENC_MAX_ACCL : 116|12@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1252 MCU2_STATUS_GATE_U: 8 MCU2
  SG_ H_NLSE : 0|1@1+ (1,0) [0|0] "" Vector__XXX
@@ -1333,6 +1353,7 @@ BO_ 1283 MCU3_STATUS_DEBUG: 16 MCU3
  SG_ SOFT_STOP_REASON : 84|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ UPTIME_S : 88|16@1+ (1,0) [0|65535] "s" Vector__XXX
  SG_ ENCODER_THETA : 104|12@1+ (0.0879121,0) [0|360] "deg" Vector__XXX
+ SG_ ENC_MAX_ACCL : 116|12@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1284 MCU3_STATUS_GATE_U: 8 MCU3
  SG_ H_NLSE : 0|1@1+ (1,0) [0|0] "" Vector__XXX
@@ -1535,6 +1556,7 @@ BO_ 1315 MCU4_STATUS_DEBUG: 16 MCU4
  SG_ SOFT_STOP_REASON : 84|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ UPTIME_S : 88|16@1+ (1,0) [0|65535] "s" Vector__XXX
  SG_ ENCODER_THETA : 104|12@1+ (0.0879121,0) [0|360] "deg" Vector__XXX
+ SG_ ENC_MAX_ACCL : 116|12@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1316 MCU4_STATUS_GATE_U: 8 MCU4
  SG_ H_NLSE : 0|1@1+ (1,0) [0|0] "" Vector__XXX
@@ -1859,6 +1881,8 @@ BA_ "GenMsgCycleTime" BO_ 1104 20;
 BA_ "VFrameFormat" BO_ 1104 14;
 BA_ "GenMsgCycleTime" BO_ 1105 20;
 BA_ "VFrameFormat" BO_ 1105 14;
+BA_ "GenMsgCycleTime" BO_ 1108 100;
+BA_ "VFrameFormat" BO_ 1108 14;
 BA_ "GenMsgCycleTime" BO_ 1217 10;
 BA_ "VFrameFormat" BO_ 1217 14;
 BA_ "GenMsgCycleTime" BO_ 1218 10;
@@ -2058,6 +2082,7 @@ VAL_ 1056 AMS_RDY 0 "False" 1 "True";
 VAL_ 1056 IMU_RDY 0 "False" 1 "True";
 VAL_ 1056 GPS_RDY 0 "False" 1 "True";
 VAL_ 1056 SENSOR_RDY 0 "False" 1 "True";
+VAL_ 1056 WARMUP_TMR_RDY 0 "False" 1 "True";
 VAL_ 1056 TEBPPC_ACTIVE 0 "False" 1 "True";
 VAL_ 1056 COOLING_SYSTEM_ACTIVE 0 "False" 1 "True";
 VAL_ 1056 SYS_DRIVE_MODE 0 "NO_CONTROL" 1 "EDIFF" 2 "RATIO" 3 "DYC";

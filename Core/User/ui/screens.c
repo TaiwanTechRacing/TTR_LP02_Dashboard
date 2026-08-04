@@ -188,9 +188,9 @@ void create_screen_main() {
                     lv_label_set_text(obj, "");
                 }
                 {
-                    // hvVoltageLabel
+                    // glvSocLabel
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.hv_voltage_label = obj;
+                    objects.glv_soc_label = obj;
                     lv_obj_set_pos(obj, 127, 12);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_text(obj);
@@ -303,11 +303,11 @@ void tick_screen_main() {
         }
     }
     {
-        const char *new_val = get_var_label_hv_value();
-        const char *cur_val = lv_label_get_text(objects.hv_voltage_label);
+        const char *new_val = get_var_label_glv_soc();
+        const char *cur_val = lv_label_get_text(objects.glv_soc_label);
         if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.hv_voltage_label;
-            lv_label_set_text(objects.hv_voltage_label, new_val);
+            tick_value_change_obj = objects.glv_soc_label;
+            lv_label_set_text(objects.glv_soc_label, new_val);
             tick_value_change_obj = NULL;
         }
     }
@@ -1911,6 +1911,16 @@ void create_screen_battery() {
             lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
+        {
+            // batPackLabel
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.bat_pack_label = obj;
+            lv_obj_set_pos(obj, 250, 12);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_text(obj);
+            lv_obj_set_style_text_font(obj, &ui_font_orbitron_bold_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
     }
     
     tick_screen_battery();
@@ -1950,6 +1960,15 @@ void tick_screen_battery() {
         if (strcmp(new_val, cur_val) != 0) {
             tick_value_change_obj = objects.bat_low_label;
             lv_label_set_text(objects.bat_low_label, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = get_var_bat_pack_text();
+        const char *cur_val = lv_label_get_text(objects.bat_pack_label);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.bat_pack_label;
+            lv_label_set_text(objects.bat_pack_label, new_val);
             tick_value_change_obj = NULL;
         }
     }

@@ -63,6 +63,7 @@ static void decode_one(const ttr_can_frame_t *frame)
         g_vehicle.drive_mode     = s.SYS_DRIVE_MODE;
         g_vehicle.tebppc_active  = s.TEBPPC_ACTIVE;
         g_vehicle.ams_ready      = s.AMS_RDY;
+        g_vehicle.warmup_ready   = s.WARMUP_TMR_RDY;
         VehicleData_MarkFresh(VD_GROUP_VCU_STATE);
         break;
     }
@@ -135,6 +136,7 @@ static void decode_one(const ttr_can_frame_t *frame)
         ttr_vcu_vcu_system_status_t s;
         ttr_vcu_vcu_system_status_unpack(&s, frame);
         g_vehicle.glv_voltage = s.GLV_VOLTAGE;
+        g_vehicle.glv_soc     = s.GLV_SOC;
         g_vehicle.glv_current = s.GLV_CURRENT;
         VehicleData_MarkFresh(VD_GROUP_VCU_SYSTEM);
         break;

@@ -153,7 +153,7 @@
       },
       {
         "objID": "dc0740cc-f8eb-43ba-b5d9-85a51d9fecd7",
-        "name": "label_hv_value",
+        "name": "label_glv_soc",
         "type": "string",
         "size": null,
         "defaultValue": "\"\"",
@@ -605,6 +605,14 @@
       {
         "objID": "dc3f4dde-4995-4920-92c4-1ae2ed792e60",
         "name": "inv4_state",
+        "type": "string",
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": false
+      },
+      {
+        "objID": "2dc94700-1633-4f06-81e4-8b262366fa99",
+        "name": "bat_pack_text",
         "type": "string",
         "defaultValue": "\"\"",
         "persistent": false,
@@ -1223,7 +1231,7 @@
                   "hiddenInEditor": false,
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "hvVoltageLabel",
+                  "identifier": "glvSocLabel",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "content",
@@ -1245,7 +1253,7 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "label_hv_value",
+                  "text": "label_glv_soc",
                   "textType": "expression",
                   "longMode": "WRAP",
                   "recolor": false,
@@ -7226,6 +7234,59 @@
               "longMode": "WRAP",
               "recolor": false,
               "previewValue": "-90"
+            },
+            {
+              "objID": "d732c8be-398a-4c81-8697-88812e25a84e",
+              "type": "LVGLLabelWidget",
+              "left": 250,
+              "top": 12,
+              "width": 168,
+              "height": 33,
+              "customInputs": [],
+              "customOutputs": [],
+              "style": {
+                "objID": "b889e6ce-842c-49b9-8aaf-c9fd3cf1dad1",
+                "useStyle": "default",
+                "conditionalStyles": [],
+                "childStyles": []
+              },
+              "locked": false,
+              "hiddenInEditor": false,
+              "timeline": [],
+              "eventHandlers": [],
+              "leftUnit": "px",
+              "topUnit": "px",
+              "widthUnit": "content",
+              "heightUnit": "content",
+              "children": [],
+              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+              "hiddenFlagType": "literal",
+              "clickableFlagType": "literal",
+              "flagScrollbarMode": "",
+              "flagScrollDirection": "",
+              "scrollSnapX": "",
+              "scrollSnapY": "",
+              "checkedStateType": "literal",
+              "disabledStateType": "literal",
+              "states": "",
+              "useStyle": "text",
+              "localStyles": {
+                "objID": "4a1be448-c614-4686-a89c-0854e010d8ed",
+                "definition": {
+                  "MAIN": {
+                    "DEFAULT": {
+                      "text_font": "orbitron_bold_30"
+                    }
+                  }
+                }
+              },
+              "group": "",
+              "groupIndex": 0,
+              "text": "bat_pack_text",
+              "textType": "expression",
+              "longMode": "WRAP",
+              "recolor": false,
+              "identifier": "batPackLabel"
             }
           ],
           "widgetFlags": "CLICKABLE|PRESS_LOCK|CLICK_FOCUSABLE|GESTURE_BUBBLE|SNAPPABLE|SCROLLABLE|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER",

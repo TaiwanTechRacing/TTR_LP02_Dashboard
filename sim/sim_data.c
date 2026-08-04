@@ -71,6 +71,7 @@ void SimData_Feed(uint32_t now)
     VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR2);
     VehicleData_MarkFresh(VD_GROUP_VCU_SENSOR1);
 
+    g_vehicle.glv_soc     = 40.0f + (wave * 55.0f);
     g_vehicle.glv_voltage = 24.0f + wave * 2.0f;
     g_vehicle.glv_current = 3.0f + wave;
     VehicleData_MarkFresh(VD_GROUP_VCU_SYSTEM);
@@ -106,6 +107,9 @@ void SimData_Feed(uint32_t now)
      * with a stretch of N-RDY to check the red styling and the shorter text. */
     g_vehicle.rtd_active     = (phase > 0.2f);
     g_vehicle.cooling_active = (phase > 0.5f);
+    /* Warm up for the first fifth of the scene, so the red WARM mode label and
+     * the normal one both appear in a screenshot run. */
+    g_vehicle.warmup_ready   = (phase > 0.2f);
     /* Cycle the drive mode so the label is exercised, not just one value. */
     g_vehicle.drive_mode     = (uint8_t)((now / 3000u) % 4u);
     VehicleData_MarkFresh(VD_GROUP_VCU_STATE);

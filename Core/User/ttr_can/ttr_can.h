@@ -631,6 +631,7 @@ typedef struct {
     bool IMU_RDY;  /* false="False", true="True" */
     bool GPS_RDY;  /* false="False", true="True" */
     bool SENSOR_RDY;  /* false="False", true="True" */
+    bool WARMUP_TMR_RDY;  /* false="False", true="True" */
     bool TEBPPC_ACTIVE;  /* false="False", true="True" */
     bool COOLING_SYSTEM_ACTIVE;  /* false="False", true="True" */
     uint8_t SYS_DRIVE_MODE;  /* see TTR_VCU_VCU_STATE_SYS_DRIVE_MODE_* */
@@ -757,6 +758,7 @@ void ttr_vcu_vcu_cpu_task_status_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_
 typedef struct {
     float GLV_VOLTAGE;  /* V */
     float GLV_CURRENT;  /* A */
+    float GLV_SOC;  /* A */
     float REGEN_TORQUE_LIMIT;
 } ttr_vcu_vcu_system_status_t;
 
@@ -1452,6 +1454,30 @@ typedef struct {
 void ttr_ams_ams_module_8_unpack(ttr_ams_ams_module_8_t *dst, const ttr_can_frame_t *frame);
 void ttr_ams_ams_module_8_pack(ttr_can_frame_t *frame, const ttr_ams_ams_module_8_t *src);
 
+/* ===== AMS_AMS_STATUS_DEBUG  (100 ms) ===== */
+#define TTR_CAN_ID_AMS_AMS_STATUS_DEBUG   (0x454u)
+#define TTR_CAN_DLC_AMS_AMS_STATUS_DEBUG  (32u)
+
+typedef struct {
+    uint32_t FW_GIT_SHA;
+    uint32_t FW_BUILD_UNIX;
+    uint32_t HAL_TICK_MS;
+    uint16_t LOOP_TIME_US;
+    uint16_t LOOP_TIME_MAX_US;
+    uint16_t TICK_OVERRUN;
+    int16_t CURRENT_ZERO_TRIM;
+    int16_t CURRENT_OFFSET_RESID;
+    uint16_t CURRENT_REF;
+    uint16_t SOC_SETTLE_DRIFT;
+    uint16_t SOC_REST_ELAPSED_S;
+    uint8_t CPL_REASON;
+    uint8_t DCL_REASON;
+    uint8_t BAL_CELL_COUNT;
+} ttr_ams_ams_status_debug_t;
+
+void ttr_ams_ams_status_debug_unpack(ttr_ams_ams_status_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_ams_ams_status_debug_pack(ttr_can_frame_t *frame, const ttr_ams_ams_status_debug_t *src);
+
 /* ===== MCU1_STATUS_SYSTEM  (10 ms) ===== */
 #define TTR_CAN_ID_MCU1_STATUS_SYSTEM   (0x4C1u)
 #define TTR_CAN_DLC_MCU1_STATUS_SYSTEM  (16u)
@@ -1543,6 +1569,7 @@ typedef struct {
     uint8_t SOFT_STOP_REASON;  /* see TTR_MCU1_STATUS_DEBUG_SOFT_STOP_REASON_* */
     uint16_t UPTIME_S;  /* s */
     float ENCODER_THETA;  /* deg */
+    uint16_t ENC_MAX_ACCL;
 } ttr_mcu1_status_debug_t;
 
 void ttr_mcu1_status_debug_unpack(ttr_mcu1_status_debug_t *dst, const ttr_can_frame_t *frame);
@@ -1872,6 +1899,7 @@ typedef struct {
     uint8_t SOFT_STOP_REASON;  /* see TTR_MCU2_STATUS_DEBUG_SOFT_STOP_REASON_* */
     uint16_t UPTIME_S;  /* s */
     float ENCODER_THETA;  /* deg */
+    uint16_t ENC_MAX_ACCL;
 } ttr_mcu2_status_debug_t;
 
 void ttr_mcu2_status_debug_unpack(ttr_mcu2_status_debug_t *dst, const ttr_can_frame_t *frame);
@@ -2201,6 +2229,7 @@ typedef struct {
     uint8_t SOFT_STOP_REASON;  /* see TTR_MCU3_STATUS_DEBUG_SOFT_STOP_REASON_* */
     uint16_t UPTIME_S;  /* s */
     float ENCODER_THETA;  /* deg */
+    uint16_t ENC_MAX_ACCL;
 } ttr_mcu3_status_debug_t;
 
 void ttr_mcu3_status_debug_unpack(ttr_mcu3_status_debug_t *dst, const ttr_can_frame_t *frame);
@@ -2530,6 +2559,7 @@ typedef struct {
     uint8_t SOFT_STOP_REASON;  /* see TTR_MCU4_STATUS_DEBUG_SOFT_STOP_REASON_* */
     uint16_t UPTIME_S;  /* s */
     float ENCODER_THETA;  /* deg */
+    uint16_t ENC_MAX_ACCL;
 } ttr_mcu4_status_debug_t;
 
 void ttr_mcu4_status_debug_unpack(ttr_mcu4_status_debug_t *dst, const ttr_can_frame_t *frame);
@@ -2816,6 +2846,7 @@ typedef struct {
     ttr_ams_ams_module_6_t ams_ams_module_6;  /* TX, 20 ms */
     ttr_ams_ams_module_7_t ams_ams_module_7;  /* TX, 20 ms */
     ttr_ams_ams_module_8_t ams_ams_module_8;  /* TX, 20 ms */
+    ttr_ams_ams_status_debug_t ams_ams_status_debug;  /* TX, 100 ms */
 } ttr_ecu_ams_t;
 
 extern ttr_ecu_ams_t ttr_ecu_ams;   /* ready-to-use, zero-initialised */

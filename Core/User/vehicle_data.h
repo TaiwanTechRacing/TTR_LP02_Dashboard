@@ -162,6 +162,7 @@ typedef struct {
     bool     cooling_active;
     bool     tebppc_active;
     bool     ams_ready;
+    bool     warmup_ready;        /* the warm-up timer has run out */
     uint8_t  drive_mode;          /* vd_drive_mode_t */
 
     /* --- VCU_DASH --- */
@@ -185,6 +186,7 @@ typedef struct {
 
     /* --- VCU_SYSTEM_STATUS --- */
     float    glv_voltage;         /* low voltage battery */
+    float    glv_soc;             /* %, low voltage battery */
     float    glv_current;
 
     /* --- VCU_ERROR --- */
