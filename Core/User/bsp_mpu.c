@@ -46,22 +46,27 @@ void BSP_MPU_ConfigAndEnableCache(void)
     HAL_MPU_ConfigRegion(&mpu);
 
     /*
-     * Region 1: the two framebuffers (512 KB), write-through. It overlaps
-     * region 0, and on the M7 the higher-numbered region wins, so these 512 KB
-     * end up WT.
+     * Region 1: the two framebuffers (512 KB). It overlaps region 0, and on the
+     * M7 the higher-numbered region wins, so these 512 KB take these attributes.
      *
-     * Why the framebuffer must be write-through: LTDC fetches pixels straight
-     * from SDRAM and never looks at the D-cache. Under write-back, freshly
-     * drawn pixels can still be sitting dirty in cache, showing up as tearing
-     * or garbage on screen. Write-through pushes every write out to SDRAM, so
-     * no manual SCB_CleanDCache is needed - and no bug from forgetting one.
+     * LTDC fetches pixels straight from SDRAM and never looks at the D-cache,
+     * so whatever the policy, the pixels have to be in SDRAM before the flip.
+     * Write-through gets that for free at the price of one FMC transaction per
+     * store; write-back gathers stores into bursts and needs an explicit clean,
+     * which lcd_flush_cb() does. See BSP_FB_WRITE_BACK in the header.
      */
     mpu.Number           = MPU_REGION_NUMBER1;
     mpu.BaseAddress      = SDRAM_FB0_ADDR;
     mpu.Size             = MPU_REGION_SIZE_512KB;
+#if BSP_FB_WRITE_BACK
+    mpu.TypeExtField     = MPU_TEX_LEVEL1;      /* TEX=001 C=1 B=1 -> write-back, write-allocate */
+    mpu.IsCacheable      = MPU_ACCESS_CACHEABLE;
+    mpu.IsBufferable     = MPU_ACCESS_BUFFERABLE;
+#else
     mpu.TypeExtField     = MPU_TEX_LEVEL0;      /* TEX=000 C=1 B=0 -> write-through */
     mpu.IsCacheable      = MPU_ACCESS_CACHEABLE;
     mpu.IsBufferable     = MPU_ACCESS_NOT_BUFFERABLE;
+#endif
     HAL_MPU_ConfigRegion(&mpu);
 
     /*
