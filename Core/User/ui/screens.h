@@ -47,8 +47,8 @@ typedef struct _objects_t {
     lv_obj_t *km_label;
     lv_obj_t *speed_label;
     lv_obj_t *obj1;
-    lv_obj_t *lv_voltage_label;
-    lv_obj_t *glv_soc_label;
+    lv_obj_t *bus_voltage_label;
+    lv_obj_t *bus_soc_label;
     lv_obj_t *obj2;
     lv_obj_t *mode_label;
     lv_obj_t *obj3;

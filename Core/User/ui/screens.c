@@ -179,18 +179,18 @@ void create_screen_main() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // lvVoltageLabel
+                    // busVoltageLabel
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.lv_voltage_label = obj;
+                    objects.bus_voltage_label = obj;
                     lv_obj_set_pos(obj, 10, 13);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_text(obj);
                     lv_label_set_text(obj, "");
                 }
                 {
-                    // glvSocLabel
+                    // busSocLabel
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.glv_soc_label = obj;
+                    objects.bus_soc_label = obj;
                     lv_obj_set_pos(obj, 127, 12);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_text(obj);
@@ -294,20 +294,20 @@ void tick_screen_main() {
         }
     }
     {
-        const char *new_val = get_var_label_lv_value();
-        const char *cur_val = lv_label_get_text(objects.lv_voltage_label);
+        const char *new_val = get_var_label_bus_voltage();
+        const char *cur_val = lv_label_get_text(objects.bus_voltage_label);
         if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.lv_voltage_label;
-            lv_label_set_text(objects.lv_voltage_label, new_val);
+            tick_value_change_obj = objects.bus_voltage_label;
+            lv_label_set_text(objects.bus_voltage_label, new_val);
             tick_value_change_obj = NULL;
         }
     }
     {
-        const char *new_val = get_var_label_glv_soc();
-        const char *cur_val = lv_label_get_text(objects.glv_soc_label);
+        const char *new_val = get_var_label_bus_soc();
+        const char *cur_val = lv_label_get_text(objects.bus_soc_label);
         if (strcmp(new_val, cur_val) != 0) {
-            tick_value_change_obj = objects.glv_soc_label;
-            lv_label_set_text(objects.glv_soc_label, new_val);
+            tick_value_change_obj = objects.bus_soc_label;
+            lv_label_set_text(objects.bus_soc_label, new_val);
             tick_value_change_obj = NULL;
         }
     }

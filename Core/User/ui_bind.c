@@ -194,8 +194,36 @@ const char *get_var_label_soc_value(void)
     return s_soc_buf;
 }
 
-/** Low voltage battery. */
-const char *get_var_label_lv_value(void)
+/*
+ * The bottom row alternates between the two buses, three seconds each.
+ *
+ * Two numbers about one bus beats one number about each: a voltage on its own
+ * says little without knowing how full the pack is, and an SOC on its own hides
+ * a sagging bus. There is only room for two labels down there, so the pair
+ * takes turns instead of being split between HV and LV.
+ *
+ * Which bus is showing is latched once per UI update rather than read from the
+ * clock in each getter. Two independent HAL_GetTick() reads can land either
+ * side of a boundary, and a row reading "LV:24.1V SOC:68%" - the low voltage
+ * battery against the pack's charge - is worse than anything the rotation was
+ * meant to solve. One frame of lag on a three second rotation costs nothing.
+ */
+#define BUS_ROTATE_MS 3000u
+
+static bool s_show_hv;
+
+/** High voltage half of the rotation. */
+static const char *bus_voltage_hv(void)
+{
+    if (VehicleData_IsStale(VD_GROUP_AMS_STATUS, VD_DEFAULT_TIMEOUT_MS)) {
+        return "HV:" STALE_TEXT;
+    }
+
+    snprintf(s_lv_buf, sizeof(s_lv_buf), "HV:%.0fV", (double)g_vehicle.pack_voltage);
+    return s_lv_buf;
+}
+
+static const char *bus_voltage_lv(void)
 {
     if (VehicleData_IsStale(VD_GROUP_VCU_SYSTEM, VD_DEFAULT_TIMEOUT_MS)) {
         return "LV:" STALE_TEXT;
@@ -205,22 +233,21 @@ const char *get_var_label_lv_value(void)
     return s_lv_buf;
 }
 
-/*
- * Low voltage battery charge, beside its voltage.
- *
- * This slot used to carry the HV pack voltage, which has moved to the battery
- * page. Voltage alone is a poor read on a lithium pack - flat for most of the
- * discharge and then falling off a cliff - and the pack already has its own
- * SOC bar on the right of this screen. What was missing was any warning that
- * the GLV battery is going down, which is the one that ends a session quietly.
- */
-const char *get_var_label_glv_soc(void)
+const char *get_var_label_bus_voltage(void)
 {
-    if (VehicleData_IsStale(VD_GROUP_VCU_SYSTEM, VD_DEFAULT_TIMEOUT_MS)) {
+    return s_show_hv ? bus_voltage_hv() : bus_voltage_lv();
+}
+
+const char *get_var_label_bus_soc(void)
+{
+    const vd_group_t group = s_show_hv ? VD_GROUP_AMS_STATUS : VD_GROUP_VCU_SYSTEM;
+
+    if (VehicleData_IsStale(group, VD_DEFAULT_TIMEOUT_MS)) {
         return "SOC:" STALE_TEXT;
     }
 
-    snprintf(s_hv_buf, sizeof(s_hv_buf), "SOC:%.0f%%", (double)g_vehicle.glv_soc);
+    snprintf(s_hv_buf, sizeof(s_hv_buf), "SOC:%.0f%%",
+             (double)(s_show_hv ? g_vehicle.pack_soc : g_vehicle.glv_soc));
     return s_hv_buf;
 }
 
@@ -602,14 +629,8 @@ const char *get_var_bse_rear_press(void)
     return brake_bar_text(6, g_vehicle.bse_rear_bar);
 }
 
-/**
- * Steering angle for the arc, in degrees.
- *
- * The arc is symmetrical over -180..180, so it takes the angle directly. On
- * timeout it centres, which is wrong in the same way an empty bar is wrong -
- * but a needle frozen at full lock would be read as a real reading.
- */
-int32_t get_var_steering_deg(void)
+/** The angle as the bus reports it, rounded. */
+static int32_t steering_raw(void)
 {
     if (VehicleData_IsStale(VD_GROUP_VCU_SENSOR2, VD_DEFAULT_TIMEOUT_MS)) {
         return 0;
@@ -617,6 +638,27 @@ int32_t get_var_steering_deg(void)
 
     return (int32_t)(g_vehicle.steering_deg +
                      (g_vehicle.steering_deg >= 0.0f ? 0.5f : -0.5f));
+}
+
+/**
+ * Steering angle for the arc, in degrees, negated.
+ *
+ * STEERING_ANGLE is positive anticlockwise, which is a left turn - the standard
+ * vehicle convention, and what can_decode.c and racer.c both already say. The
+ * arc is symmetrical over -180..180 and fills towards its end angle for positive
+ * values, and its end angle is on the right. Fed the raw signal it therefore
+ * swung right for a left turn.
+ *
+ * Only the picture is flipped. The number beside it still reads what is on the
+ * bus, so it can be compared against a CAN tool without a sign to remember -
+ * which is the point of a sensor page.
+ *
+ * On timeout it centres, which is wrong in the same way an empty bar is wrong,
+ * but a needle frozen at full lock would be read as a real reading.
+ */
+int32_t get_var_steering_deg(void)
+{
+    return -steering_raw();
 }
 
 /*
@@ -638,7 +680,7 @@ const char *get_var_steering_text(void)
     }
 
     snprintf(s_sensor_text[4], sizeof(s_sensor_text[4]), "%d",
-             (int)get_var_steering_deg());
+             (int)steering_raw());
     return s_sensor_text[4];
 }
 
@@ -933,6 +975,11 @@ int32_t get_var_soc(void)
  */
 void UIBind_ApplyDynamicStyles(void)
 {
+    /* See the note above get_var_label_bus_voltage(). This runs after ui_tick(),
+     * so the getters use the value latched on the previous update - which is
+     * the point: both labels read the same one. */
+    s_show_hv = ((HAL_GetTick() / BUS_ROTATE_MS) & 1u) != 0u;
+
 
     static const lv_color_t green  = LV_COLOR_MAKE(0x02, 0xff, 0x02);
     static const lv_color_t yellow = LV_COLOR_MAKE(0xff, 0xd0, 0x00);

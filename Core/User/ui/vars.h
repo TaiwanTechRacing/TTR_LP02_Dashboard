@@ -17,8 +17,8 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_READY = 1,
     FLOW_GLOBAL_VARIABLE_LABEL_SOC_VALUE = 2,
     FLOW_GLOBAL_VARIABLE_SPEED = 3,
-    FLOW_GLOBAL_VARIABLE_LABEL_LV_VALUE = 4,
-    FLOW_GLOBAL_VARIABLE_LABEL_GLV_SOC = 5,
+    FLOW_GLOBAL_VARIABLE_LABEL_BUS_VOLTAGE = 4,
+    FLOW_GLOBAL_VARIABLE_LABEL_BUS_SOC = 5,
     FLOW_GLOBAL_VARIABLE_MODE = 6,
     FLOW_GLOBAL_VARIABLE_LEOPARD02 = 7,
     FLOW_GLOBAL_VARIABLE_LV = 8,
@@ -88,10 +88,10 @@ extern const char *get_var_label_soc_value();
 extern void set_var_label_soc_value(const char *value);
 extern const char *get_var_speed();
 extern void set_var_speed(const char *value);
-extern const char *get_var_label_lv_value();
-extern void set_var_label_lv_value(const char *value);
-extern const char *get_var_label_glv_soc();
-extern void set_var_label_glv_soc(const char *value);
+extern const char *get_var_label_bus_voltage();
+extern void set_var_label_bus_voltage(const char *value);
+extern const char *get_var_label_bus_soc();
+extern void set_var_label_bus_soc(const char *value);
 extern const char *get_var_mode();
 extern void set_var_mode(const char *value);
 extern const char *get_var_leopard02();
