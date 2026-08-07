@@ -1,0 +1,37 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "STM32: debug DashBoard",
+      "type": "cortex-debug",
+      "request": "launch",
+      "servertype": "stlink",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/build/debug/DashBoard_re_1010.elf",
+      "device": "STM32H743IITx",
+      "interface": "swd",
+      "runToEntryPoint": "main",
+      "preLaunchTask": "STM32: build debug",
+      "showDevDebugOutput": "none",
+      "liveWatch": {
+        "enabled": true,
+        "samplesPerSecond": 10
+      }
+    },
+    {
+      "name": "STM32: attach DashBoard",
+      "type": "cortex-debug",
+      "request": "attach",
+      "servertype": "stlink",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/build/debug/DashBoard_re_1010.elf",
+      "device": "STM32H743IITx",
+      "interface": "swd",
+      "showDevDebugOutput": "none",
+      "liveWatch": {
+        "enabled": true,
+        "samplesPerSecond": 10
+      }
+    }
+  ]
+}

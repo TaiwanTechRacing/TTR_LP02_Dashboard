@@ -69,13 +69,22 @@
 
 #if LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN
     /** Size of memory available for `lv_malloc()` in bytes (>= 2kB) */
-    #define LV_MEM_SIZE (128 * 1024U)          /**< [bytes] */
+    #define LV_MEM_SIZE (2 * 1024 * 1024U)     /**< [bytes] */
 
     /** Size of the memory expand for `lv_malloc()` in bytes */
     #define LV_MEM_POOL_EXPAND_SIZE 0
 
     /** Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too. */
-    #define LV_MEM_ADR 0     /**< 0: unused*/
+    /* The LVGL heap lives in the board's 32 MB SDRAM instead of internal
+     * RAM_D1. Address and size must match SDRAM_LVGL_HEAP_ADDR /
+     * SDRAM_LVGL_HEAP_SIZE in Core/User/bsp_sdram.h. That header cannot be
+     * included here because LVGL uses this value too early. */
+    /* The PC simulator has no SDRAM; let LVGL allocate the pool normally. */
+    #ifdef LV_SIMULATOR
+        #define LV_MEM_ADR 0
+    #else
+        #define LV_MEM_ADR 0xC0100000
+    #endif
     /* Instead of an address give a memory allocator that will be called to get a memory pool for LVGL. E.g. my_malloc */
     #if LV_MEM_ADR == 0
         #undef LV_MEM_POOL_INCLUDE
@@ -88,7 +97,10 @@
  *====================*/
 
 /** Default display refresh, input device read and animation step period. */
-#define LV_DEF_REFR_PERIOD  33      /**< [ms] */
+/* 33 ms caps the display at 30 fps. With caches on, double buffering in place
+ * and the main loop no longer calling HAL_Delay, 16 ms (60 fps) is what keeps
+ * up with the panel. */
+#define LV_DEF_REFR_PERIOD  16      /**< [ms] */
 
 /** Default Dots Per Inch. Used to initialize default sizes such as widgets sized, style paddings.
  * (Not so important, you can adjust it to modify default sizes and spaces.) */
@@ -107,7 +119,13 @@
  * - LV_OS_MQX
  * - LV_OS_SDL2
  * - LV_OS_CUSTOM */
-#define LV_USE_OS   LV_OS_NONE
+/* The firmware runs bare-metal; the PC simulator needs LVGL's Windows OS
+ * backend, which lv_windows_context.c requires. */
+#ifdef LV_SIMULATOR
+    #define LV_USE_OS   LV_OS_WINDOWS
+#else
+    #define LV_USE_OS   LV_OS_NONE
+#endif
 
 #if LV_USE_OS == LV_OS_CUSTOM
     #define LV_OS_CUSTOM_INCLUDE <stdint.h>
@@ -129,7 +147,9 @@
 #define LV_DRAW_BUF_STRIDE_ALIGN                1
 
 /** Align start address of draw_buf addresses to this bytes*/
-#define LV_DRAW_BUF_ALIGN                       4
+/* Align to a 32-byte cache line now that D-cache is on, so a buffer boundary
+ * never shares a line with unrelated data. */
+#define LV_DRAW_BUF_ALIGN                       32
 
 /** Using matrix for transformations.
  * Requirements:
@@ -938,7 +958,9 @@
 #define LV_USE_LIBJPEG_TURBO 0
 
 /** GIF decoder library */
-#define LV_USE_GIF 0
+/* Animations on the debug pages. Data lives in QSPI, not internal flash -
+ * see Core/User/gif_pages.c and tools/make_qspi_image.py. */
+#define LV_USE_GIF 1
 #if LV_USE_GIF
     /** GIF decoder accelerate */
     #define LV_GIF_CACHE_DECODE_DATA 0
@@ -1033,7 +1055,11 @@
 #define LV_USE_SNAPSHOT 0
 
 /** 1: Enable system monitor component */
-#define LV_USE_SYSMON   0
+/* Backs the FPS readout in the debug overlay. Visibility is controlled at
+ * runtime by Core/User/debug_overlay.c and starts hidden.
+ * Set back to 0 for a race build to compile it out entirely; debug_overlay
+ * then becomes empty functions. */
+#define LV_USE_SYSMON   1
 #if LV_USE_SYSMON
     /** Get the idle percentage. E.g. uint32_t my_get_idle(void); */
     #define LV_SYSMON_GET_IDLE lv_os_get_idle_percent
@@ -1047,9 +1073,9 @@
 
     /** 1: Show CPU usage and FPS count.
      *  - Requires `LV_USE_SYSMON = 1` */
-    #define LV_USE_PERF_MONITOR 0
+    #define LV_USE_PERF_MONITOR 1
     #if LV_USE_PERF_MONITOR
-        #define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_RIGHT
+        #define LV_USE_PERF_MONITOR_POS LV_ALIGN_TOP_LEFT
 
         /** 0: Displays performance data on the screen; 1: Prints performance data using log. */
         #define LV_USE_PERF_MONITOR_LOG_MODE 0
@@ -1354,7 +1380,12 @@
 #define LV_USE_NXP_ELCDIF   0
 
 /** LVGL Windows backend */
-#define LV_USE_WINDOWS    0
+/* Win32 display backend, used only by the PC simulator in sim/. */
+#ifdef LV_SIMULATOR
+    #define LV_USE_WINDOWS    1
+#else
+    #define LV_USE_WINDOWS    0
+#endif
 
 /** LVGL UEFI backend */
 #define LV_USE_UEFI 0
