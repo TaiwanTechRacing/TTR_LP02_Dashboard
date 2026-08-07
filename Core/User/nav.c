@@ -8,6 +8,7 @@
 #include "game_tetris.h"
 #include "cell_map.h"
 #include "racer.h"
+#include "vehicle_data.h"
 
 #include "ui.h"
 
@@ -146,6 +147,34 @@ void Nav_Scan(uint32_t now_ms, bool button1_pressed, bool button2_pressed)
      * pins rather than what the logic below decided to do about them. */
     g_nav_btn1_level = button1_pressed;
     g_nav_btn2_level = button2_pressed;
+
+    /*
+     * Ready to drive: the main screen, and nothing else.
+     *
+     * The pedal is live from here on, so the one thing that must be on the
+     * panel is the instruments - not a cell map, not a debug animation, and
+     * certainly not tetris. Forcing rather than merely blocking, because the
+     * case that matters is the state changing while some other page is up:
+     * someone finishes the RTD sequence while the driver is on the battery
+     * page, and the display has to follow the car rather than wait to be asked.
+     *
+     * Checked before the gestures below, so a hold in progress when RTD
+     * engages cannot complete into a page change.
+     *
+     * Deliberately not held while VCU_DASH is stale. A lock that survives the
+     * bus going quiet would strand the display on MAIN exactly when the
+     * diagnostic pages are wanted, and this is a display policy, not a safety
+     * interlock - a silent bus already shows as a red "---" on the indicator.
+     */
+    if (!VehicleData_IsStale(VD_GROUP_VCU_DASH, VD_DEFAULT_TIMEOUT_MS)
+        && g_vehicle.main_status == (uint8_t)VD_MAIN_STATUS_RTD) {
+
+        if (s_page != NAV_MIN_PAGE) {
+            Nav_ShowPage(NAV_MIN_PAGE);
+        }
+
+        return;
+    }
 
     /* Set by the three second hold; the next button to come up is the choice. */
     static bool egg_armed = false;

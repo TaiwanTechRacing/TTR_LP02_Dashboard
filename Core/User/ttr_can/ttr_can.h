@@ -634,6 +634,7 @@ typedef struct {
     bool WARMUP_TMR_RDY;  /* false="False", true="True" */
     bool TEBPPC_ACTIVE;  /* false="False", true="True" */
     bool COOLING_SYSTEM_ACTIVE;  /* false="False", true="True" */
+    bool GLV_LOW_WARN;  /* false="False", true="True" */
     uint8_t SYS_DRIVE_MODE;  /* see TTR_VCU_VCU_STATE_SYS_DRIVE_MODE_* */
     uint8_t VCU_HEARTBEAT;
 } ttr_vcu_vcu_state_t;
@@ -1723,6 +1724,25 @@ typedef struct {
 void ttr_mcu1_status_comm_unpack(ttr_mcu1_status_comm_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu1_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_comm_t *src);
 
+/* ===== MCU1_STATUS_ENCODER_DEBUG  (100 ms) ===== */
+#define TTR_CAN_ID_MCU1_STATUS_ENCODER_DEBUG   (0x4C8u)
+#define TTR_CAN_DLC_MCU1_STATUS_ENCODER_DEBUG  (16u)
+
+typedef struct {
+    uint16_t CRC_ERR_COUNT;
+    uint16_t ERRFLAG_RAW_COUNT;
+    uint16_t GLITCH_COUNT;
+    uint16_t REVERSAL_COUNT;
+    uint16_t VEL_WOULD_REJECT;
+    uint16_t VEL_DEV_MAX;
+    uint8_t ERR_CONSEC_MAX;
+    uint8_t STANDDOWN_COUNT;
+    uint8_t RESYNC_BAD_COUNT;
+} ttr_mcu1_status_encoder_debug_t;
+
+void ttr_mcu1_status_encoder_debug_unpack(ttr_mcu1_status_encoder_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu1_status_encoder_debug_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_encoder_debug_t *src);
+
 /* ===== MCU1_INFO  (1000 ms) ===== */
 #define TTR_CAN_ID_MCU1_INFO   (0x4D4u)
 #define TTR_CAN_DLC_MCU1_INFO  (8u)
@@ -2052,6 +2072,25 @@ typedef struct {
 
 void ttr_mcu2_status_comm_unpack(ttr_mcu2_status_comm_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu2_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_comm_t *src);
+
+/* ===== MCU2_STATUS_ENCODER_DEBUG  (100 ms) ===== */
+#define TTR_CAN_ID_MCU2_STATUS_ENCODER_DEBUG   (0x4E8u)
+#define TTR_CAN_DLC_MCU2_STATUS_ENCODER_DEBUG  (16u)
+
+typedef struct {
+    uint16_t CRC_ERR_COUNT;
+    uint16_t ERRFLAG_RAW_COUNT;
+    uint16_t GLITCH_COUNT;
+    uint16_t REVERSAL_COUNT;
+    uint16_t VEL_WOULD_REJECT;
+    uint16_t VEL_DEV_MAX;
+    uint8_t ERR_CONSEC_MAX;
+    uint8_t STANDDOWN_COUNT;
+    uint8_t RESYNC_BAD_COUNT;
+} ttr_mcu2_status_encoder_debug_t;
+
+void ttr_mcu2_status_encoder_debug_unpack(ttr_mcu2_status_encoder_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu2_status_encoder_debug_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_encoder_debug_t *src);
 
 /* ===== MCU2_INFO  (1000 ms) ===== */
 #define TTR_CAN_ID_MCU2_INFO   (0x4F4u)
@@ -2383,6 +2422,25 @@ typedef struct {
 void ttr_mcu3_status_comm_unpack(ttr_mcu3_status_comm_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu3_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_comm_t *src);
 
+/* ===== MCU3_STATUS_ENCODER_DEBUG  (100 ms) ===== */
+#define TTR_CAN_ID_MCU3_STATUS_ENCODER_DEBUG   (0x508u)
+#define TTR_CAN_DLC_MCU3_STATUS_ENCODER_DEBUG  (16u)
+
+typedef struct {
+    uint16_t CRC_ERR_COUNT;
+    uint16_t ERRFLAG_RAW_COUNT;
+    uint16_t GLITCH_COUNT;
+    uint16_t REVERSAL_COUNT;
+    uint16_t VEL_WOULD_REJECT;
+    uint16_t VEL_DEV_MAX;
+    uint8_t ERR_CONSEC_MAX;
+    uint8_t STANDDOWN_COUNT;
+    uint8_t RESYNC_BAD_COUNT;
+} ttr_mcu3_status_encoder_debug_t;
+
+void ttr_mcu3_status_encoder_debug_unpack(ttr_mcu3_status_encoder_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu3_status_encoder_debug_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_encoder_debug_t *src);
+
 /* ===== MCU3_INFO  (1000 ms) ===== */
 #define TTR_CAN_ID_MCU3_INFO   (0x514u)
 #define TTR_CAN_DLC_MCU3_INFO  (8u)
@@ -2713,6 +2771,25 @@ typedef struct {
 void ttr_mcu4_status_comm_unpack(ttr_mcu4_status_comm_t *dst, const ttr_can_frame_t *frame);
 void ttr_mcu4_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_comm_t *src);
 
+/* ===== MCU4_STATUS_ENCODER_DEBUG  (100 ms) ===== */
+#define TTR_CAN_ID_MCU4_STATUS_ENCODER_DEBUG   (0x528u)
+#define TTR_CAN_DLC_MCU4_STATUS_ENCODER_DEBUG  (16u)
+
+typedef struct {
+    uint16_t CRC_ERR_COUNT;
+    uint16_t ERRFLAG_RAW_COUNT;
+    uint16_t GLITCH_COUNT;
+    uint16_t REVERSAL_COUNT;
+    uint16_t VEL_WOULD_REJECT;
+    uint16_t VEL_DEV_MAX;
+    uint8_t ERR_CONSEC_MAX;
+    uint8_t STANDDOWN_COUNT;
+    uint8_t RESYNC_BAD_COUNT;
+} ttr_mcu4_status_encoder_debug_t;
+
+void ttr_mcu4_status_encoder_debug_unpack(ttr_mcu4_status_encoder_debug_t *dst, const ttr_can_frame_t *frame);
+void ttr_mcu4_status_encoder_debug_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_encoder_debug_t *src);
+
 /* ===== MCU4_INFO  (1000 ms) ===== */
 #define TTR_CAN_ID_MCU4_INFO   (0x534u)
 #define TTR_CAN_DLC_MCU4_INFO  (8u)
@@ -2928,6 +3005,7 @@ typedef struct {
     ttr_mcu1_status_gate_v_t mcu1_status_gate_v;  /* TX, 100 ms */
     ttr_mcu1_status_gate_w_t mcu1_status_gate_w;  /* TX, 100 ms */
     ttr_mcu1_status_comm_t mcu1_status_comm;  /* TX, 100 ms */
+    ttr_mcu1_status_encoder_debug_t mcu1_status_encoder_debug;  /* TX, 100 ms */
     ttr_mcu1_info_t mcu1_info;  /* TX, 1000 ms */
     ttr_mcu1_parameter_control_t mcu1_parameter_control;  /* TX, 1000 ms */
     ttr_mcu1_parameter_limit_t mcu1_parameter_limit;  /* TX, 1000 ms */
@@ -2957,6 +3035,7 @@ typedef struct {
     ttr_mcu2_status_gate_v_t mcu2_status_gate_v;  /* TX, 100 ms */
     ttr_mcu2_status_gate_w_t mcu2_status_gate_w;  /* TX, 100 ms */
     ttr_mcu2_status_comm_t mcu2_status_comm;  /* TX, 100 ms */
+    ttr_mcu2_status_encoder_debug_t mcu2_status_encoder_debug;  /* TX, 100 ms */
     ttr_mcu2_info_t mcu2_info;  /* TX, 1000 ms */
     ttr_mcu2_parameter_control_t mcu2_parameter_control;  /* TX, 1000 ms */
     ttr_mcu2_parameter_limit_t mcu2_parameter_limit;  /* TX, 1000 ms */
@@ -2986,6 +3065,7 @@ typedef struct {
     ttr_mcu3_status_gate_v_t mcu3_status_gate_v;  /* TX, 100 ms */
     ttr_mcu3_status_gate_w_t mcu3_status_gate_w;  /* TX, 100 ms */
     ttr_mcu3_status_comm_t mcu3_status_comm;  /* TX, 100 ms */
+    ttr_mcu3_status_encoder_debug_t mcu3_status_encoder_debug;  /* TX, 100 ms */
     ttr_mcu3_info_t mcu3_info;  /* TX, 1000 ms */
     ttr_mcu3_parameter_control_t mcu3_parameter_control;  /* TX, 1000 ms */
     ttr_mcu3_parameter_limit_t mcu3_parameter_limit;  /* TX, 1000 ms */
@@ -3015,6 +3095,7 @@ typedef struct {
     ttr_mcu4_status_gate_v_t mcu4_status_gate_v;  /* TX, 100 ms */
     ttr_mcu4_status_gate_w_t mcu4_status_gate_w;  /* TX, 100 ms */
     ttr_mcu4_status_comm_t mcu4_status_comm;  /* TX, 100 ms */
+    ttr_mcu4_status_encoder_debug_t mcu4_status_encoder_debug;  /* TX, 100 ms */
     ttr_mcu4_info_t mcu4_info;  /* TX, 1000 ms */
     ttr_mcu4_parameter_control_t mcu4_parameter_control;  /* TX, 1000 ms */
     ttr_mcu4_parameter_limit_t mcu4_parameter_limit;  /* TX, 1000 ms */

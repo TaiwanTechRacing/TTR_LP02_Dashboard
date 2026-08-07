@@ -953,6 +953,7 @@ void ttr_vcu_vcu_state_unpack(ttr_vcu_vcu_state_t *dst, const ttr_can_frame_t *f
     dst->WARMUP_TMR_RDY = ttr_get_bits(frame->data, 7u, 1u) != 0u;
     dst->TEBPPC_ACTIVE = ttr_get_bits(frame->data, 8u, 1u) != 0u;
     dst->COOLING_SYSTEM_ACTIVE = ttr_get_bits(frame->data, 9u, 1u) != 0u;
+    dst->GLV_LOW_WARN = ttr_get_bits(frame->data, 10u, 1u) != 0u;
     dst->SYS_DRIVE_MODE = (uint8_t)ttr_get_bits(frame->data, 16u, 8u);
     dst->VCU_HEARTBEAT = (uint8_t)ttr_get_bits(frame->data, 56u, 8u);
 }
@@ -973,6 +974,7 @@ void ttr_vcu_vcu_state_pack(ttr_can_frame_t *frame, const ttr_vcu_vcu_state_t *s
     ttr_set_bits(frame->data, 7u, 1u, src->WARMUP_TMR_RDY ? 1u : 0u);
     ttr_set_bits(frame->data, 8u, 1u, src->TEBPPC_ACTIVE ? 1u : 0u);
     ttr_set_bits(frame->data, 9u, 1u, src->COOLING_SYSTEM_ACTIVE ? 1u : 0u);
+    ttr_set_bits(frame->data, 10u, 1u, src->GLV_LOW_WARN ? 1u : 0u);
     ttr_set_bits(frame->data, 16u, 8u, (uint64_t)src->SYS_DRIVE_MODE);
     ttr_set_bits(frame->data, 56u, 8u, (uint64_t)src->VCU_HEARTBEAT);
 }
@@ -2776,6 +2778,37 @@ void ttr_mcu1_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_com
     ttr_set_bits(frame->data, 248u, 8u, (uint64_t)src->ERR_PASSIVE_COUNT);
 }
 
+/* ===== MCU1_STATUS_ENCODER_DEBUG ===== */
+void ttr_mcu1_status_encoder_debug_unpack(ttr_mcu1_status_encoder_debug_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->CRC_ERR_COUNT = (uint16_t)ttr_get_bits(frame->data, 0u, 16u);
+    dst->ERRFLAG_RAW_COUNT = (uint16_t)ttr_get_bits(frame->data, 16u, 16u);
+    dst->GLITCH_COUNT = (uint16_t)ttr_get_bits(frame->data, 32u, 16u);
+    dst->REVERSAL_COUNT = (uint16_t)ttr_get_bits(frame->data, 48u, 16u);
+    dst->VEL_WOULD_REJECT = (uint16_t)ttr_get_bits(frame->data, 64u, 16u);
+    dst->VEL_DEV_MAX = (uint16_t)ttr_get_bits(frame->data, 80u, 12u);
+    dst->ERR_CONSEC_MAX = (uint8_t)ttr_get_bits(frame->data, 96u, 8u);
+    dst->STANDDOWN_COUNT = (uint8_t)ttr_get_bits(frame->data, 104u, 8u);
+    dst->RESYNC_BAD_COUNT = (uint8_t)ttr_get_bits(frame->data, 112u, 8u);
+}
+
+void ttr_mcu1_status_encoder_debug_pack(ttr_can_frame_t *frame, const ttr_mcu1_status_encoder_debug_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_MCU1_STATUS_ENCODER_DEBUG;
+    frame->dlc = TTR_CAN_DLC_MCU1_STATUS_ENCODER_DEBUG;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 16u, (uint64_t)src->CRC_ERR_COUNT);
+    ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->ERRFLAG_RAW_COUNT);
+    ttr_set_bits(frame->data, 32u, 16u, (uint64_t)src->GLITCH_COUNT);
+    ttr_set_bits(frame->data, 48u, 16u, (uint64_t)src->REVERSAL_COUNT);
+    ttr_set_bits(frame->data, 64u, 16u, (uint64_t)src->VEL_WOULD_REJECT);
+    ttr_set_bits(frame->data, 80u, 12u, (uint64_t)src->VEL_DEV_MAX);
+    ttr_set_bits(frame->data, 96u, 8u, (uint64_t)src->ERR_CONSEC_MAX);
+    ttr_set_bits(frame->data, 104u, 8u, (uint64_t)src->STANDDOWN_COUNT);
+    ttr_set_bits(frame->data, 112u, 8u, (uint64_t)src->RESYNC_BAD_COUNT);
+}
+
 /* ===== MCU1_INFO ===== */
 void ttr_mcu1_info_unpack(ttr_mcu1_info_t *dst, const ttr_can_frame_t *frame)
 {
@@ -3288,6 +3321,37 @@ void ttr_mcu2_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_com
     ttr_set_bits(frame->data, 232u, 8u, (uint64_t)src->REC_MAX);
     ttr_set_bits(frame->data, 240u, 8u, (uint64_t)src->LEC_SEEN);
     ttr_set_bits(frame->data, 248u, 8u, (uint64_t)src->ERR_PASSIVE_COUNT);
+}
+
+/* ===== MCU2_STATUS_ENCODER_DEBUG ===== */
+void ttr_mcu2_status_encoder_debug_unpack(ttr_mcu2_status_encoder_debug_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->CRC_ERR_COUNT = (uint16_t)ttr_get_bits(frame->data, 0u, 16u);
+    dst->ERRFLAG_RAW_COUNT = (uint16_t)ttr_get_bits(frame->data, 16u, 16u);
+    dst->GLITCH_COUNT = (uint16_t)ttr_get_bits(frame->data, 32u, 16u);
+    dst->REVERSAL_COUNT = (uint16_t)ttr_get_bits(frame->data, 48u, 16u);
+    dst->VEL_WOULD_REJECT = (uint16_t)ttr_get_bits(frame->data, 64u, 16u);
+    dst->VEL_DEV_MAX = (uint16_t)ttr_get_bits(frame->data, 80u, 12u);
+    dst->ERR_CONSEC_MAX = (uint8_t)ttr_get_bits(frame->data, 96u, 8u);
+    dst->STANDDOWN_COUNT = (uint8_t)ttr_get_bits(frame->data, 104u, 8u);
+    dst->RESYNC_BAD_COUNT = (uint8_t)ttr_get_bits(frame->data, 112u, 8u);
+}
+
+void ttr_mcu2_status_encoder_debug_pack(ttr_can_frame_t *frame, const ttr_mcu2_status_encoder_debug_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_MCU2_STATUS_ENCODER_DEBUG;
+    frame->dlc = TTR_CAN_DLC_MCU2_STATUS_ENCODER_DEBUG;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 16u, (uint64_t)src->CRC_ERR_COUNT);
+    ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->ERRFLAG_RAW_COUNT);
+    ttr_set_bits(frame->data, 32u, 16u, (uint64_t)src->GLITCH_COUNT);
+    ttr_set_bits(frame->data, 48u, 16u, (uint64_t)src->REVERSAL_COUNT);
+    ttr_set_bits(frame->data, 64u, 16u, (uint64_t)src->VEL_WOULD_REJECT);
+    ttr_set_bits(frame->data, 80u, 12u, (uint64_t)src->VEL_DEV_MAX);
+    ttr_set_bits(frame->data, 96u, 8u, (uint64_t)src->ERR_CONSEC_MAX);
+    ttr_set_bits(frame->data, 104u, 8u, (uint64_t)src->STANDDOWN_COUNT);
+    ttr_set_bits(frame->data, 112u, 8u, (uint64_t)src->RESYNC_BAD_COUNT);
 }
 
 /* ===== MCU2_INFO ===== */
@@ -3804,6 +3868,37 @@ void ttr_mcu3_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_com
     ttr_set_bits(frame->data, 248u, 8u, (uint64_t)src->ERR_PASSIVE_COUNT);
 }
 
+/* ===== MCU3_STATUS_ENCODER_DEBUG ===== */
+void ttr_mcu3_status_encoder_debug_unpack(ttr_mcu3_status_encoder_debug_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->CRC_ERR_COUNT = (uint16_t)ttr_get_bits(frame->data, 0u, 16u);
+    dst->ERRFLAG_RAW_COUNT = (uint16_t)ttr_get_bits(frame->data, 16u, 16u);
+    dst->GLITCH_COUNT = (uint16_t)ttr_get_bits(frame->data, 32u, 16u);
+    dst->REVERSAL_COUNT = (uint16_t)ttr_get_bits(frame->data, 48u, 16u);
+    dst->VEL_WOULD_REJECT = (uint16_t)ttr_get_bits(frame->data, 64u, 16u);
+    dst->VEL_DEV_MAX = (uint16_t)ttr_get_bits(frame->data, 80u, 12u);
+    dst->ERR_CONSEC_MAX = (uint8_t)ttr_get_bits(frame->data, 96u, 8u);
+    dst->STANDDOWN_COUNT = (uint8_t)ttr_get_bits(frame->data, 104u, 8u);
+    dst->RESYNC_BAD_COUNT = (uint8_t)ttr_get_bits(frame->data, 112u, 8u);
+}
+
+void ttr_mcu3_status_encoder_debug_pack(ttr_can_frame_t *frame, const ttr_mcu3_status_encoder_debug_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_MCU3_STATUS_ENCODER_DEBUG;
+    frame->dlc = TTR_CAN_DLC_MCU3_STATUS_ENCODER_DEBUG;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 16u, (uint64_t)src->CRC_ERR_COUNT);
+    ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->ERRFLAG_RAW_COUNT);
+    ttr_set_bits(frame->data, 32u, 16u, (uint64_t)src->GLITCH_COUNT);
+    ttr_set_bits(frame->data, 48u, 16u, (uint64_t)src->REVERSAL_COUNT);
+    ttr_set_bits(frame->data, 64u, 16u, (uint64_t)src->VEL_WOULD_REJECT);
+    ttr_set_bits(frame->data, 80u, 12u, (uint64_t)src->VEL_DEV_MAX);
+    ttr_set_bits(frame->data, 96u, 8u, (uint64_t)src->ERR_CONSEC_MAX);
+    ttr_set_bits(frame->data, 104u, 8u, (uint64_t)src->STANDDOWN_COUNT);
+    ttr_set_bits(frame->data, 112u, 8u, (uint64_t)src->RESYNC_BAD_COUNT);
+}
+
 /* ===== MCU3_INFO ===== */
 void ttr_mcu3_info_unpack(ttr_mcu3_info_t *dst, const ttr_can_frame_t *frame)
 {
@@ -4316,6 +4411,37 @@ void ttr_mcu4_status_comm_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_com
     ttr_set_bits(frame->data, 232u, 8u, (uint64_t)src->REC_MAX);
     ttr_set_bits(frame->data, 240u, 8u, (uint64_t)src->LEC_SEEN);
     ttr_set_bits(frame->data, 248u, 8u, (uint64_t)src->ERR_PASSIVE_COUNT);
+}
+
+/* ===== MCU4_STATUS_ENCODER_DEBUG ===== */
+void ttr_mcu4_status_encoder_debug_unpack(ttr_mcu4_status_encoder_debug_t *dst, const ttr_can_frame_t *frame)
+{
+    dst->CRC_ERR_COUNT = (uint16_t)ttr_get_bits(frame->data, 0u, 16u);
+    dst->ERRFLAG_RAW_COUNT = (uint16_t)ttr_get_bits(frame->data, 16u, 16u);
+    dst->GLITCH_COUNT = (uint16_t)ttr_get_bits(frame->data, 32u, 16u);
+    dst->REVERSAL_COUNT = (uint16_t)ttr_get_bits(frame->data, 48u, 16u);
+    dst->VEL_WOULD_REJECT = (uint16_t)ttr_get_bits(frame->data, 64u, 16u);
+    dst->VEL_DEV_MAX = (uint16_t)ttr_get_bits(frame->data, 80u, 12u);
+    dst->ERR_CONSEC_MAX = (uint8_t)ttr_get_bits(frame->data, 96u, 8u);
+    dst->STANDDOWN_COUNT = (uint8_t)ttr_get_bits(frame->data, 104u, 8u);
+    dst->RESYNC_BAD_COUNT = (uint8_t)ttr_get_bits(frame->data, 112u, 8u);
+}
+
+void ttr_mcu4_status_encoder_debug_pack(ttr_can_frame_t *frame, const ttr_mcu4_status_encoder_debug_t *src)
+{
+    uint16_t i;
+    frame->id = TTR_CAN_ID_MCU4_STATUS_ENCODER_DEBUG;
+    frame->dlc = TTR_CAN_DLC_MCU4_STATUS_ENCODER_DEBUG;
+    for (i = 0; i < 16u; ++i) { frame->data[i] = 0u; }
+    ttr_set_bits(frame->data, 0u, 16u, (uint64_t)src->CRC_ERR_COUNT);
+    ttr_set_bits(frame->data, 16u, 16u, (uint64_t)src->ERRFLAG_RAW_COUNT);
+    ttr_set_bits(frame->data, 32u, 16u, (uint64_t)src->GLITCH_COUNT);
+    ttr_set_bits(frame->data, 48u, 16u, (uint64_t)src->REVERSAL_COUNT);
+    ttr_set_bits(frame->data, 64u, 16u, (uint64_t)src->VEL_WOULD_REJECT);
+    ttr_set_bits(frame->data, 80u, 12u, (uint64_t)src->VEL_DEV_MAX);
+    ttr_set_bits(frame->data, 96u, 8u, (uint64_t)src->ERR_CONSEC_MAX);
+    ttr_set_bits(frame->data, 104u, 8u, (uint64_t)src->STANDDOWN_COUNT);
+    ttr_set_bits(frame->data, 112u, 8u, (uint64_t)src->RESYNC_BAD_COUNT);
 }
 
 /* ===== MCU4_INFO ===== */

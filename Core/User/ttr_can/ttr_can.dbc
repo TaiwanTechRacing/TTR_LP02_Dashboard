@@ -338,6 +338,7 @@ BO_ 1056 VCU_VCU_STATE: 8 VCU
  SG_ WARMUP_TMR_RDY : 7|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ TEBPPC_ACTIVE : 8|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ COOLING_SYSTEM_ACTIVE : 9|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ GLV_LOW_WARN : 10|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ SYS_DRIVE_MODE : 16|8@1+ (1,0) [0|0] "" Vector__XXX
  SG_ VCU_HEARTBEAT : 56|8@1+ (1,0) [0|0] "" Vector__XXX
 
@@ -1065,6 +1066,17 @@ BO_ 1223 MCU1_STATUS_COMM: 32 MCU1
  SG_ LEC_SEEN : 240|8@1+ (1,0) [0|0] "" Vector__XXX
  SG_ ERR_PASSIVE_COUNT : 248|8@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 1224 MCU1_STATUS_ENCODER_DEBUG: 16 MCU1
+ SG_ CRC_ERR_COUNT : 0|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ERRFLAG_RAW_COUNT : 16|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ GLITCH_COUNT : 32|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ REVERSAL_COUNT : 48|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VEL_WOULD_REJECT : 64|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VEL_DEV_MAX : 80|12@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ERR_CONSEC_MAX : 96|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ STANDDOWN_COUNT : 104|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ RESYNC_BAD_COUNT : 112|8@1+ (1,0) [0|0] "" Vector__XXX
+
 BO_ 1236 MCU1_INFO: 8 MCU1
  SG_ FW_BUILD_UNIX : 0|32@1+ (1,0) [0|0] "" Vector__XXX
  SG_ FW_GIT_SHA : 32|32@1+ (1,0) [0|0] "" Vector__XXX
@@ -1267,6 +1279,17 @@ BO_ 1255 MCU2_STATUS_COMM: 32 MCU2
  SG_ REC_MAX : 232|8@1+ (1,0) [0|0] "" Vector__XXX
  SG_ LEC_SEEN : 240|8@1+ (1,0) [0|0] "" Vector__XXX
  SG_ ERR_PASSIVE_COUNT : 248|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1256 MCU2_STATUS_ENCODER_DEBUG: 16 MCU2
+ SG_ CRC_ERR_COUNT : 0|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ERRFLAG_RAW_COUNT : 16|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ GLITCH_COUNT : 32|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ REVERSAL_COUNT : 48|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VEL_WOULD_REJECT : 64|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VEL_DEV_MAX : 80|12@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ERR_CONSEC_MAX : 96|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ STANDDOWN_COUNT : 104|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ RESYNC_BAD_COUNT : 112|8@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1268 MCU2_INFO: 8 MCU2
  SG_ FW_BUILD_UNIX : 0|32@1+ (1,0) [0|0] "" Vector__XXX
@@ -1471,6 +1494,17 @@ BO_ 1287 MCU3_STATUS_COMM: 32 MCU3
  SG_ LEC_SEEN : 240|8@1+ (1,0) [0|0] "" Vector__XXX
  SG_ ERR_PASSIVE_COUNT : 248|8@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 1288 MCU3_STATUS_ENCODER_DEBUG: 16 MCU3
+ SG_ CRC_ERR_COUNT : 0|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ERRFLAG_RAW_COUNT : 16|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ GLITCH_COUNT : 32|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ REVERSAL_COUNT : 48|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VEL_WOULD_REJECT : 64|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VEL_DEV_MAX : 80|12@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ERR_CONSEC_MAX : 96|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ STANDDOWN_COUNT : 104|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ RESYNC_BAD_COUNT : 112|8@1+ (1,0) [0|0] "" Vector__XXX
+
 BO_ 1300 MCU3_INFO: 8 MCU3
  SG_ FW_BUILD_UNIX : 0|32@1+ (1,0) [0|0] "" Vector__XXX
  SG_ FW_GIT_SHA : 32|32@1+ (1,0) [0|0] "" Vector__XXX
@@ -1673,6 +1707,17 @@ BO_ 1319 MCU4_STATUS_COMM: 32 MCU4
  SG_ REC_MAX : 232|8@1+ (1,0) [0|0] "" Vector__XXX
  SG_ LEC_SEEN : 240|8@1+ (1,0) [0|0] "" Vector__XXX
  SG_ ERR_PASSIVE_COUNT : 248|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1320 MCU4_STATUS_ENCODER_DEBUG: 16 MCU4
+ SG_ CRC_ERR_COUNT : 0|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ERRFLAG_RAW_COUNT : 16|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ GLITCH_COUNT : 32|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ REVERSAL_COUNT : 48|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VEL_WOULD_REJECT : 64|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ VEL_DEV_MAX : 80|12@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ERR_CONSEC_MAX : 96|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ STANDDOWN_COUNT : 104|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ RESYNC_BAD_COUNT : 112|8@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1332 MCU4_INFO: 8 MCU4
  SG_ FW_BUILD_UNIX : 0|32@1+ (1,0) [0|0] "" Vector__XXX
@@ -1898,6 +1943,8 @@ BA_ "GenMsgCycleTime" BO_ 1222 100;
 BA_ "VFrameFormat" BO_ 1222 14;
 BA_ "GenMsgCycleTime" BO_ 1223 100;
 BA_ "VFrameFormat" BO_ 1223 14;
+BA_ "GenMsgCycleTime" BO_ 1224 100;
+BA_ "VFrameFormat" BO_ 1224 14;
 BA_ "GenMsgCycleTime" BO_ 1236 1000;
 BA_ "VFrameFormat" BO_ 1236 14;
 BA_ "GenMsgCycleTime" BO_ 1237 1000;
@@ -1922,6 +1969,8 @@ BA_ "GenMsgCycleTime" BO_ 1254 100;
 BA_ "VFrameFormat" BO_ 1254 14;
 BA_ "GenMsgCycleTime" BO_ 1255 100;
 BA_ "VFrameFormat" BO_ 1255 14;
+BA_ "GenMsgCycleTime" BO_ 1256 100;
+BA_ "VFrameFormat" BO_ 1256 14;
 BA_ "GenMsgCycleTime" BO_ 1268 1000;
 BA_ "VFrameFormat" BO_ 1268 14;
 BA_ "GenMsgCycleTime" BO_ 1269 1000;
@@ -1946,6 +1995,8 @@ BA_ "GenMsgCycleTime" BO_ 1286 100;
 BA_ "VFrameFormat" BO_ 1286 14;
 BA_ "GenMsgCycleTime" BO_ 1287 100;
 BA_ "VFrameFormat" BO_ 1287 14;
+BA_ "GenMsgCycleTime" BO_ 1288 100;
+BA_ "VFrameFormat" BO_ 1288 14;
 BA_ "GenMsgCycleTime" BO_ 1300 1000;
 BA_ "VFrameFormat" BO_ 1300 14;
 BA_ "GenMsgCycleTime" BO_ 1301 1000;
@@ -1970,6 +2021,8 @@ BA_ "GenMsgCycleTime" BO_ 1318 100;
 BA_ "VFrameFormat" BO_ 1318 14;
 BA_ "GenMsgCycleTime" BO_ 1319 100;
 BA_ "VFrameFormat" BO_ 1319 14;
+BA_ "GenMsgCycleTime" BO_ 1320 100;
+BA_ "VFrameFormat" BO_ 1320 14;
 BA_ "GenMsgCycleTime" BO_ 1332 1000;
 BA_ "VFrameFormat" BO_ 1332 14;
 BA_ "GenMsgCycleTime" BO_ 1333 1000;
@@ -2086,6 +2139,7 @@ VAL_ 1056 SENSOR_RDY 0 "False" 1 "True";
 VAL_ 1056 WARMUP_TMR_RDY 0 "False" 1 "True";
 VAL_ 1056 TEBPPC_ACTIVE 0 "False" 1 "True";
 VAL_ 1056 COOLING_SYSTEM_ACTIVE 0 "False" 1 "True";
+VAL_ 1056 GLV_LOW_WARN 0 "False" 1 "True";
 VAL_ 1056 SYS_DRIVE_MODE 0 "NO_CONTROL" 1 "EDIFF" 2 "RATIO" 3 "DYC";
 VAL_ 1057 APPS1_ERR 0 "False" 1 "True";
 VAL_ 1057 APPS2_ERR 0 "False" 1 "True";
